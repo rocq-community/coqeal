@@ -1,14 +1,11 @@
 From HB Require Import structures.
-Require Import mathcomp.ssreflect.ssreflect.
-From mathcomp
-Require Import ssrfun ssrbool eqtype ssrnat seq choice fintype tuple.
-From mathcomp
-Require Import bigop binomial finset finfun zmodp ssralg countalg finalg poly polydiv.
-From mathcomp
-Require Import perm fingroup.
+From mathcomp Require Import ssreflect ssrfun ssrbool.
+From mathcomp Require Import eqtype ssrnat seq choice fintype tuple.
+From mathcomp Require Import bigop binomial finset finfun perm fingroup.
+From mathcomp Require Import zmodp ssralg countalg finalg poly polydiv.
 
-From CoqEAL
-Require Import hrel pos param refinements binnat boolF2 seqpoly poly_op trivial_seq poly_div boolF2.
+From CoqEAL Require Import hrel pos param refinements binnat boolF2 seqpoly.
+From CoqEAL Require Import poly_op trivial_seq poly_div boolF2.
 
 
 Set Implicit Arguments.
