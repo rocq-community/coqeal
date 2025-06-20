@@ -498,7 +498,7 @@ Qed.
 
 (* Add to ssr? *)
 Lemma size_MXnaddC (R : ringType) (p : {poly R}) (c : R) n :
-  size (p * 'X^n.+1 + c%:P) = if (p == 0) then size c%:P else (n.+1 + size p)%N.
+  size (p * 'X^(n.+1) + c%:P) = if (p == 0) then size c%:P else (n.+1 + size p)%N.
 Proof.
 have [->|/eqP hp0] := eqP; first by rewrite mul0r add0r.
 rewrite size_addl polyseqMXn ?size_ncons // size_polyC.
@@ -538,7 +538,7 @@ Proof.
 Qed.
 
 Lemma lead_coef_MXnaddC (R : ringType) (p : {poly R}) (c : R) n :
-  lead_coef (p * 'X^n.+1 + c%:P) = if (lead_coef p == 0) then c
+  lead_coef (p * 'X^(n.+1) + c%:P) = if (lead_coef p == 0) then c
                                    else lead_coef p.
 Proof.
   have [|/eqP hp0] := eqP.
@@ -561,7 +561,7 @@ Proof.
 Qed.
 
 Lemma rdivpXnSm (p : {poly A}) a n m :
-  rdivp (p * 'X^n + a%:P) 'X^m.+1 = if (n <= m.+1)%C then rdivp p 'X^(m.+1 - n)
+  rdivp (p * 'X^n + a%:P) 'X^(m.+1) = if (n <= m.+1)%C then rdivp p 'X^(m.+1 - n)
                                     else p * 'X^(n - m.+1).
 Proof.
   have [leqnSm|gtnSm] := leqP n m.+1.
@@ -580,7 +580,7 @@ Proof.
 Qed.
 
 Lemma rmodpXnSm (p : {poly A}) a n m :
-  rmodp (p * 'X^n + a%:P) 'X^m.+1 =
+  rmodp (p * 'X^n + a%:P) 'X^(m.+1) =
   if (n <= m.+1)%C then (rmodp p 'X^(m.+1 - n)) * 'X^n + a%:P
   else a%:P.
 Proof.

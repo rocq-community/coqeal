@@ -409,7 +409,7 @@ Proof.
   rewrite mulrDl -mulrA -exprSr addrC -addrA.
   suff htnp :
     size (rmodp (\poly_(i < size p) p`_i) 'X^n * 'X + a%:P) <
-    size ('X^n.+1 : {poly R}).
+    size ('X^(n.+1) : {poly R}).
     by rewrite rdivp_addl_mul_small ?rmodp_addl_mul_small ?monicXn // addrC.
   rewrite size_polyXn size_MXaddC ltnS; case: ifP=> // _.
   by rewrite (leq_trans (ltn_rmodpN0 _ _)) ?monic_neq0 ?monicXn ?size_polyXn.
