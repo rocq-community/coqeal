@@ -357,9 +357,9 @@ have {H} Hd1: d %= 1.
     move=> i; rewrite !mxE !ffunE -(inj_eq (@ord_inj _)) lift0 lift_max.
     by rewrite eqxx !eqn_leq ltnn (leqNgt _ i) ltn_ord sub0r subr0.
   by apply/dvdrP; exists ((-1)^+ (size p).-2); rewrite -expr2 sqrr_sign.
-have Hip: s`_(size p).-2 %= p.
+have Hip: s`_((size p).-2) %= p.
   rewrite eqd_sym in Hd1.
-  rewrite -(mul1r s`_(size p).-2) (eqd_ltrans (eqd_mulr _ Hd1)).
+  rewrite -(mul1r s`_((size p).-2)) (eqd_ltrans (eqd_mulr _ Hd1)).
    rewrite -{2}(comp_char_polyK Hmp Hsp) /char_poly -det_Smith.
   rewrite /Smith_form -diag_mx_seq_takel.
   rewrite det_diag_mx_seq // eqd_sym (big_nth 0) big_mkord.
@@ -648,9 +648,9 @@ have {H2} Hd2: d2 %= 1.
     by rewrite det1 mulr1.
   move=> j /negbTE Hj; rewrite !mxE !ffunE (inj_eq (@ord_inj _)).
   by rewrite (inj_eq (@lift_inj _ _)) eq_sym Hj mul0r.
-have Hsp: s`_sap.-1 %= p1.
+have Hsp: s`_(sap.-1) %= p1.
   rewrite eqd_sym in Hd2.
-  rewrite -(mul1r s`_sap.-1) (eqd_ltrans (eqd_mulr _ Hd2)).
+  rewrite -(mul1r s`_(sap.-1)) (eqd_ltrans (eqd_mulr _ Hd2)).
   rewrite -HdetM -det_Smith /Smith_form -diag_mx_seq_takel det_diag_mx_seq.
     rewrite (big_nth 0) big_mkord Hs1 big_ord_recr /=.
     by apply: eqd_mul=> //; rewrite /d2 prednK // Hcast addnS addSn.
