@@ -432,7 +432,8 @@ constructor.
     case: unliftP=> //= _; rewrite [RHS]mxE split1; case: unliftP => //= _.
     rewrite !mxE !mulr1n !mulrDr !mulNr !mulrN opprK [_ + y * _]addrC addrA.
     rewrite [p * b]mulrC [a * (b * p)]mulrCA [p * a]mulrC addrN sub0r.
-    rewrite ![_ * (a * _)]mulrCA -!mulNr -mulrDr mulrCA mulrAC -mulrA -mulrDr.
+    rewrite ![_ * (a * _)]mulrCA -!mulNr -mulrDr.
+    rewrite [X in _ + X]mulrCA mulrAC -mulrA -mulrDr.
     by rewrite [x * p]mulrC addrC -mulrA Hxy mulr1.
 * by apply: sorted_cons => //=; rewrite mulr1 dvdr_mulr.
 * rewrite !unitmx_mul unit_Bezout_mx !unitmxE detmx2 /x /y mulNr opprK.
