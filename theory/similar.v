@@ -528,7 +528,8 @@ rewrite !coefMC !coefCM !coefD !coefN !coefC !coefX !eqxx !sub0r subr0 mulr1.
 rewrite mulrN mulNr; move/eqP; rewrite eqr_opp=> /eqP HM0N0 HM0N0I.
 case:(mulmx1_unit HM0N0I)=> HM00 HN00.
 exists (M0`_0) => //; rewrite conform_mx_id -HM0N0 mulmxE -(divr1 N0`_0).
-by rewrite -[1]HM0N0I invrM // mulrA divrr // mul1r -!mulrA mulVr // mulr1.
+rewrite -[1]HM0N0I invrM // (mulrA N0`_0) divrr // mul1r.
+by rewrite -!mulrA mulVr // mulr1.
 Qed.
 
 Lemma similar_mxminpoly m' n' (A : 'M[R]_m'.+1) (B : 'M[R]_n'.+1) :

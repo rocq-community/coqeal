@@ -182,7 +182,7 @@ have Hst: sorted (@dvdpm F) (nseq m 1 ++ invariant_factors A).
   apply: (@path_sorted _ _ 1); rewrite cat_path; apply/andP; split.
     apply/(pathP 0); rewrite size_nseq=> [][|i] Hi.
       by rewrite nth0 dvd1pm // nth_nseq Hi monic1.
-    rewrite -nth_behead nth_nseq (ltn_trans (ltnSn i) Hi) dvd1pm //.
+    rewrite -nth_behead/= nth_nseq (ltn_trans (ltnSn i) Hi) dvd1pm //.
     by rewrite nth_nseq Hi monic1.
   rewrite path_min_sorted; [|apply/allP=>p Hp].
     by rewrite sorted_filter //;first exact: dvdpm_trans.

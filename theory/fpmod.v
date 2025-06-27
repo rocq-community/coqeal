@@ -345,8 +345,8 @@ rewrite !subr0 => /= /dvdmxP [Y] /(congr1 (mulmx X)).
 rewrite !mulmxA -[X *m phi](addrNK 1%:M) mulmxDl mul1mx.
 move/(canRL (addKr _)) ->.
 rewrite -mulNmx opprB Z_def -mulmxA dvdmxD //; last first.
-  by rewrite mulmxA dvdmxMl.
-by rewrite -mulmxA dvdmxMl // dvdmx_morphism.
+  by rewrite 1?mulmxA dvdmxMl.
+by rewrite -1?mulmxA dvdmxMl // dvdmx_morphism.
 Qed.
 
 Lemma rinv_inj (psi : 'Mor(N, M)) :
