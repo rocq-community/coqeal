@@ -810,8 +810,8 @@ apply/andP; split; [|by apply Hind].
 by apply/negP => Hin; apply H1, in_fst_InA_eq_key_iff.
 Qed.
 
-Lemma refine_size_mpoly (n : nat) T (p : mpoly n T) (p' : effmpoly T)
-  `{ref_pp' : !refines Reffmpoly p p'} :
+Lemma refine_size_mpoly (n : nat) (T : ringType)
+    (p : mpoly n T) (p' : effmpoly T) `{ref_pp' : !refines Reffmpoly p p'} :
   forall m, M.In m p' -> size m == n.
 Proof.
 move: ref_pp'.
@@ -821,8 +821,8 @@ rewrite /t (P.for_all_iff _); [|by move=> m _ /mnmc_eq_seqP /eqP <-].
 by move=> H _ m [e Hme]; apply (H m e).
 Qed.
 
-Lemma refine_find_mpoly (n : nat) T (p : mpoly n T) (p' : effmpoly T) :
-  refines Reffmpoly p p' ->
+Lemma refine_find_mpoly (n : nat) (T : ringType)
+    (p : mpoly n T) (p' : effmpoly T) : refines Reffmpoly p p' ->
   forall m m', refines Rseqmultinom m m' -> p@_m = odflt 0 (M.find m' p').
 Proof.
 rewrite !refinesE /Reffmpoly /mpoly_of_effmpoly /ofun_hrel.
@@ -867,7 +867,8 @@ rewrite (H_sz xe.1 xe.2) in Hf => //; apply M.elements_2.
 by rewrite -in_InA_eq_key_elt_iff -surjective_pairing.
 Qed.
 
-Lemma refine_effmpolyP (n : nat) T (p : mpoly n T) (p' : effmpoly T) :
+Lemma refine_effmpolyP (n : nat) (T : ringType)
+  (p : mpoly n T) (p' : effmpoly T) :
   (forall m, M.In m p' -> size m == n)%N ->
   (forall m m', refines Rseqmultinom m m' -> p@_m = odflt 0 (M.find m' p')) ->
   refines Reffmpoly p p'.
