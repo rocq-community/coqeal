@@ -24,6 +24,10 @@
   ## /!\ Manual overlays in `.nix/coq-overlays` should be preferred then.
   # buildInputs = [ ];
 
+  ## Set this when the package has no rocqPackages version yet
+  ## (either in nixpkgs or in .nix/rocq-overlays)
+  no-rocq-yet = true;
+
   ## Indicate the relative location of your _CoqProject
   ## If not specified, it defaults to "_CoqProject"
   # coqproject = "_CoqProject";
@@ -40,14 +44,14 @@
   ## name here. For instance, coq-community projects can use
   ## the following line instead of the one above:
   # cachix.coq-community.authToken = "CACHIX_AUTH_TOKEN";
-  
+
   ## Or if you have a signing key for a given Cachix cache:
   # cachix.my-cache.signingKey = "CACHIX_SIGNING_KEY"
-  
+
   ## Note that here, CACHIX_AUTH_TOKEN and CACHIX_SIGNING_KEY
   ## are the names of secret variables. They are set in
   ## GitHub's web interface.
-  
+
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
   default-bundle = "coq-8.20";
@@ -86,16 +90,7 @@
   ## It can then be built throught
   ## nix-build --argstr ci "default" --arg ci-job "test";
 
-  common-bundles = { 
-    mathcomp-ssreflect.job = true;
-    mathcomp-algebra.job = true;
-    mathcomp-field.job = true;
-    mathcomp-finmap.job = true;
-    mathcomp-bigenough.job = true;
-    multinomials.job = true;
-    mathcomp-real-closed.job = true;
-    mathcomp-zify.job = true;
-    mathcomp-algebra-tactics.job = true;
+  common-bundles = {
     mathcomp-apery.override.version = "master";  # reverse dependency of coqeal
     stdlib.job = true;
     bignums.job = true;
@@ -117,13 +112,13 @@
       stdlib.override.version = "master";
       bignums.override.version = "master";
       rocq-elpi.override.version = "master";
-      rocq-elpi.override.elpi-version = "2.0.7";
+      rocq-elpi.override.elpi-version = "3.0.1";
     }; coqPackages = common-bundles // {
       coq.override.version = "master";
       stdlib.override.version = "master";
       bignums.override.version = "master";
       coq-elpi.override.version = "master";
-      coq-elpi.override.elpi-version = "2.0.7";
+      coq-elpi.override.elpi-version = "3.0.1";
       hierarchy-builder.override.version = "master";
       mathcomp.override.version = "master";
       mathcomp-finmap.override.version = "master";
@@ -133,13 +128,16 @@
       mathcomp-zify.override.version = "master";
       mathcomp-algebra-tactics.override.version = "master";
     }; };
-    "rocq-9.0".coqPackages = common-bundles // {
+    "rocq-9.1" = { rocqPackages = {
+      rocq-core.override.version = "9.1";
+    }; coqPackages = common-bundles // {
+      coq.override.version = "9.1";
+    }; };
+    "rocq-9.0" = { rocqPackages = {
+      rocq-core.override.version = "9.0";
+    }; coqPackages = common-bundles // {
       coq.override.version = "9.0";
-      coq-elpi.job = true;
-      hierarchy-builder.job = true;
-      mathcomp.override.version = "2.3.0";
-      multinomials.override.version = "2.3.0";
-    };
+    }; };
     "coq-8.20".coqPackages = common-bundles // {
       coq.override.version = "8.20";
       coq-elpi.override.version = "2.5.0";
