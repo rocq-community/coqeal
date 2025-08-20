@@ -1,5 +1,5 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq fintype.
-From elpi Require Import derive param2.
+From elpi Require Export derive param2.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
