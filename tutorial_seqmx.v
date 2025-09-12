@@ -280,4 +280,49 @@ Qed.
    by some [@seqmx R'] were [R'] could be some refinement of [R]. *)
 About RseqmxC.
 
+End MatVecMul.
+
+(* Finally, a nice capability offered by CoqEAL (and more precisely
+Elpi derive.param2 (and previously the paramcoq plugin) on which it is based)
+is to automatically derive refinement proofs for inductive types and programs,
+assuming refinements for their parameters. *)
+Section Derive2.
+
+(* We define some program doing stuffs on matrices.
+The type of matrices is parameterized *)
+Section Prog.
+(* Assume some type of matrices *)
+Variable (M : nat -> nat -> Type).
+(* with a boolean equality *)
+Variable (Meq : forall m n, M m n -> M m n -> bool).
+(* and addition *)
+Variable (Madd : forall m n, M m n -> M m n -> M m n).
+
+(* some program, computing some arbirary stuff for the sake of the example *)
+Fixpoint prog m n (A B : M m n) k :=
+  if k isn't k'.+1 then B else prog A (Madd A B) k'.
+End Prog.
+
+(* Once the program defined, we can automatically derive its refinement proof *)
+Elpi derive.param2 prog.
+(* This defines a new lemma [prog_R] *)
+About prog_R.
+
+Section TestProg.
+
+(* Assume some type of coefficients (with some zero and addition) *)
+Context R (zR : zero_of R) (Radd : add_of R).
+
+(* Using the basic blocks from CoqEAL
+(here refinement of matrix addition [Rseqmx_add]), the derived lemma [prog_R]
+immediatly gives that [prog (addmx Radd)] on MathComp matrices
+is refined by [prog (fun _ _ => @add_seqmx R _)] on [@seqmx R]. *)
+Check @prog_R (matrix R) (@hseqmx R) (@Rseqmx R _) _ _
+  (fun m1 m2 (rm : nat_R m1 m2) n1 n2 (rn : nat_R n1 n2) =>
+     refinesP (Rseqmx_add zR Radd rm rn)).
+
+End TestProg.
+
+End Derive2.
+
 End Tutorial.
