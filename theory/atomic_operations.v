@@ -1,6 +1,6 @@
 
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq.
-From mathcomp Require Import ssralg fintype perm choice.
+From mathcomp Require Import fintype ssralg perm choice.
 From mathcomp Require Import matrix  bigop zmodp mxalgebra poly mxpoly.
 
 Import GRing.Theory.

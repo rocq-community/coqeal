@@ -2,7 +2,7 @@
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
 From HB Require Import structures.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq path.
-From mathcomp Require Import ssralg fintype matrix mxalgebra bigop zmodp perm choice.
+From mathcomp Require Import fintype ssralg matrix mxalgebra bigop zmodp perm choice.
 
 Require Import dvdring mxstructure minor stronglydiscrete coherent edr.
 

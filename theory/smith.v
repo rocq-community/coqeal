@@ -3,7 +3,7 @@
 (* Require Import ZArith. *)
 From HB Require Import structures.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq path.
-From mathcomp Require Import ssralg ssrint ssrnum fintype choice.
+From mathcomp Require Import fintype ssralg ssrint ssrnum choice.
 From mathcomp Require Import matrix mxalgebra bigop zmodp perm.
 Require Import dvdring mxstructure stronglydiscrete coherent edr.
 

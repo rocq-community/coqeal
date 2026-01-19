@@ -1,7 +1,7 @@
 (** This file is part of CoqEAL, the Coq Effective Algebra Library.
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq.
-From mathcomp Require Import ssralg fintype fingroup perm.
+From mathcomp Require Import fintype ssralg fingroup perm.
 From mathcomp Require Import matrix bigop zmodp mxalgebra.
 
 Require Import gauss.

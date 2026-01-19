@@ -1,6 +1,6 @@
 (* Version of Bareiss/Sasaki-Murao based on dvdrings *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq path.
-From mathcomp Require Import ssralg fintype perm choice.
+From mathcomp Require Import fintype ssralg perm choice.
 From mathcomp Require Import matrix bigop zmodp mxalgebra poly polydiv mxpoly.
 
 Require Import ssrcomplements dvdring minor atomic_operations.
