@@ -18,7 +18,7 @@
     Submitted by Richard A. Brualdi.
 *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq path.
-From mathcomp Require Import ssralg fintype perm choice finfun.
+From mathcomp Require Import fintype ssralg perm choice finfun.
 From mathcomp Require Import matrix  bigop zmodp mxalgebra fingroup.
 Require Import minor.
 

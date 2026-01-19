@@ -2,7 +2,7 @@
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
 From HB Require Import structures.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq path.
-From mathcomp Require Import ssralg fintype finfun perm matrix bigop zmodp mxalgebra.
+From mathcomp Require Import fintype ssralg finfun perm matrix bigop zmodp mxalgebra.
 From mathcomp Require Import choice poly polydiv mxpoly binomial.
 
 Set Implicit Arguments.

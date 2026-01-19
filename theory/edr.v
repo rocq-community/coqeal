@@ -2,7 +2,7 @@
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
 From HB Require Import structures.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq path tuple.
-From mathcomp Require Import perm fingroup choice ssralg fintype finfun poly polydiv.
+From mathcomp Require Import perm fingroup choice fintype ssralg finfun poly polydiv.
 From mathcomp Require Import bigop matrix zmodp mxalgebra.
 
 Require Import ssrcomplements dvdring mxstructure similar minor binetcauchy.

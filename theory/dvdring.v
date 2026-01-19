@@ -3,7 +3,7 @@
 From HB Require Import structures.
 From Coq Require Import ssreflect ssrfun ssrbool Arith.Wf_nat.
 From mathcomp Require Import eqtype ssrnat div seq path.
-From mathcomp Require Import ssralg fintype perm tuple choice generic_quotient.
+From mathcomp Require Import fintype ssralg perm tuple choice generic_quotient.
 From mathcomp Require Import matrix bigop zmodp mxalgebra poly.
 
 Require Import stronglydiscrete.

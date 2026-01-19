@@ -1,7 +1,7 @@
 (** This file is part of CoqEAL, the Coq Effective Algebra Library.
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq path.
-From mathcomp Require Import ssralg fintype perm poly mxpoly finfun tuple.
+From mathcomp Require Import fintype ssralg perm poly mxpoly finfun tuple.
 From mathcomp Require Import matrix bigop zmodp polydiv.
 
 Require Import ssrcomplements dvdring.
