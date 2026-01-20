@@ -1,8 +1,8 @@
 (** This file is part of CoqEAL, the Coq Effective Algebra Library.
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
 (* Formalization of the Sasaki-Murao algorithm *)
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq path ssralg.
-From mathcomp Require Import fintype perm choice matrix bigop zmodp poly polydiv mxpoly.
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq path fintype.
+From mathcomp Require Import perm choice ssralg matrix bigop zmodp poly polydiv mxpoly.
 
 From CoqEAL Require Import ssrcomplements minor dvdring.
 
@@ -46,7 +46,7 @@ Lemma bareiss_block_key_lemma_sub m n k (M : 'M[R]_(1 + m,1 + n))
   M 0 0 ^+ k * (minor (lift_pred f) (lift_pred g) M).
 Proof.
 rewrite /minor -{7}[M]submxK submatrix_add submatrix_scale submatrix_opp.
-have -> : ulsubmx M = (M 0 0)%:M by apply/rowP=> i; rewrite !ord1 !mxE !lshift0.
+have -> : ulsubmx M = (M 0 0)%:M by apply/rowP=> i; rewrite ord1 !mxE !lshift0.
 by rewrite submatrix_lift_block bareiss_key_lemma submatrix_mul.
 Qed.
 
@@ -111,7 +111,7 @@ have hM' : M' = a *: M''.
   move: (hdvd 1%nat (f _ i) (f _ j)).
   by rewrite !minor2 /f /= expr1 !mxE !lshift0 !rshift1.
 rewrite -[M]submxK; apply/(@lregX _ d m.+1 (monic_lreg d_monic)).
-have -> : matrix.ulsubmx M = d%:M by apply/rowP=> i; rewrite !mxE !ord1 lshift0.
+have -> : matrix.ulsubmx M = d%:M by apply/rowP=> i; rewrite !mxE ord1 lshift0.
 rewrite bareiss_key_lemma -/M' hM' detZ mulrCA [_ * (a ^+ _ * _)]mulrCA !exprS -!mulrA.
 rewrite ih // => [p h h'|k f g].
   rewrite -(@monicMl _ (a ^+ p.+1)) // -detZ -submatrix_scale -hM'.
