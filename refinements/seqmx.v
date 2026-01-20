@@ -1,4 +1,4 @@
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq ssralg.
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq ssralg zmodp.
 From mathcomp Require Import path choice fintype tuple finset bigop poly matrix mxpoly.
 
 From CoqEAL Require Import hrel param refinements trivial_seq.
@@ -1093,7 +1093,7 @@ Proof.
         apply Rseqmx_top_left_seqmx.
       rewrite refinesE; eassumption.
     apply: congr2=> //; apply eq_bigr=> i _.
-    by rewrite -[in LHS](@submxK R 1 n1 1 n1 M) -zmodp.rshift1
+    by rewrite -[in LHS](@submxK R 1 n1 1 n1 M) -rshift1
                [LHS](@block_mxEdr R 1 n1 1 n1).
   apply refinesP; eapply refines_apply.
     apply Rseqmx_drsubseqmx.
