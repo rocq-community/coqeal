@@ -5,6 +5,7 @@ From mathcomp Require Import choice fintype bigop matrix.
 
 From CoqEAL Require Import hrel param refinements seqmx seqpoly.
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

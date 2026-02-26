@@ -3,6 +3,7 @@
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq zmodp.
 From mathcomp Require Import path choice fintype tuple finset bigop.
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 
 Set Implicit Arguments.
 Unset Strict Implicit.

@@ -7,6 +7,8 @@ From CoqEAL Require Import hrel param refinements.
 
 Import Refinements.Op.
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+
 Section operations.
 
 #[export] Instance zero_bool : zero_of bool := false.

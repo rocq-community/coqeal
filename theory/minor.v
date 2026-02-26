@@ -2,6 +2,7 @@
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq path ssralg.
 From mathcomp Require Import fintype perm choice finfun matrix bigop zmodp poly mxpoly.
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 
 Import GRing.Theory.
 

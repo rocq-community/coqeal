@@ -5,6 +5,7 @@ From mathcomp Require Import path choice fintype tuple finset ssralg ssrnum bigo
 
 From CoqEAL Require Import hrel param refinements binnat.
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
