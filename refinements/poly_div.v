@@ -6,6 +6,7 @@ From mathcomp Require Import path choice fintype tuple finset ssralg bigop poly 
 
 From CoqEAL Require Import param refinements hrel poly_op.
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

@@ -9,6 +9,8 @@ From CoqEAL Require Import hrel param refinements.
 
 Import Refinements.Op.
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+
 Section size_seq.
 
 Context (A : Type) (N : Type) `{zero_of N} `{one_of N} `{add_of N}.

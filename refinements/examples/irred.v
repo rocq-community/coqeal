@@ -7,6 +7,7 @@ From mathcomp Require Import zmodp ssralg countalg finalg poly polydiv.
 From CoqEAL Require Import hrel pos param refinements binnat boolF2 seqpoly.
 From CoqEAL Require Import poly_op trivial_seq poly_div boolF2.
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
