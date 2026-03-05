@@ -26,7 +26,7 @@ Variant smith_spec (R : dvdRingType) m n M
                      & P \in unitmx
                      & Q \in unitmx : smith_spec M (P,d,Q).
 
-HB.mixin Record Bezout_Coherent_isEDR R of DvdRing R := {
+HB.mixin Record Bezout_Coherent_isEDR R & DvdRing R := {
   smith : forall m n, 'M[R]_(m,n) -> 'M[R]_m * seq R * 'M[R]_n;
   smithP : forall m n (M : 'M[R]_(m,n)), smith_spec M (smith _ _ M)
 }.
@@ -44,12 +44,12 @@ Notation "[ 'edrType' 'of' T ]" := (EDR.clone T _)
 Arguments smith {_} [_ _].
 Arguments smithP {_} [_ _].
 
-HB.factory Record DvdRing_isEDR R of DvdRing R := {
+HB.factory Record DvdRing_isEDR R & DvdRing R := {
   smith : forall m n, 'M[R]_(m,n) -> 'M[R]_m * seq R * 'M[R]_n;
   smithP : forall m n (M : 'M[R]_(m,n)), smith_spec M (smith _ _ M)
 }.
 
-HB.builders Context R of DvdRing_isEDR R.
+HB.builders Context R & DvdRing_isEDR R.
 
 Definition smith_seq m n (M : 'M[R]_(m,n)) := (smith M).1.2.
 

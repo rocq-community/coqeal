@@ -22,7 +22,7 @@ Variant member_spec (R : ringType) n (x : R) (I : 'cV[R]_n)
 | Member J of x%:M = J *m I : member_spec x I (Some J)
 | NMember of (forall J, x%:M != J *m I) : member_spec x I None.
 
-HB.mixin Record Ring_isStronglyDiscrete R of GRing.Ring R := {
+HB.mixin Record Ring_isStronglyDiscrete R & GRing.Ring R := {
   member : forall n, R -> 'cV_n -> option 'rV_n;
   member_specP : forall n (x : R) (I : 'cV_n), member_spec x I (member n x I)
 }.

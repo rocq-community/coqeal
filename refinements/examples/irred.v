@@ -32,7 +32,7 @@ Record npolynomial : predArgType := Npolynomial {
 HB.instance Definition _ := [isSub of npolynomial for poly_of_npoly].
 HB.instance Definition _ := [Choice of pos by <:].
 
-Definition npoly_of of (phant R) := npolynomial.
+Definition npoly_of & (phant R) := npolynomial.
 Local Notation npoly_ofR := (npoly_of (Phant R)).
 
 HB.instance Definition _ := SubType.on npoly_ofR.

@@ -32,7 +32,7 @@ Local Open Scope ring_scope.
 For any i j s.t. ~~ g %| M i j, xrow 0 i M, bezout step on the first row
 and back to 1) *)
 
-HB.factory Record SmithPID R of PID R := {
+HB.factory Record SmithPID R & PID R := {
   find1 : forall m n, 'M[R]_(m.+1,n.+1) -> R -> option 'I_m;
   find2 : forall m n, 'M[R]_(m.+1,n.+1) -> R -> option ('I_(1 + m) * 'I_n);
   find1P : forall m n (M : 'M[R]_(1 + m,1 + n)) a,
@@ -45,7 +45,7 @@ HB.factory Record SmithPID R of PID R := {
     pick_spec [pred ij | M ij.1 ij.2 != 0] (find_pivot _ _ M)
 }.
 
-HB.builders Context R of SmithPID R.
+HB.builders Context R & SmithPID R.
 
 (* This lemma is used in the termination proof of improve_pivot_rec *)
 Lemma sdvd_Bezout_step2 m n i j u' vM (M : 'M[R]_(1 + m, 1 + n)) :

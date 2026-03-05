@@ -38,7 +38,7 @@ Record fpmod := FPmod {
   pres  : 'M[R]_(nbrel, nbgen)
 }.
 
-Definition fpmod_of of phant R := fpmod.
+Definition fpmod_of & phant R := fpmod.
 (* Identity Coercion type_fpmod_of : fpmod_of >-> fpmod. *) (* Is this necessary? *)
 
 (* We want morphism_of_rect so temporarily add this: *)

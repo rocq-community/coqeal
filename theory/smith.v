@@ -278,7 +278,7 @@ Qed.
 
 End smith.
 
-HB.factory Record hasSmith E of EuclideanDomain E := {
+HB.factory Record hasSmith E & EuclideanDomain E := {
   find1 : forall m n, 'M[E]_(m.+1,n.+1) -> E -> option 'I_m;
   find2 : forall m n, 'M[E]_(m.+1,n.+1) -> E -> option ('I_(1+m) * 'I_n);
   find_pivot :
@@ -291,7 +291,7 @@ HB.factory Record hasSmith E of EuclideanDomain E := {
     pick_spec [pred ij | E ij.1 ij.2 != 0] (find_pivot _ _ E)
 }.
 
-HB.builders Context E of hasSmith E.
+HB.builders Context E & hasSmith E.
 
 HB.instance Definition _ := DvdRing_isEDR.Build E
   (SmithP find1P find2P find_pivotP).
