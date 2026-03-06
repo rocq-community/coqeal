@@ -20,7 +20,7 @@ Delimit Scope mxpresentation_scope with MP.
 Local Open Scope mxpresentation_scope.
 
 (** Coherent rings *)
-HB.mixin Record Ring_isCoherent R of GRing.Ring R := {
+HB.mixin Record Ring_isCoherent R & GRing.Ring R := {
   dim_ker : forall m n, 'M[R]_(m,n) -> nat;
   ker : forall m n (M : 'M_(m,n)), 'M_(dim_ker _ _ M,m);
   kerP_subproof : forall m n (M : 'M_(m,n)) (X : 'rV_m),
@@ -310,7 +310,7 @@ Qed.
 (*    the underlying ring (in this case a strongly discrete ring) is an *)
 (*    integral domain *)
 HB.factory Record StronglyDiscrete_isIntersectionCoherent R
-           of StronglyDiscrete R := {
+           & StronglyDiscrete R := {
   (** The size of the intersection - 1, this is done to ensure that *)
   (*    the intersection is nonempty *)
   dim_cap : forall m n, 'cV[R]_m -> 'cV[R]_n -> nat;
@@ -319,7 +319,7 @@ HB.factory Record StronglyDiscrete_isIntersectionCoherent R
   cap_spec : forall n m (I : 'cV[R]_n) (J : 'cV[R]_m), int_spec (cap _ _ I J)
 }.
 
-HB.builders Context R of StronglyDiscrete_isIntersectionCoherent R.
+HB.builders Context R & StronglyDiscrete_isIntersectionCoherent R.
 
 Fixpoint dim_int n : 'cV[R]_n -> nat :=
   if n is p.+1 then

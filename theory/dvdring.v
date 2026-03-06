@@ -45,7 +45,7 @@ Variant div_spec (R : ringType) (a b : R) : option R -> Type :=
 | DivDvd x of a = x * b : div_spec a b (Some x)
 | DivNDvd of (forall x, a != x * b) : div_spec a b None.
 
-HB.mixin Record Ring_hasDiv R of GRing.Ring R := {
+HB.mixin Record Ring_hasDiv R & GRing.Ring R := {
   div : R -> R -> option R;
   div_subdef : forall a b, div_spec a b (div a b)
 }.
@@ -589,7 +589,7 @@ End DvdRingTheory.
 (* Notation "x %|d y" := (dvdqr x y) *)
 (*   (at level 40, left associativity, format "x  %|d  y"). *)
 
-HB.mixin Record DvdRing_hasGcd R of DvdRing R := {
+HB.mixin Record DvdRing_hasGcd R & DvdRing R := {
   gcdr : R -> R -> R;
   gcdr_subdef : forall d a b, d %| gcdr a b = (d %| a) && (d %| b)
 }.
@@ -1134,7 +1134,7 @@ End GCDDomainTheory.
 Variant bezout_spec (R : gcdDomainType) (a b : R) : R * R -> Type:=
   BezoutSpec x y of gcdr a b %= x * a + y * b : bezout_spec a b (x, y).
 
-HB.mixin Record GcdDomain_hasPreBezout R of GcdDomain R := {
+HB.mixin Record GcdDomain_hasPreBezout R & GcdDomain R := {
   bezout : R -> R -> (R * R);
   bezout_subdef : forall a b, bezout_spec a b (bezout a b)
 }.
@@ -1384,12 +1384,12 @@ End Bezout_mx.
 
 End BezoutDomainTheory.
 
-HB.factory Record GcdDomain_hasBezout R of GcdDomain R := {
+HB.factory Record GcdDomain_hasBezout R & GcdDomain R := {
   bezout : R -> R -> (R * R);
   bezout_subdef : forall a b, bezout_spec a b (bezout a b)
 }.
 
-HB.builders Context R of GcdDomain_hasBezout R.
+HB.builders Context R & GcdDomain_hasBezout R.
 
 HB.instance Definition _ := GcdDomain_hasPreBezout.Build R bezout_subdef.
 
@@ -1447,7 +1447,7 @@ HB.end.
 
 (* End Mixins. *)
 
-HB.mixin Record DvdRing_isWellFounded R of DvdRing R := {
+HB.mixin Record DvdRing_isWellFounded R & DvdRing R := {
   sdvdr_wf : well_founded (@sdvdr [the dvdRingType of R])
 }.
 
@@ -1477,7 +1477,7 @@ Variant edivr_spec (R : ringType)
   EdivrSpec q r of a = q * b + r & (b != 0) ==> (norm r < norm b)
   : edivr_spec norm a b (q,r).
 
-HB.mixin Record Ring_isEuclidean R of GRing.Ring R := {
+HB.mixin Record Ring_isEuclidean R & GRing.Ring R := {
   enorm : R -> nat;
   ediv : R -> R -> (R * R);
   norm_mul : forall a b, a != 0 -> enorm b <= enorm (a * b);
@@ -1600,14 +1600,14 @@ Qed.
 End Dvd.
 End Dvd.
 
-HB.factory Record IntegralDomain_isEuclidean R of GRing.IntegralDomain R := {
+HB.factory Record IntegralDomain_isEuclidean R & GRing.IntegralDomain R := {
   enorm : R -> nat;
   ediv : R -> R -> (R * R);
   norm_mul : forall a b, a != 0 -> enorm b <= enorm (a * b);
   edivP : forall a b, edivr_spec enorm a b (ediv a b)
 }.
 
-HB.builders Context R of IntegralDomain_isEuclidean R.
+HB.builders Context R & IntegralDomain_isEuclidean R.
 
   Implicit Type a b : [the idomainType of R].
 

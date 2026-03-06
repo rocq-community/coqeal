@@ -586,21 +586,21 @@ Qed.
 
 End AdequacyEDR.
 
-HB.factory Record BezoutDomain_isAdequacyEDR R of BezoutDomain R := {
+HB.factory Record BezoutDomain_isAdequacyEDR R & BezoutDomain R := {
   gdco : R -> R -> R;
   gdcoP : forall p q, gdco_spec p q (gdco p q)
 }.
 
-HB.builders Context R of BezoutDomain_isAdequacyEDR R.
+HB.builders Context R & BezoutDomain_isAdequacyEDR R.
   HB.instance Definition _ := DvdRing_isEDR.Build R (gdco_smithP gdcoP).
 HB.end.
 
-HB.factory Record BezoutDomain_isKrull1EDR R of BezoutDomain R := {
+HB.factory Record BezoutDomain_isKrull1EDR R & BezoutDomain R := {
   krull1 : forall a u : [the bezoutDomainType of R],
     exists m v, a %| u ^+ m * (1 - u * v)
 }.
 
-HB.builders Context R of BezoutDomain_isKrull1EDR R.
+HB.builders Context R & BezoutDomain_isKrull1EDR R.
 
 Implicit Types a b u : [the bezoutDomainType of R].
 
