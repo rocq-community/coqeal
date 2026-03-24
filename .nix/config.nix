@@ -54,7 +54,7 @@
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "coq-8.20";
+  default-bundle = "rocq-9.1";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration, the can be used to
@@ -112,19 +112,21 @@
       stdlib.override.version = "master";
       bignums.override.version = "master";
       rocq-elpi.override.version = "master";
-      rocq-elpi.override.elpi-version = "3.0.1";
+      hierarchy-builder.override.version = "master";
+      mathcomp.override.version = "master";
+      mathcomp-finmap.override.version = "master";
+      mathcomp-bigenough.override.version = "master";
     }; coqPackages = common-bundles // {
       coq.override.version = "master";
-      stdlib.override.version = "master";
-      bignums.override.version = "master";
       coq-elpi.override.version = "master";
-      coq-elpi.override.elpi-version = "3.0.1";
       hierarchy-builder.override.version = "master";
       mathcomp.override.version = "master";
       mathcomp-finmap.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       multinomials.override.version = "master";
       mathcomp-real-closed.override.version = "master";
+      bignums.override.version = "master";
+      stdlib.override.version = "master";
       mathcomp-zify.override.version = "master";
       mathcomp-algebra-tactics.override.version = "master";
     }; };
@@ -144,6 +146,7 @@
       coq-elpi.override.elpi-version = "2.0.7";
       hierarchy-builder.override.version = "1.8.1";
       mathcomp.override.version = "2.3.0";
+      mathcomp-apery.job = false;
     };
   };
 }
