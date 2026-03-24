@@ -7,7 +7,7 @@ Require Import ssrcomplements dvdring minor atomic_operations.
 
 Import Pdiv.Ring Pdiv.RingComRreg Pdiv.RingMonic GRing.Theory.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -24,32 +24,31 @@ Lemma L1 m (a d: R) (l: 'rV[R]_m) (c: 'cV[R]_m) (M: 'M[R]_m):
 Proof.
 set X := block_mx d%:M l c M.
 have huniq : uniq (map (lift 0) (enum 'I_m)).
-- rewrite map_inj_in_uniq; first exact: enum_uniq.
+- rewrite map_inj_in_uniq; last exact: enum_uniq.
   by move => i j hi hj /= /lift_inj.
 have htool : forall s, 0 \notin map (lift 0) s by move => n /=; elim.
-have -> : block_mx d%:M l (a *: c) (a *: M) =
-  foldl (fun N i => line_scale i a N) X (map (lift 0) (enum 'I_m)).
-- apply/row_matrixP => i.
-  case: (lines_scale_row a X huniq) => hl hr.
-  move: (hl i) (hr i) => {hl hr}.
-  case: (splitP i) => j.
-  + rewrite [j]ord1 {j} => hi.
-    have {i hi}-> : i = 0 by apply/ord_inj.
-    move => _ /= ->; last exact: htool.
-    apply/rowP => j; rewrite !mxE.
-    by case: splitP.
-
-  move => hi.
-  have {i hi}-> : i = lift 0 j by apply/ord_inj.
-  move => -> /=.
-  + move => _.
-    apply/rowP => k; rewrite !mxE.
-    case: splitP => x; first by rewrite [x]ord1.
-    rewrite !mxE => _.
-    case: splitP => y; by rewrite !mxE.
+suff -> : block_mx d%:M l (a *: c) (a *: M) =
+    foldl (fun N i => line_scale i a N) X (map (lift 0) (enum 'I_m)).
+  by rewrite det_lines_scale size_map size_enum_ord /=.
+apply/row_matrixP => i.
+case: (lines_scale_row a X huniq) => hl hr.
+move: (hl i) (hr i) => {hl hr}.
+case: (splitP i) => j.
+- rewrite [j]ord1 {j} => hi.
+  have {i hi}-> : i = 0 by apply/ord_inj.
+  move => _ /= ->; first exact: htool.
+  apply/rowP => j; rewrite !mxE.
+  by case: splitP.
+move => hi.
+have {i hi}-> : i = lift 0 j by apply/ord_inj.
+move => -> /=.
   rewrite mem_map ?mem_enum //.
   by apply/lift_inj.
-by rewrite det_lines_scale size_map size_enum_ord /=.
+move => _.
+apply/rowP => k; rewrite !mxE.
+case: splitP => x; first by rewrite [x]ord1.
+rewrite !mxE => _.
+case: splitP => y; by rewrite !mxE.
 Qed.
 
 Definition L3tool m (c: 'cV[R]_m) (d: R) (i: 'I_(1 + m)) :=
@@ -76,34 +75,31 @@ have huniq : uniq (map (lift 0) (enum 'I_m)).
   by apply/lift_inj.
 have htool : forall s, 0 \notin map (lift 0) s by move => n /=; elim.
 have {}htool := htool _ (enum 'I_m).
-have -> : block_mx d%:M l (c -d *: c0) (M - c0 *m l) =
-  foldl (fun N i => line_comb i 0 (-(L3tool c0 d i)) N) X
-        (map (lift 0) (enum 'I_m)).
-- apply/row_matrixP => i.
-  case: (lines_comb_row_dep (fun i => - (L3tool c0 d i)) X huniq htool)
-     => hl hr.
-  move: (hl i) (hr i) => {hl hr}.
-  case: (splitP i) => j.
-  + rewrite [j]ord1 {j} => hi.
-    have {hi i}-> : i = 0 by apply/ord_inj.
-    move => _ -> //=.
-    apply/rowP => j; rewrite !mxE.
-    by case: splitP.
-  move => hi.
-  have {i hi}-> : i = lift 0 j by apply/ord_inj.
-  move => -> /=.
-  + rewrite L3toolES => _.
-    apply/rowP => k; rewrite !mxE.
-    case: splitP => x /= ; first by rewrite [x]ord1.
-    rewrite /bump leq0n => /eqP; rewrite eqSS => /eqP/ord_inj{j}->.
-    case: splitP => z //; rewrite [z]ord1 {z} !mxE => _.
-    case: splitP => y; rewrite !mxE.
-    * rewrite [y]ord1 {y} => _.
-      by rewrite mulrC mulr1n mulNr.
-    by move => _; rewrite big_ord_recl big_ord0 addr0 mulNr.
-  rewrite mem_map ?mem_enum //.
-  by apply/lift_inj.
-by rewrite det_lines_comb_dep // size_map size_enum_ord /=.
+suff -> : block_mx d%:M l (c -d *: c0) (M - c0 *m l) =
+    foldl (fun N i => line_comb i 0 (-(L3tool c0 d i)) N) X
+          (map (lift 0) (enum 'I_m)).
+  by rewrite det_lines_comb_dep // size_map size_enum_ord /=.
+apply/row_matrixP => i.
+case: (lines_comb_row_dep (fun i => - (L3tool c0 d i)) X huniq htool) => hl hr.
+move: (hl i) (hr i) => {hl hr}.
+case: (splitP i) => j.
+- rewrite [j]ord1 {j} => hi.
+  have {hi i}-> : i = 0 by apply/ord_inj.
+  move => _ -> //=.
+  apply/rowP => j; rewrite !mxE.
+  by case: splitP.
+move => hi.
+have {i hi}-> : i = lift 0 j by apply/ord_inj.
+move => -> /=; first by rewrite mem_map ?mem_enum //; apply/lift_inj.
+rewrite L3toolES => _.
+apply/rowP => k; rewrite !mxE.
+case: splitP => x /= ; first by rewrite [x]ord1.
+rewrite /bump leq0n => /eqP; rewrite eqSS => /eqP/ord_inj{j}->.
+case: splitP => z //; rewrite [z]ord1 {z} !mxE => _.
+case: splitP => y; rewrite !mxE.
+  rewrite [y]ord1 {y} => _.
+  by rewrite mulrC mulr1n mulNr.
+by move => _; rewrite big_ord_recl big_ord0 addr0 mulNr.
 Qed.
 
 Lemma key_lemma m d (l: 'rV[R]_m) (c: 'cV[R]_m) M:
@@ -225,9 +221,9 @@ set M0 := block_mx d%:M l c M.
 (* d is the 1x1 principal minor of M0 *)
 have hh : d = minor (widen_ord (ltn0Sn _)) (widen_ord (ltn0Sn _)) M0.
 - rewrite (@minor_eq _ _ _ _ _ (fun=> 0) _ (fun=> 0)) ?minor1 //.
+  + by move => x; rewrite ord1; apply: val_inj.
+  + by move => x; rewrite ord1; apply: val_inj.
   + by rewrite /M0 blockE00.
-  + by move => x; rewrite ord1; apply: val_inj.
-  + by move => x; rewrite ord1; apply: val_inj.
 (* all principal minors of M0 are lreg, so M 0 0 is *)
 have h2 : lreg d.
 - by rewrite hh /M0; apply hN.
@@ -289,11 +285,10 @@ rewrite h8.
 apply/lregM; first by apply/lregX.
 rewrite (@minor_eq _ _ _ _ _ (widen_ord (size_tool h)) _
                              (widen_ord (size_tool h'))) ?hN.
+- by move => x; apply: val_inj; rewrite lift_pred_widen_ord.
+- by move => x; apply: val_inj; rewrite lift_pred_widen_ord.
 - by apply: hN.
-- by move => x; apply: val_inj; rewrite lift_pred_widen_ord.
-- by move => x; apply: val_inj; rewrite lift_pred_widen_ord.
 Qed.
-
 
 (*
   formal definition of Bareiss algorithm
@@ -347,7 +342,7 @@ move: (hi d (dvd_step a (d *: N - c *m l)) hM00 h1 h3').
 set r := Bareiss_rec _ _ => hh.
 have : a ^+ m.+1 *( d ^+m * r) =
        a ^+ m.+1 * \det (dvd_step a (d *: N - c *m l)) by rewrite hh.
-rewrite det_dvd_step //; last by move => i j; exact: (det_dvd_step_tool h2).
+rewrite det_dvd_step //; first by move => i j; exact: (det_dvd_step_tool h2).
 move => heq2.
 have hX : lreg (M 0 0 ^+ (1 + m)) by apply/lregX.
 apply/hX.
@@ -395,13 +390,12 @@ Lemma pminor_char_poly_mx_monic: forall m p (M: 'M[R]_m) (h h': p.+1 <= m),
   pminor h h' (char_poly_mx M) \is monic.
 Proof.
 rewrite /pminor => m p M h h'.
-rewrite (@minor_eq _ _ _ _ _ (widen_ord h) _ (widen_ord h)); first last.
-- by apply: widen_ord_eq.
+rewrite (@minor_eq _ _ _ _ _ (widen_ord h) _ (widen_ord h)).
 - by move => x.
-rewrite /minor submatrix_char_poly_mx; last by apply: inj_widen_ord.
+- by apply: widen_ord_eq.
+rewrite /minor submatrix_char_poly_mx; first by apply: inj_widen_ord.
 by apply/char_poly_monic.
 Qed.
-
 
 Definition char_poly_alt n (M: 'M[R]_(1 + n)) :=
   Bareiss (char_poly_mx M : 'M[polydvd.poly_of R]__).
@@ -430,4 +424,3 @@ by rewrite detZ mulrA -expr2 sqrr_sign mul1r.
 Qed.
 
 End Bareiss_det.
-

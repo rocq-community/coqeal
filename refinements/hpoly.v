@@ -10,7 +10,7 @@ From CoqEAL Require Import param refinements pos hrel poly_op.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -412,7 +412,7 @@ case: eqP => [->|/eqP no].
     rewrite mulr1 /= addr0 -mulrA -exprD [_ + (a%:P + _)]addrCA /cast.
     by rewrite /cast_pos_nat insubdK ?subnK -?topredE /= ?subn_gt0 // ltnW.
   rewrite -mulrA -exprD [_ + (a%:P + _)]addrCA /cast /cast_pos_nat.
-  rewrite insubdK ?subnK // -?topredE /=; first by rewrite leqNgt hnm.
+  rewrite insubdK ?subnK // -?topredE /=; last by rewrite leqNgt hnm.
   rewrite subn_gt0 ltnNge leq_eqVlt hnm Bool.orb_false_r {hnm}.
   move/negbT: hneq; apply: contra; move/eqP=> heq; apply/eqP; exact: val_inj.
 rewrite !ih !addXn_constE expr0 mulr1 /= addr0 mulrDl -mulrA -exprD addnC.
@@ -546,7 +546,7 @@ Proof.
   have [|/eqP hp0] := eqP.
     move/eqP; rewrite lead_coef_eq0; move/eqP=> ->.
     by rewrite mul0r add0r lead_coefC.
-  rewrite lead_coefDl; first by rewrite lead_coef_Mmonic ?monicXn.
+  rewrite lead_coefDl; last by rewrite lead_coef_Mmonic ?monicXn.
   rewrite size_polyC size_Mmonic ?monicXn -?lead_coef_eq0 //.
   rewrite size_polyXn !addnS -pred_Sn.
   case: (c == 0)=> //=.
@@ -572,7 +572,7 @@ Proof.
     rewrite mulrDl -addrA -mulrA -exprD subnK ?rdivp_addl_mul_small //.
       by rewrite monicXn.
     rewrite size_polyXn (leq_ltn_trans (size_add _ _)) // gtn_max.
-    rewrite (leq_ltn_trans (size_mul_leq _ _)) /=.
+    rewrite (leq_ltn_trans (size_mul_leq _ _)) /=; last first.
       by rewrite size_polyC; case: (a != 0).
     rewrite size_polyXn addnS -pred_Sn addnC -ltn_subRL [X in (_ < X)]subSn //.
     by rewrite -[X in (_ < X)](size_polyXn A) ltn_rmodp monic_neq0 ?monicXn.
@@ -592,7 +592,7 @@ Proof.
     rewrite mulrDl -addrA -mulrA -exprD subnK ?rmodp_addl_mul_small //.
       by rewrite monicXn.
     rewrite size_polyXn (leq_ltn_trans (size_add _ _)) // gtn_max.
-    rewrite (leq_ltn_trans (size_mul_leq _ _)) /=.
+    rewrite (leq_ltn_trans (size_mul_leq _ _)) /=; last first.
       by rewrite size_polyC; case: (a != 0).
     rewrite size_polyXn addnS -pred_Sn addnC -ltn_subRL [X in (_ < X)]subSn //.
     by rewrite -[X in (_ < X)](size_polyXn A) ltn_rmodp monic_neq0 ?monicXn.
@@ -617,9 +617,9 @@ Proof.
     have -> /= := surjective_pairing (split_hpoly (m.+1 - cast n)%C p).
     by have [-> ->] := ih (m.+1 - cast n)%C.
   rewrite /shift_hpoly [(_ == _)%C]subn_eq0 ifN /=.
+    by rewrite [(_ <= _)%N]hnSm.
   rewrite polyC0 addr0 /cast cast_nat_posK //.
-    by rewrite subn_gt0 ltnNge [(_ <= _)%N]hnSm.
-  by rewrite [(_ <= _)%N]hnSm.
+  by rewrite subn_gt0 ltnNge [(_ <= _)%N]hnSm.
 Qed.
 
 Instance Rhpoly_head : refines (Rhpoly ==> Logic.eq) (fun p => p`_0) head_hpoly.

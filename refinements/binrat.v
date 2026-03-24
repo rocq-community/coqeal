@@ -6,7 +6,7 @@ From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat order.
 From mathcomp Require Import ssralg ssrnum ssrint rat div intdiv.
 From CoqEAL.refinements Require Import hrel refinements param binint.
 Import Refinements.Op.
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -133,7 +133,7 @@ rewrite /Z2int /GRing.add /= /intZmod.addz /Z.add; case x, y=>//.
     by rewrite ltnSn subnn. }
   { move=> p' ->; rewrite -!binnat.to_natE Pos2Nat.inj_add.
     case (Pos.to_nat p0); [by rewrite Nat.add_0_l addn0|move=> n].
-    rewrite ifT; [by rewrite plusE addKn|].
+    rewrite ifT; [|by rewrite plusE addKn].
     by rewrite plusE; apply ltn_addr; rewrite ltnSn. }
   move=> p' ->; rewrite -!binnat.to_natE Pos2Nat.inj_add.
   case (Pos.to_nat p').
@@ -142,8 +142,8 @@ rewrite /Z2int /GRing.add /= /intZmod.addz /Z.add; case x, y=>//.
   move=> n.
   case E: (Pos.to_nat p)=>/=; [by rewrite subn0|].
   rewrite ifF.
-  { by rewrite plusE addnS -addSn addKn. }
-  by rewrite plusE addnS -addSn -ltn_subRL subnn ltn0. }
+    by rewrite plusE addnS -addSn -ltn_subRL subnn ltn0.
+  by rewrite plusE addnS -addSn addKn. }
 { rewrite /GRing.opp /= /intZmod.oppz -binnat.to_natE.
   by case (Pos.to_nat p); [rewrite addn0|move=>n; rewrite subn0]. }
 { rewrite -binnat.to_natE /GRing.opp /= /intZmod.oppz.
@@ -151,16 +151,16 @@ rewrite /Z2int /GRing.add /= /intZmod.addz /Z.add; case x, y=>//.
   { move<-; rewrite -binnat.to_natE Z.pos_sub_diag; case (Pos.to_nat _)=>// n.
     by rewrite ltnSn subnn. }
   { move=> ->.
-    rewrite -!binnat.to_natE Pos2Nat.inj_add Z.pos_sub_lt; last first.
+    rewrite -!binnat.to_natE Pos2Nat.inj_add Z.pos_sub_lt.
     { by apply Pos.lt_add_diag_r. }
-    rewrite -binnat.to_natE Pos2Nat.inj_sub ?Pos2Nat.inj_add; last first.
+    rewrite -binnat.to_natE Pos2Nat.inj_sub ?Pos2Nat.inj_add.
     { by apply Pos.lt_add_diag_r. }
     rewrite plusE minusE addKn; case (Pos.to_nat _).
     { by rewrite addn0; case (Pos.to_nat p0)=>// n; rewrite ltnSn subnn. }
     move=> n.
     case E: (Pos.to_nat p0 + n.+1)%N.
     { by exfalso; move: E; rewrite addnS. }
-    rewrite -E ifF.
+    rewrite -E ifF; last first.
     { f_equal.
       have H: (Pos.to_nat p0 + n.+1 - n.+1 = Pos.to_nat p0 + n.+1 - n.+1)%N.
       { done. }
@@ -168,8 +168,8 @@ rewrite /Z2int /GRing.add /= /intZmod.addz /Z.add; case x, y=>//.
       by rewrite subnS subSn /= ?subKn //; move: E;
         rewrite addnS=>[] [] <-; rewrite leq_addl. }
     by rewrite addnS -ltn_subRL subnn ltn0. }
-  move=> ->; rewrite Z.pos_sub_gt; [|by apply Pos.lt_add_diag_r].
-  rewrite -!binnat.to_natE !Pos2Nat.inj_sub; [|by apply Pos.lt_add_diag_r].
+  move=> ->; rewrite Z.pos_sub_gt; [by apply Pos.lt_add_diag_r|].
+  rewrite -!binnat.to_natE !Pos2Nat.inj_sub; [by apply Pos.lt_add_diag_r|].
   rewrite Pos2Nat.inj_add; case (Pos.to_nat p).
   { by rewrite plusE minusE !add0n subn0. }
   by move=> n; rewrite plusE minusE addKn ifT // leq_addr. }
@@ -207,7 +207,7 @@ case: Nat.divmod => q r /(_ (le_n _)) [].
 rewrite Nat.mul_0_r Nat.sub_diag !Nat.add_0_r Nat.mul_comm => + Hr /=.
 rewrite multE minusE plusE => /(f_equal (fun x => divn x y.+1)) ->.
 rewrite divnMDl // divn_small ?addn0 //.
-rewrite ltn_subLR; [|exact/ssrnat.leP].
+rewrite ltn_subLR; [exact/ssrnat.leP|].
   by rewrite -addSnnS addnC addnS ltnS leq_addr.
 Qed.
 
@@ -218,7 +218,7 @@ Proof.
 case: x => [|x|//] _; [by rewrite intdiv.div0z|].
 case: y => [|y|//] _; [by rewrite intdiv.divz0|].
 rewrite -!positive_nat_Z -Nat2Z.inj_div; last first.
-rewrite !positive_nat_Z /= /divz gtr0_sgz ?mul1r; last first.
+rewrite !positive_nat_Z /= /divz gtr0_sgz ?mul1r.
 { exact: nat_of_pos_gt0. }
 rewrite divE !binnat.to_natE absz_nat /Z2int.
 move: (Zle_0_nat (nat_of_pos x %/ nat_of_pos y)).
@@ -339,7 +339,7 @@ case: x => [|x|//] _; [by rewrite /= lcm0n|].
 case: y => [|y|//] _; [by rewrite /= lcmn0|].
 rewrite /Z.lcm Z2int_abs Z2int_mul Z2int_div //.
 rewrite ZgcdE' abszM; apply: f_equal; apply/eqP.
-rewrite -(@eqn_pmul2r (gcdn `|Z2int (Z.pos x)| `|Z2int (Z.pos y)|)); last first.
+rewrite -(@eqn_pmul2r (gcdn `|Z2int (Z.pos x)| `|Z2int (Z.pos y)|)).
 { rewrite gcdn_gt0; apply/orP; left; rewrite absz_gt0 /= eqz_nat.
   apply: lt0n_neq0; exact: nat_of_pos_gt0. }
 rewrite muln_lcm_gcd.
@@ -423,7 +423,7 @@ case: g => [|g|g].
   { rewrite normr_eq0.
     case: d' posd' {coprime_n'_d'} => // d' _.
     by rewrite Posz_nat_of_pos_neq0. }
-  rewrite !Z2int_mul abszM PoszM gez0_abs; [|by rewrite -[0%R]int2ZK Z2int_le].
+  rewrite !Z2int_mul abszM PoszM gez0_abs; [by rewrite -[0%R]int2ZK Z2int_le|].
   rewrite fracqMM ?Posz_nat_of_pos_neq0 // abszE.
   move: (@valq_frac (Z2int n', `|Z2int d'|) d'n0).
   rewrite scalqE // mul1r => [[neq deq]].
@@ -475,7 +475,7 @@ rewrite Qcanon.Qred_iff ZgcdE -[1%coqZ]/(Z.of_nat 1%nat) => /Nat2Z.inj.
 rewrite /Qnum /Qden nat_of_pos_Z_to_pos => /eqP ny_dy_coprime.
 move=> /eqP; rewrite rat_eqE !coprimeq_num // !coprimeq_den //=.
 rewrite !gtr0_sg ?nat_of_pos_gtr0 // !mul1r => /andP[/eqP <-].
-rewrite ifF; [|exact/eqP/eqP/lt0r_neq0/nat_of_pos_gtr0].
+rewrite ifF; [exact/eqP/eqP/lt0r_neq0/nat_of_pos_gtr0|].
 rewrite -!abszE !absz_nat => /eqP[<-]; split=> [//|].
 rewrite -[LHS]/(Z2int (Z.pos (Z.to_pos (BigN.to_Z dy)))) Z2Pos.id //.
 exact: BigQ.N_to_Z_pos.
@@ -547,7 +547,7 @@ rewrite /Qeq_bool !Z2int_Qred /=.
 do ?[rewrite /Zeq_bool -Z.eqb_compare].  (* remove line when requiring Rocq >= 9.0 *)
 rewrite GRing.eqr_div ?intq_eq0 ?Posz_nat_of_pos_neq0 //.
 rewrite !nat_of_pos_Z_to_pos.
-rewrite !gez0_abs; [|by rewrite -[0%R]int2ZK Z2int_le..].
+rewrite !gez0_abs; [by rewrite -[0%R]int2ZK Z2int_le..|].
 rewrite -!intrM -!Z2int_mul eqr_int.
 by case: Z.eqb_spec => [->|eq]; apply/eqP => // eq'; apply/eq/Z2int_inj.
 Qed.
@@ -571,7 +571,7 @@ rewrite !Z2int_Qred /= /Qcompare /= -Z.ltb_compare.
 rewrite ltr_pdivrMr ?ltr0z ?nat_of_pos_gtr0 //.
 rewrite mulrAC ltr_pdivlMr ?ltr0z ?nat_of_pos_gtr0 //.
 rewrite !nat_of_pos_Z_to_pos.
-rewrite !gez0_abs; [|by rewrite -[0%R]int2ZK Z2int_le..].
+rewrite !gez0_abs; [by rewrite -[0%R]int2ZK Z2int_le..|].
 rewrite -!intrM -!Z2int_mul ltr_int.
 case: ltP.
 { by move=> /(proj1 (Z2int_lt _ _)) /(proj2 (Z.ltb_lt _ _)) => ->. }
@@ -589,7 +589,7 @@ rewrite !Z2int_Qred /= /Qcompare /=.
 rewrite ler_pdivrMr ?ltr0z ?nat_of_pos_gtr0 //.
 rewrite mulrAC ler_pdivlMr ?ltr0z ?nat_of_pos_gtr0 //.
 rewrite !nat_of_pos_Z_to_pos.
-rewrite !gez0_abs; [|by rewrite -[0%R]int2ZK Z2int_le..].
+rewrite !gez0_abs; [by rewrite -[0%R]int2ZK Z2int_le..|].
 rewrite -!intrM -!Z2int_mul ler_int.
 case: leP.
 { move=> /(proj1 (Z2int_le _ _)) /Zle_compare.

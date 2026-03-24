@@ -10,7 +10,7 @@ Require Import ssralg_ring_tac.
 (** This file describes a formally verified implementation of Strassen's
 algorithm (Winograd's variant). *)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

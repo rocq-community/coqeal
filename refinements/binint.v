@@ -17,7 +17,7 @@ From CoqEAL Require Import hrel param refinements pos.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -234,8 +234,8 @@ Proof.
     rewrite -[((_<=_)%N)]/(_<=_)%C => ->.
     by rewrite /= -subzn.
   rewrite [((_<=_)%C)]/(_<=_)%N ifN_eq=> /=.
-    by rewrite insubdK -?topredE /= ?subn_gt0 // -?subzn 1?ltnW // opprB.
-  by have := nm; rewrite lt0n_neq0 // subn_gt0.
+    by have := nm; rewrite lt0n_neq0 // subn_gt0.
+  by rewrite insubdK -?topredE /= ?subn_gt0 // -?subzn 1?ltnW // opprB.
 Qed.
 
 Local Instance Rint_add : refines (Rint ==> Rint ==> Rint) +%R +%C.

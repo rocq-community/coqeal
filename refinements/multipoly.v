@@ -11,7 +11,7 @@ From CoqEAL Require Import ssrcomplements.
    https://github.com/math-comp/multinomials.git *)
 From mathcomp.multinomials Require Import mpoly freeg.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -543,7 +543,7 @@ apply: refine_seqmultinomP.
 move=> k.
 rewrite /mnmd_seq /mnmd multinomE (tnth_nth 0%N) /=.
 rewrite !(nth_cat,nth_nseq).
-rewrite (nth_map ord0); last by rewrite size_enum_ord.
+rewrite (nth_map ord0); first by rewrite size_enum_ord.
 case: ifP.
   rewrite if_same size_nseq nth_enum_ord //.
   move=> Hic; rewrite ifF //.
@@ -574,9 +574,9 @@ apply/refine_seqmultinomP.
 { rewrite /mnm_add_seq size_map size_zip.
   by rewrite (@refine_size _ mnm1) (@refine_size _ mnm2) minnn. }
 move=> i.
-rewrite /mnm_add_seq (nth_map (0%num, 0%num)); last first.
-{ by rewrite size_zip (@refine_size _ mnm1) (@refine_size _ mnm2) minnn. }
-rewrite nth_zip /=; [|by rewrite (@refine_size _ mnm1) (@refine_size _ mnm2)].
+rewrite /mnm_add_seq (nth_map (0%num, 0%num)).
+  by rewrite size_zip (@refine_size _ mnm1) (@refine_size _ mnm2) minnn.
+rewrite nth_zip /=; [by rewrite (@refine_size _ mnm1) (@refine_size _ mnm2)|].
 rewrite mnmDE -!refine_nth.
 exact: nat_of_add_bin.
 Qed.
@@ -666,7 +666,7 @@ rewrite /mnmc_le.
 rewrite Order.SeqLexiOrder.Exports.lexi_cons.
 rewrite (rmdeg _ _ (refinesP rm1)) (rmdeg _ _ (refinesP rm2)) => {rmdeg}.
 rewrite /Order.le /=.
-rewrite (_ : Order.SeqLexiOrder.le _ _ = mnmc_lt_seq_aux m1' m2').
+rewrite (_ : Order.SeqLexiOrder.le _ _ = mnmc_lt_seq_aux m1' m2'); last first.
 { rewrite leq_eqVlt.
   apply/idP/idP.
   { case eqP => /= He.
@@ -726,8 +726,7 @@ apply/idP/idP.
     apply /orP; right.
     apply /andP; split.
     { rewrite Heq12; apply N.eqb_refl. }
-    rewrite -(IH _ _ rt1 _ _ rt2).
-    { by apply Himpl; rewrite Heq12. }
+    rewrite -(IH _ _ rt1 _ _ rt2); last by apply Himpl; rewrite Heq12.
     apply /eqP => Hst12.
     move: nE => /eqP; apply.
     do 2 (apply val_inj => /=).
@@ -744,7 +743,7 @@ move=> /orP [Hlt12|/andP [Heq12 Hltseq]];
   apply /negP; rewrite -ltnNge.
   by move: Hlt12; rewrite /is_true N.ltb_lt => /Rnat_ltP. }
 { by move: Heq12 => /Neqb_ok => ->. }
-rewrite (IH _ _ rt1 _ _ rt2) => [//|].
+rewrite (IH _ _ rt1 _ _ rt2) => [|//].
 apply /negP => /eqP [Ht12'].
 move: nE => /negP; apply; apply /eqP.
 do 2 (apply val_inj => /=).
@@ -818,7 +817,7 @@ Proof.
 move: ref_pp'.
 rewrite refinesE /Reffmpoly /mpoly_of_effmpoly /ofun_hrel.
 set t := P.for_all _ _; case_eq t => //.
-rewrite /t (P.for_all_iff _); [|by move=> m _ /mnmc_eq_seqP /eqP <-].
+rewrite /t (P.for_all_iff _); [by move=> m _ /mnmc_eq_seqP /eqP <-|].
 by move=> H _ m [e Hme]; apply (H m e).
 Qed.
 
@@ -828,7 +827,7 @@ Lemma refine_find_mpoly (n : nat) (T : ringType)
 Proof.
 rewrite !refinesE /Reffmpoly /mpoly_of_effmpoly /ofun_hrel.
 set t := P.for_all _ _; case_eq t => //.
-rewrite /t (P.for_all_iff _); [|by move=> m _ /mnmc_eq_seqP /eqP <-].
+rewrite /t (P.for_all_iff _); [by move=> m _ /mnmc_eq_seqP /eqP <-|].
 move=> H_sz H; injection H; move=> {}H m m' Hm'.
 rewrite -H mcoeff_MPoly coeff_Freeg.
 case_eq (M.find m' p') => [c|] Hc.
@@ -836,7 +835,7 @@ case_eq (M.find m' p') => [c|] Hc.
   apply precoeff_mem_uniqE.
   { rewrite /predom -map_comp.
     rewrite (@eq_map _ _ _ ((multinom_of_seqmultinom_val n) \o fst)) //.
-    rewrite map_comp map_inj_in_uniq.
+    rewrite map_comp map_inj_in_uniq; last first.
     { apply NoDupA_eq_key_uniq_fst, M.elements_3w. }
     move=> x y Hx Hy; apply multinom_of_seqmultinom_val_inj.
     { move: Hx; move/mapP => [xe Hxe ->].
@@ -876,7 +875,7 @@ Lemma refine_effmpolyP (n : nat) (T : ringType)
 Proof.
 move=> eq_sz eq_monom.
 assert (Hsz : P.for_all (fun (k : M.key) (_ : T) => size k == n) p').
-{ rewrite /is_true (P.for_all_iff _) => k e Hke.
+{ rewrite /is_true (P.for_all_iff _) => k e Hke; last first.
   { by apply eq_sz; exists e. }
   by move=> _ _ _; move: Hke; move/mnmc_eq_seqP/eqP ->. }
 rewrite refinesE /Reffmpoly /mpoly_of_effmpoly /ofun_hrel ifT //; f_equal.
@@ -890,7 +889,7 @@ case_eq (M.find m' p') => [c|] Hc.
   apply precoeff_mem_uniqE.
   { rewrite /predom -map_comp.
     rewrite (@eq_map _ _ _ ((multinom_of_seqmultinom_val n) \o fst)) //.
-    rewrite map_comp map_inj_in_uniq.
+    rewrite map_comp map_inj_in_uniq; last first.
     { apply NoDupA_eq_key_uniq_fst, M.elements_3w. }
     move=> x y Hx Hy; apply multinom_of_seqmultinom_val_inj.
     { move: Hx; move/mapP => [xe Hxe ->].
@@ -912,7 +911,7 @@ rewrite -in_InA_eq_key_elt_iff /m' Hm /= /multinom_of_seqmultinom_val.
 rewrite /multinom_of_seqmultinom /seqmultinom_of_multinom.
 case (sumb _) => [prf|] /=.
 rewrite -map_comp (eq_map spec_NK) map_id -surjective_pairing //.
-rewrite size_map (@eq_sz xe.1); [by []|exists xe.2].
+rewrite size_map (@eq_sz xe.1); [exists xe.2|by []].
 by apply /M.elements_2 /in_InA_eq_key_elt_iff; rewrite -surjective_pairing.
 Qed.
 
@@ -1020,7 +1019,7 @@ apply uniq_perm.
 { rewrite path.sort_uniq; apply msupp_uniq. }
 { change (fun _ => multinom_of_seqmultinom_val _ _)
   with ((fun m => multinom_of_seqmultinom_val n m) \o (fst (B:=T))).
-  rewrite map_comp map_inj_in_uniq.
+  rewrite map_comp map_inj_in_uniq; last first.
   { apply (@uniq_map_filter _ _ (M.elements p')).
     apply NoDupA_eq_key_uniq_fst, M.elements_3w. }
   move=> m m' Hm Hm'; apply multinom_of_seqmultinom_val_inj.
@@ -1084,11 +1083,11 @@ move=> m m' Hm; rewrite mcoeffZ mcoeffX.
 rewrite (Rseqmultinom_eq Hmnmd Hm) eq_sym.
 case_eq (m' == (@mnmd_seq n1.+1 i' d')).
 { move/eqP => Hm'; rewrite Hm'.
-  rewrite F.add_eq_o; last exact: E.eq_refl.
+  rewrite F.add_eq_o; first exact: E.eq_refl.
   by rewrite /= mulr1 (refines_eq ref_c). }
 move=> Hm'; rewrite F.add_neq_o /=.
-{ by rewrite mulr0; rewrite F.empty_o. }
-by apply/mnmc_eq_seqP; rewrite eq_sym Hm'.
+{ by apply/mnmc_eq_seqP; rewrite eq_sym Hm'. }
+by rewrite mulr0; rewrite F.empty_o.
 Qed.
 
 Arguments mpolyC {n R} c.
@@ -1106,9 +1105,8 @@ have Hm0 := @refine_mnm0 n.
 rewrite (Rseqmultinom_eq Hm Hm0).
 case_eq (m' == @mnm0_seq n).
 { move/eqP => Hm'; rewrite Hm'.
-  by rewrite F.add_eq_o; [rewrite mulr1|apply E.eq_refl]. }
-move=> Hm'; rewrite F.add_neq_o /=.
-{ by rewrite mulr0; rewrite F.empty_o. }
+  by rewrite F.add_eq_o; [apply E.eq_refl|rewrite mulr1]. }
+move=> Hm'; rewrite F.add_neq_o /=; last by rewrite mulr0; rewrite F.empty_o.
 by apply/mnmc_eq_seqP; move: Hm'; rewrite eq_sym =>->.
 Qed.
 
@@ -1126,9 +1124,8 @@ move=> m'' m''' Hm; rewrite mcoeffX.
 rewrite (Rseqmultinom_eq ref_m Hm) eq_sym.
 case_eq (m''' == m').
 { move/eqP => Hm'; rewrite Hm'.
-  by rewrite F.add_eq_o /=; [|by apply E.eq_refl]. }
-move=> Hm'; rewrite F.add_neq_o //=.
-{ by rewrite F.empty_o. }
+  by rewrite F.add_eq_o /=; [by apply E.eq_refl|]. }
+move=> Hm'; rewrite F.add_neq_o //=; last by rewrite F.empty_o.
 by apply/mnmc_eq_seqP; rewrite eq_sym Hm'.
 Qed.
 
@@ -1289,7 +1286,7 @@ move=> m' c p'' q q' Hp'' Hq Hq' IH p Hp.
 pose m := multinom_of_seqmultinom_val k m'; pose cm := c *: 'X_[m].
 have ref_m : refines Rseqmultinom m m'.
 { apply refine_multinom_of_seqmultinom_val.
-  move: (Hq' m'); rewrite F.add_eq_o; [|by apply/mnmc_eq_seqP]; move=> Hm'.
+  move: (Hq' m'); rewrite F.add_eq_o; [by apply/mnmc_eq_seqP|]; move=> Hm'.
   apply (@refine_size_mpoly _ _ _ _ Hp).
   by exists c; apply M.find_2. }
 have Hc : p@_m = c.
@@ -1328,7 +1325,7 @@ split => Hmain.
 move=> i Hi.
 rewrite size_tuple in Hi.
 case: n m Hmain Hi => // n m Hmain Hi.
-rewrite -(inordK Hi) (nth_map 0%num); last by rewrite (@refine_size _ m).
+rewrite -(inordK Hi) (nth_map 0%num); first by rewrite (@refine_size _ m).
 by rewrite (@refine_nth _ m) -tnth_nth. }
 have Hsz : size m' = size m by rewrite Hmain size_map.
 apply: refine_seqmultinomP.
@@ -1353,7 +1350,7 @@ apply: refine_effmpolyP.
 move=> l l' Hl; rewrite mcoeffD mcoeffZ mcoeffX.
 case: (boolP (m == l)) => Heq /=.
 { rewrite mulr1.
-  rewrite F.add_eq_o /=; last first.
+  rewrite F.add_eq_o /=.
   { apply/mnmc_eq_seqP.
     apply RseqmultinomE in Hm.
     apply RseqmultinomE in Hl.
@@ -1364,7 +1361,7 @@ case: (boolP (m == l)) => Heq /=.
   by rewrite memN_msupp_eq0 // addr0.
 }
 rewrite mulr0 add0r.
-rewrite F.add_neq_o /=; last first.
+rewrite F.add_neq_o /=.
 { apply/mnmc_eq_seqP.
   apply/negbT; rewrite -(@Rseqmultinom_eq _ _ _ _ _ Hm Hl).
   by move/negbTE: Heq ->.
@@ -1381,7 +1378,7 @@ Proof.
 move=> Hadd Hp.
 apply refine_multinom_of_seqmultinom_val.
 apply (@refine_size_mpoly _ _ _ _ Hp).
-exists e; move: (Hadd k'); rewrite F.add_eq_o; [|by apply E.eq_refl].
+exists e; move: (Hadd k'); rewrite F.add_eq_o; [by apply E.eq_refl|].
 apply M.find_2.
 Qed.
 
@@ -1448,15 +1445,15 @@ apply refine_Madd_mnm_add.
 rewrite mcoeff_msupp negbK.
 set F' := fun i2 => (c *: 'X_[m]) * (pmpk@_i2 *: 'X_[i2]).
 rewrite (eq_bigr F').
-{ rewrite -big_distrr /= -mpolyE.
-  rewrite (mcoeff_poly_mul _ _ (k:=(mdeg (m + k)).+1)) //.
-  rewrite big1 // => k0.
-  case (boolP (m == k0.1)).
-  { by move/eqP<-; rewrite eqm_add2l; move/eqP <-; rewrite Hpmpk mulr0. }
-  by rewrite mcoeffZ mcoeffX; move /negbTE ->; rewrite mulr0 mul0r. }
-move=> m'' _; rewrite /F'; rewrite mpolyXD.
-rewrite -scalerAl -scalerA; f_equal.
-by rewrite -[RHS]commr_mpolyX -scalerAl commr_mpolyX.
+  move=> m'' _; rewrite /F'; rewrite mpolyXD.
+  rewrite -scalerAl -scalerA; f_equal.
+  by rewrite -[RHS]commr_mpolyX -scalerAl commr_mpolyX.
+rewrite -big_distrr /= -mpolyE.
+rewrite (mcoeff_poly_mul _ _ (k:=(mdeg (m + k)).+1)) //.
+rewrite big1 // => k0.
+case (boolP (m == k0.1)).
+  by move/eqP<-; rewrite eqm_add2l; move/eqP <-; rewrite Hpmpk mulr0.
+by rewrite mcoeffZ mcoeffX; move /negbTE ->; rewrite mulr0 mul0r.
 Qed.
 
 Arguments mpoly_mul {n R} p q.
@@ -1541,7 +1538,7 @@ apply bigop.eq_big => // i _; f_equal.
 move /eqP in sz_m'; move: (refine_multinom_of_seqmultinom_val sz_m') => Hmt'.
 move: (@refine_nth _ _ _ i Hmt') => <-.
 move: (@refine_nth _ _ _ (inord i.+1) ref_m); rewrite Hm' /=.
-rewrite inordK /=; [|by rewrite ltnS]; move=> ->; apply f_equal.
+rewrite inordK /=; [by rewrite ltnS|]; move=> ->; apply f_equal.
 by apply ord_inj; rewrite inordK //; move: (ltn_ord i).
 Qed.
 
@@ -1697,12 +1694,12 @@ rewrite refinesE; rewrite refinesE in ref_m1, ref_m2; split.
   by move=> _ K; inversion_clear K. }
 move=> k e e' He He'; move: (M.find_1 He) (M.find_1 He') (Hf k).
 case_eq (M.find k m1) => [e1|] He1.
-{ rewrite M.map2_1; [|by left; exists e1; apply M.find_2].
-  rewrite M.map2_1; [|by left; apply ref_m1; exists e1; apply M.find_2].
+{ rewrite M.map2_1; [by left; exists e1; apply M.find_2|].
+  rewrite M.map2_1; [by left; apply ref_m1; exists e1; apply M.find_2|].
   by rewrite He1 => -> -> H; inversion_clear H. }
 case_eq (M.find k m2) => [e2|] He2.
-{ rewrite M.map2_1; [|by right; exists e2; apply M.find_2].
-  rewrite M.map2_1; [|by right; apply ref_m2; exists e2; apply M.find_2].
+{ rewrite M.map2_1; [by right; exists e2; apply M.find_2|].
+  rewrite M.map2_1; [by right; apply ref_m2; exists e2; apply M.find_2|].
   by rewrite He1 He2 => -> -> H; inversion_clear H. }
 elim (@map2_2_dec _ _ _ m1 m2 k f); [| |by exists e].
 { by move/MIn_sig=> [e'1 He'1]; apply M.find_1 in He'1; rewrite He'1 in He1. }

@@ -12,7 +12,7 @@ Require Import stronglydiscrete.
 
 Import GRing.Theory.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -491,9 +491,8 @@ Lemma big_dvdr (I : finType) (d : R) (F : I -> R) (P : pred I) :
 Proof.
 move=> H; elim: (index_enum I)=> [|a l IHl].
   by rewrite big_nil dvdr0.
-rewrite big_cons; case: (P a).
-  by rewrite dvdr_addl; [apply: H | apply: IHl].
-exact: IHl.
+rewrite big_cons; case: (P a); last exact: IHl.
+by rewrite dvdr_addl; [apply: IHl | apply: H].
 Qed.
 
 Lemma eqd_big_mul n (P : pred 'I_n) (F1 F2 : 'I_n -> R) :
@@ -846,7 +845,7 @@ have [-> | a0] := eqVneq a 0.
 have [-> | b0] := eqVneq b 0.
   rewrite lcmr0 dvd0r andbC.
   by case: eqP => //= ->; rewrite dvdr0.
-rewrite -(@dvdr_mul2r _ (gcdr a b)); last by rewrite gcdr_eq0 negb_and a0.
+rewrite -(@dvdr_mul2r _ (gcdr a b)); first by rewrite gcdr_eq0 negb_and a0.
 rewrite mulr_lcm_gcd (eqd_dvd (eqdd _) (mulr_gcdr _ _ _)) dvdr_gcd {1}mulrC.
 by rewrite !dvdr_mul2r // andbC.
 Qed.
@@ -1317,17 +1316,17 @@ Proof.
 apply/matrixP=> i j; have [g u v a' b' _ _ _ _] := egcdrP a b.
 rewrite !mxE (bigD1 ord0) // !mxE (bigD1 (lift 0 k)) // !mxE /=.
 case H: (i == 0).
-  rewrite big1=> [|l /andP [/negbTE H1 /negbTE H2]].
-    by rewrite (eqP H) !eqxx !mulr1n !mxE !mulr0 !addr0 mulr0n add0r mulr1.
-  by rewrite !mxE (eqP H) (eq_sym 0 l) H1 H2 mulr0n !mulr0 !add0r mul0r.
+  rewrite big1=> [l /andP [/negbTE H1 /negbTE H2]|].
+    by rewrite !mxE (eqP H) (eq_sym 0 l) H1 H2 mulr0n !mulr0 !add0r mul0r.
+  by rewrite (eqP H) !eqxx !mulr1n !mxE !mulr0 !addr0 mulr0n add0r mulr1.
 case H': (i == lift 0 k).
-  rewrite big1=> [|l /andP [/negbTE H1 /negbTE H2]].
+  rewrite big1=> [l /andP [/negbTE H1 /negbTE H2]|]; last first.
     by rewrite (eqP H') !(eqxx,mulr1n,mxE,mulr0,addr0,mulr1,mulr0n,add0r).
   by rewrite !mxE (eqP H') !(eq_sym _ l) eqxx H1 H2 mulr0n !mulr0 !add0r mul0r.
-rewrite (bigD1 i); last by rewrite H H'.
-rewrite !mxE big1=> [/=|l /andP [/andP [/negbTE H1 /negbTE H2] /negbTE H3]].
-  by rewrite H H' eqxx !(mulr0n,mulr0,mulr1n,addr0,mul0r,add0r,mul1r).
-by rewrite !mxE H H' H1 H2 (eq_sym i l) H3 mulr0n !mulr0 !addr0 mul0r.
+rewrite (bigD1 i); first by rewrite H H'.
+rewrite !mxE big1=> [l /andP [/andP [/negbTE H1 /negbTE H2] /negbTE H3]|/=].
+  by rewrite !mxE H H' H1 H2 (eq_sym i l) H3 mulr0n !mulr0 !addr0 mul0r.
+by rewrite H H' eqxx !(mulr0n,mulr0,mulr1n,addr0,mul0r,add0r,mul1r).
 Qed.
 
 Lemma combine_mx_inv (a b c d : R) m (k : 'I_m) :
@@ -1777,7 +1776,7 @@ HB.builders Context R & IntegralDomain_isEuclidean R.
   move=> a b; rewrite /eqd dvdr_gcd dvdr_gcdr /=.
   case: edivP=> q r /= G _.
   move/eqP: (G); rewrite addrC -subr_eq; move/eqP=> H.
-  rewrite -{1}H dvdr_sub ?dvdr_gcdl //; last by rewrite dvdr_mull ?dvdr_gcdr.
+  rewrite -{1}H dvdr_sub ?dvdr_gcdl //; first by rewrite dvdr_mull ?dvdr_gcdr.
   by rewrite dvdr_gcd dvdr_gcdl G dvdr_add ?dvdr_gcdr // dvdr_mull ?dvdr_gcdl.
   Qed.
 

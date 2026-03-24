@@ -10,7 +10,7 @@ From CoqEAL Require Import stronglydiscrete dvdring.
 Import GRing.Theory.
 Import Pdiv.Ring Pdiv.Idomain Pdiv.RingComRreg dvdring.Notations.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -63,10 +63,10 @@ case: ifP => /= spq.
   rewrite hp in spq.
   move: p0; rewrite hp mulf_eq0 negb_or; case/andP=> s0 q0.
   move: spq; rewrite (@size_proper_mul _ s q).
-    rewrite prednK; last by rewrite addn_gt0 lt0n size_poly_eq0 s0.
-    apply/negP; rewrite -ltnNge -{1}(add0n (size q)) ltn_add2r lt0n.
-    by rewrite size_poly_eq0.
-  by rewrite mulf_neq0 // lead_coef_eq0 (s0, q0).
+    by rewrite mulf_neq0 // lead_coef_eq0 (s0, q0).
+  rewrite prednK; first by rewrite addn_gt0 lt0n size_poly_eq0 s0.
+  apply/negP; rewrite -ltnNge -{1}(add0n (size q)) ltn_add2r lt0n.
+  by rewrite size_poly_eq0.
 case: odivrP=> /= [x hx|hpq]; last first.
   constructor=> s; apply: contra (hpq (lead_coef s)) => /eqP ->.
   by rewrite lead_coefM.
@@ -270,8 +270,8 @@ suff H: exists q, p = (gcdsr p)%:P * q.
   have [-> | p0] := eqVneq p 0; first by exists 1; rewrite gcdsr0 mulr1 gcdsr1.
   case: H=> x H; exists x; split=> //.
   rewrite -(@eqd_mul2l _ (gcdsr p)).
-    by rewrite mulr1 {2}H (eqd_trans _ (mulr_gcdsr _ x)).
-  by apply: contraPneq H => ->; apply/eqP; rewrite mul0r.
+    by apply: contraPneq H => ->; apply/eqP; rewrite mul0r.
+  by rewrite mulr1 {2}H (eqd_trans _ (mulr_gcdsr _ x)).
 elim/poly_ind: p=> /= [|p c [q IH]]; first by exists 1; rewrite gcdsr0 mul0r.
 case/dvdrP: (dvdr_gcdr c (gcdsr p))=> wr Hr; rewrite mulrC in Hr.
 case/dvdrP: (dvdr_gcdl c (gcdsr p))=> wl Hl; rewrite mulrC in Hl.
@@ -357,11 +357,11 @@ rewrite !addrA -mulrDl -mulrDl.
 (* Finish everything *)
 rewrite gcdsr_gcdl -/(coprimer _ _) coprimer_mull andbC /coprimer {1}addrC.
 rewrite [_ + q0'%:P * p1']addrC -addrA (eqd_trans (gcdr_gcdsr_muladdr _ _ _)).
-  rewrite (eqd_trans (gcdr_gcdsr_muladdr _ _ _)) // -mulrA [_ * 'X]mulrC mulrA.
-  rewrite -mulrDl -Hp' (eqd_trans (eqd_gcd (eqdd _) IH2')) // -gcdsr_gcdl.
-  by rewrite -Hq'.
-rewrite [_ * p1']mulrC -mulrA -mulrDr addrC -Hq'.
-by rewrite (eqd_trans (eqd_gcd (eqdd _) IH1')) // -gcdsr_gcdl -Hp'.
+  rewrite [_ * p1']mulrC -mulrA -mulrDr addrC -Hq'.
+  by rewrite (eqd_trans (eqd_gcd (eqdd _) IH1')) // -gcdsr_gcdl -Hp'.
+rewrite (eqd_trans (gcdr_gcdsr_muladdr _ _ _)) // -mulrA [_ * 'X]mulrC mulrA.
+rewrite -mulrDl -Hp' (eqd_trans (eqd_gcd (eqdd _) IH2')) // -gcdsr_gcdl.
+by rewrite -Hq'.
 Qed.
 
 Lemma gauss_primitive : forall p q, primitive p -> primitive q -> primitive (p * q).
@@ -532,7 +532,7 @@ apply/idP/idP; case/andP=> H Hpp.
   move: (dvdr_trans Hpp pp1)=> H'.
   case/andP: (ppC a0)=> H1 _.
   by move: (dvdr_trans H' (dvdr_mul H1 (dvdrr (pp q)))); rewrite mul1r.
-rewrite (dvdr_trans _ Hg3) /=; last by move: (dvdr_mul H pq2); rewrite mulr1.
+rewrite (dvdr_trans _ Hg3) /=; first by move: (dvdr_mul H pq2); rewrite mulr1.
 case/andP: (pp_prim pq)=> G1 _.
 by rewrite (dvdr_trans (dvdr_trans Hpp G1)); case/andP: (pp_mull q a0).
 Qed.
@@ -758,7 +758,7 @@ case: {1}_ / h=> //.
   rewrite addrAC -!addrA [xx in _ + (_ + xx)]addrC -scalerAl.
   rewrite [_ ^+ _ * (_ * _)]mulrCA -exprD subnKC //.
   rewrite /lead_coef hsp hsq ![_.+1.-1]/= scalerAr ![_ *: _]scale_polyE.
-  rewrite !mulrA -polyCM -!mulrA [_ * q`_sq]mulrC divff; last first.
+  rewrite !mulrA -polyCM -!mulrA [_ * q`_sq]mulrC divff.
     by apply: contra Hq0; rewrite -lead_coef_eq0 /lead_coef hsq.
   rewrite mulr1 subrr addr0.
   rewrite ltnS (leq_trans (size_add _ _)) //.
@@ -794,7 +794,7 @@ Lemma poly_size_mull : forall p q, p != (0 : {poly F}) -> (size q <= size (p * q
 Proof.
 move=> p q p0.
 case: (eqVneq q 0)=>[->|q0]; first by rewrite mulr0 size_poly0 leqnn.
-rewrite size_mul // -ltnS prednK; first by rewrite -subn_gt0 addnK lt0n size_poly_eq0.
+rewrite size_mul // -ltnS prednK; last by rewrite -subn_gt0 addnK lt0n size_poly_eq0.
 by rewrite addn_gt0 lt0n size_poly_eq0 p0.
 Qed.
 

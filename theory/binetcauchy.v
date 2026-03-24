@@ -24,7 +24,7 @@ Require Import minor.
 
 Import GRing.Theory.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -348,25 +348,25 @@ Lemma from_good_to_perm (g: {ffun 'I_k -> 'I_l})
 Proof.
 move => hg.
 rewrite (reindex_onto (fun p:'S_k => finfun (g \o p)) (perm_f g)) /=.
-- apply/eq_big => // p.
-  have hinj : injective (finfun (g \o p)).
-  + have htemp : injective (g \o p)
-      by apply: inj_comp => //; apply: perm_inj.
-    move => x y; rewrite !ffunE => heq.
-    exact: htemp.
-  have hcodom : forall x,
-    (x \in codom (finfun (g \o p))) = (x \in codom g)
-    by move => x; rewrite codom_perm.
-  apply/andP; split.
-  + apply/andP; split; first exact/injectiveP.
-    apply/forallP => x; by rewrite hcodom.
-  apply/eqP/permP => x.
-  have := perm_fE hinj hcodom x.
-  by rewrite ffunE => /hg ->.
-move => /= f.
-case/goodP => h1 h2.
-apply/ffunP => /= x.
-by rewrite ffunE (perm_fE h1 h2).
+  move => /= f.
+  case/goodP => h1 h2.
+  apply/ffunP => /= x.
+  by rewrite ffunE (perm_fE h1 h2).
+apply/eq_big => // p.
+have hinj : injective (finfun (g \o p)).
+- have htemp : injective (g \o p)
+    by apply: inj_comp => //; apply: perm_inj.
+  move => x y; rewrite !ffunE => heq.
+  exact: htemp.
+have hcodom : forall x,
+  (x \in codom (finfun (g \o p))) = (x \in codom g)
+  by move => x; rewrite codom_perm.
+apply/andP; split.
+- apply/andP; split; first exact/injectiveP.
+  apply/forallP => x; by rewrite hcodom.
+apply/eqP/permP => x.
+have := perm_fE hinj hcodom x.
+by rewrite ffunE => /hg ->.
 Qed.
 
 Lemma one_step (g : {ffun 'I_k -> 'I_l}) : injective g ->
@@ -565,25 +565,25 @@ pose cond := fun fz : Z => injectiveb fz.1.
 pose ffstrictf := fun (f: {ffun 'I_k -> 'I_l}) => strictf f.
 rewrite detAB_weight (bigID cond) /= sum_bad addr0.
 rewrite -gather_by_strictness (partition_big strict_from_f ffstrictf) /=.
-- apply/eq_big => // g hg.
-  apply/congr_big => //.
-  case => f pi; rewrite /cond /good /=.
-  apply/andP/andP; case => /injectiveP h1.
-  + rewrite /strict_from_f /=.
-    case: injectiveP => [hinj | []] //.
-    move/eqP => heq; split => //.
-    case: (strict_fromP hinj) => hlt hrt.
-    apply/forallP => x.
-    by rewrite -heq (hrt x).
-  move/forallP => hsame.
-  have hcodom : forall x, (x \in codom f) = (x \in codom g)
-    by move => x; rewrite (eqP (hsame x)).
-  split; first by apply/injectiveP.
-  case: (@strict_from_fP (f,pi) h1) => hstrict hcodom2.
-  rewrite (strictf_uniq hstrict hg) // => x.
-  by rewrite -hcodom2 hcodom.
-move => fz /injectiveP hf.
-by case: (strict_from_fP hf).
+  move => fz /injectiveP hf.
+  by case: (strict_from_fP hf).
+apply/eq_big => // g hg.
+apply/congr_big => //.
+case => f pi; rewrite /cond /good /=.
+apply/andP/andP; case => /injectiveP h1.
+- rewrite /strict_from_f /=.
+  case: injectiveP => [hinj | []] //.
+  move/eqP => heq; split => //.
+  case: (strict_fromP hinj) => hlt hrt.
+  apply/forallP => x.
+  by rewrite -heq (hrt x).
+move/forallP => hsame.
+have hcodom : forall x, (x \in codom f) = (x \in codom g)
+  by move => x; rewrite (eqP (hsame x)).
+split; first by apply/injectiveP.
+case: (@strict_from_fP (f,pi) h1) => hstrict hcodom2.
+rewrite (strictf_uniq hstrict hg) // => x.
+by rewrite -hcodom2 hcodom.
 Qed.
 
 End BinetCauchy.

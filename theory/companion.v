@@ -10,7 +10,7 @@ From CoqEAL Require Import ssrcomplements mxstructure.
                                                                               *)
 
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -50,7 +50,7 @@ rewrite (expand_det_row _ ord0) big_ord_recl !mxE.
 rewrite mulr1n !mulr0n add0r /cofactor !addn0 expr0 mul1r.
 set d1 := \det _.
 case Hnp: (size p) (Hpt)=> [|n] //; case: n Hnp=> // n Hnp _.
-rewrite big_ord_recr big1; last first.
+rewrite big_ord_recr big1.
    move=> i _; rewrite !mxE !sub0r size_MXaddC (negbTE p0) andFb.
    have:= (neq_ltn n (widen_ord (leqnSn n) i)).
    rewrite Hnp (ltn_ord i) orbT lift0 eqSS.
@@ -125,8 +125,8 @@ suff : q == 0 by rewrite Hq.
 have: \sum_(i < size q) q`_i *: (A ^+ i *m col ord0 1%:M) = 0.
   rewrite (eq_bigr (fun i : 'I_(size q) =>
                     ((map_poly scalar_mx q)`_i * A ^+ i) *m col ord0 1%:M)).
-    by rewrite -mulmx_suml ?Hb ?mul0mx //.
-  by move=> i _; rewrite coef_map scalemxAl -mul_scalar_mx.
+    by move=> i _; rewrite coef_map scalemxAl -mul_scalar_mx.
+  by rewrite -mulmx_suml ?Hb ?mul0mx //.
 set b := \sum_(_ < _) _.
 have <-: \col_(i < (size p).-2.+1) q`_i = b.
   apply/matrixP=> i j; rewrite mxE summxE.

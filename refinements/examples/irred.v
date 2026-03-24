@@ -7,7 +7,7 @@ From mathcomp Require Import zmodp ssralg countalg finalg poly polydiv.
 From CoqEAL Require Import hrel pos param refinements binnat boolF2 seqpoly.
 From CoqEAL Require Import poly_op trivial_seq poly_div boolF2.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -91,7 +91,7 @@ Definition npoly_enum : seq {poly_n R} :=
 Lemma npoly_enum_uniq : uniq npoly_enum.
 Proof.
 rewrite /npoly_enum; case: n=> [|k] //.
-rewrite pmap_sub_uniq // map_inj_uniq => [|f g eqfg]; rewrite ?enum_uniq //.
+rewrite pmap_sub_uniq // map_inj_uniq => [f g eqfg|]; rewrite ?enum_uniq //.
 apply/ffunP => /= i; have /(congr1 (fun p : {poly _} => p`_i)) := eqfg.
 by rewrite !coef_poly ltn_ord inord_val.
 Qed.
@@ -114,7 +114,7 @@ HB.instance Definition _ := Finite.on {poly_n R}.
 Lemma card_npoly : #|{poly_n R}| = (#|R| ^ n)%N.
 Proof.
 rewrite cardE enumT unlock /= /npoly_enum; case: n => [|k] //=.
-rewrite  size_pmap_sub (@eq_in_count _ _ predT) ?count_predT; last first.
+rewrite  size_pmap_sub (@eq_in_count _ _ predT) ?count_predT.
   by move=> _ /mapP /= [f _ ->]; rewrite size_poly.
 by rewrite size_map -cardE card_ffun card_ord.
 Qed.

@@ -2,7 +2,7 @@
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq path ssralg.
 From mathcomp Require Import fintype perm choice finfun matrix bigop zmodp poly mxpoly.
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Import GRing.Theory.
 
@@ -273,8 +273,8 @@ Lemma pminor_char_poly_mx_monic m p (M : 'M[R]_m) (h h': p.+1 <= m) :
 Proof.
 have h'h : widen_ord h' =1 widen_ord h by apply/widen_ord_eq.
 rewrite /pminor (minor_eq (frefl _) h'h) /minor submatrix_char_poly_mx.
-  by rewrite char_poly_monic.
-exact: inj_widen_ord.
+  exact: inj_widen_ord.
+by rewrite char_poly_monic.
 Qed.
 
 End minor_char_poly_mx.

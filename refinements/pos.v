@@ -6,7 +6,7 @@ From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq zmod
 From mathcomp Require Import path choice fintype tuple finset ssralg ssrnum bigop ssrint.
 From CoqEAL Require Import hrel param refinements.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

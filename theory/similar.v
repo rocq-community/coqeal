@@ -14,7 +14,7 @@ Require Import mxstructure dvdring.
          equivalent M N == The matrices M and N are equivalent.
 
                                                                               *)
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -212,14 +212,13 @@ case/tuple_permP=> p Hp.
 split=> //; rewrite eq.
 exists (perm_mx p)^T; first by rewrite unitmx_tr unitmx_perm.
 apply/matrixP=> i j; rewrite conform_mx_id !mxE (bigD1 j) //= big1 ?addr0.
-  rewrite (bigD1 i) //= big1 ?addr0.
-    rewrite !mxE Hp -tnth_nth tnth_mktuple (tnth_nth 0) HE !eqxx.
-    case: (p j == i) /eqP => Hij; first by rewrite Hij mulr1 mul1r.
-    by rewrite mulr0 mul0r.
+  by move=> k /negbTE Hk; rewrite !mxE (inj_eq (@ord_inj _)) Hk mulr0.
+rewrite (bigD1 i) //= big1 ?addr0.
   by move=> k /negbTE Hk; rewrite !mxE eq_sym (inj_eq (@ord_inj _)) Hk mul0r.
-by move=> k /negbTE Hk; rewrite !mxE (inj_eq (@ord_inj _)) Hk mulr0.
+rewrite !mxE Hp -tnth_nth tnth_mktuple (tnth_nth 0) HE !eqxx.
+case: (p j == i) /eqP => Hij; first by rewrite Hij mulr1 mul1r.
+by rewrite mulr0 mul0r.
 Qed.
-
 
 Lemma similar_ulblockmx n1 n2 n3 (Aul : 'M[R]_n1) (Adr : 'M[R]_n3)
   (Bul : 'M[R]_n2) :
@@ -516,13 +515,13 @@ case: (eqVneq R1 0) => HR1; last first.
     by rewrite (size1_polyC HM0) size_polyC size_XsubC addnC; exact:leq_b1.
   have Hsize: size (1 - ('X - B%:P) * R1) = (size R1).+1.
     rewrite addrC size_addl size_opp (size_monicM (monicXsubC B) HR1).
-      by rewrite {1}size_XsubC.
-    rewrite size_polyC oner_neq0 size_XsubC.
-    by move:(size_poly_eq0 R1); case:(size R1)=> //; rewrite (negbTE HR1).
+      rewrite size_polyC oner_neq0 size_XsubC.
+      by move:(size_poly_eq0 R1); case:(size R1)=> //; rewrite (negbTE HR1).
+    by rewrite {1}size_XsubC.
   rewrite size_Mmonic.
-  + by rewrite Hsize size_XsubC addnC !ltnS leqn0 size_poly_eq0 (negbTE HR1).
   + by rewrite -size_poly_eq0 Hsize.
-  exact: monicXsubC.
+  + exact: monicXsubC.
+  by rewrite Hsize size_XsubC addnC !ltnS leqn0 size_poly_eq0 (negbTE HR1).
 move:H; rewrite HR1 mulr0 subr0 mul1r (size1_polyC HM0).
 rewrite (size1_polyC HN0)=> /polyP H; move:(H 1%N); move:(H 0%N).
 rewrite !coefMC !coefCM !coefD !coefN !coefC !coefX !eqxx !sub0r subr0 mulr1.

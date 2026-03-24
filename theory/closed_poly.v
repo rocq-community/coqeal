@@ -24,7 +24,7 @@ From CoqEAL Require Import ssrcomplements.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -89,7 +89,7 @@ elim: s p=> [p | x s IHp p H].
   by move/negP; rewrite negbK H.
 rewrite H big_cons (root_seq_cons H) mulrC scalerAl.
 have Hfp : p = p %/ ('X - x%:P) * ('X - x%:P).
-  apply/eqP; rewrite -dvdp_eq dvdp_XsubCl -root_root_seq.
+  apply/eqP; rewrite -dvdp_eq dvdp_XsubCl -root_root_seq; last first.
     by rewrite H mem_head.
   move: H; rewrite /root_seq.
   set loop := fix loop p n := if n is _.+1 then _ else _.
@@ -107,10 +107,10 @@ Proof.
 have [-> | p0] := eqVneq p 0; first by rewrite root_seq0 size_poly0.
 rewrite {2}[p]root_seq_eq size_scale ?lead_coef_eq0 //.
 rewrite (big_nth 0) big_mkord size_prod.
-  rewrite (eq_bigr (fun=> (1 + 1)%N)).
-    by rewrite big_split sum1_card /= subSKn addnK card_ord.
+  by move=> i _; rewrite polyXsubC_eq0.
+rewrite (eq_bigr (fun=> (1 + 1)%N)).
   by move=> i _; rewrite size_XsubC.
-by move=> i _; rewrite polyXsubC_eq0.
+by rewrite big_split sum1_card /= subSKn addnK card_ord.
 Qed.
 
 Lemma root_seq_nil (p : {poly F}) :
@@ -194,8 +194,8 @@ Lemma monic_linear_factor_seq p : forall q, q \in linear_factor_seq p ->
   q \is monic.
 Proof.
 move=> q Hq; rewrite -(nth_index 0 Hq) (nth_map (0,0%N)).
-apply: monic_exp; first by apply: monicXsubC.
-by rewrite -index_mem size_map in Hq.
+  by rewrite -index_mem size_map in Hq.
+apply: monic_exp; last by apply: monicXsubC.
 Qed.
 
 Lemma size_linear_factor_leq1 p : forall q, q \in linear_factor_seq p ->
@@ -204,9 +204,9 @@ Proof.
 move=> q; have [-> | Hp Hq] := eqVneq p 0.
   rewrite /linear_factor_seq /root_mu_seq.
   by rewrite /root_seq_uniq /root_seq size_poly0.
-rewrite -(nth_index 0 Hq) (nth_map (0,0%N)); last first.
+rewrite -(nth_index 0 Hq) (nth_map (0,0%N)).
   by rewrite -index_mem size_map in Hq.
-rewrite size_exp_XsubC (nth_map 0); last first.
+rewrite size_exp_XsubC (nth_map 0).
   by rewrite -index_mem !size_map in Hq.
 rewrite -(@prednK (\mu_ _ _)) // mu_gt0 // -root_root_seq //.
 rewrite -mem_undup mem_nth //.

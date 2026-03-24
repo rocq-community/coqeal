@@ -7,7 +7,7 @@ From mathcomp Require Import fintype ssralg ssrint ssrnum choice.
 From mathcomp Require Import matrix mxalgebra bigop zmodp perm.
 Require Import dvdring mxstructure stronglydiscrete coherent edr.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -188,12 +188,12 @@ have /(_ erefl) [|||P' A' Q' HA' ? ? Hdiv HP' HQ'] // :=
   + rewrite -HA' /P0 /M0 /Q0 -[C]trmxK [C^T^T^T]trmxK ![C^T^T _ _]mxE.
     rewrite ![(C^T) 0 _]mxE /C /B -Hblock -HblockP !xrowE.
     rewrite !Bezout_stepE !trmx_mul !trmxK !invrM //.
-    - rewrite !mulmxA -[_ / _ *m _]mulmxA mulVmx ?unitmx_perm // mulmx1.
-      rewrite -[_ / _ *m _]mulmxA mulVmx // mulmx1 -[_ *m _^T *m _]mulmxA.
-      by rewrite mulmxV ?unitmx_tr ?unit_Bezout_mx // mulmx1.
-    - by rewrite unitmx_tr unit_Bezout_mx.
     - by rewrite unitmx_perm.
-    by rewrite !unitmxEE unit_block.
+    - by rewrite !unitmxEE unit_block.
+    - by rewrite unitmx_tr unit_Bezout_mx.
+    rewrite !mulmxA -[_ / _ *m _]mulmxA mulVmx ?unitmx_perm // mulmx1.
+    rewrite -[_ / _ *m _]mulmxA mulVmx // mulmx1 -[_ *m _^T *m _]mulmxA.
+    by rewrite mulmxV ?unitmx_tr ?unit_Bezout_mx // mulmx1.
   rewrite /M0 -[C]trmxK [C^T^T^T]trmxK ![C^T^T _ _]mxE in Hdiv.
   rewrite (dvdr_trans Hdiv) // mxE (eqd_dvd (Bezout_step_mx00 _) (eqdd _)) HMA.
   exact: dvdr_gcdl.
@@ -283,8 +283,8 @@ case: find_pivotP =>[[i j] HMij | H].
       by rewrite !nth_default ?size_map ?Hk // mulr0.
   * have {}HA00: B 0 0 != 0.
       by apply/eqP=> H; move:HA00; rewrite H dvd0r (negbTE HMij).
-    rewrite /= path_min_sorted;
-      last by apply/allP => a /mapP [b _ ->]; exact:dvdr_mull.
+    rewrite /= path_min_sorted.
+      by apply/allP => a /mapP [b _ ->]; exact:dvdr_mull.
     case: d Hsorted {Hd} => //= a d; elim: d a=> //= a1 d IHd a0 /andP[a01 /IHd].
     by rewrite dvdr_mul2r ?a01.
   * rewrite xcolE !unitmx_mul unitmx_perm HL !unitmxE.
