@@ -5,7 +5,7 @@ From mathcomp Require Import choice fintype bigop matrix.
 
 From CoqEAL Require Import hrel param refinements seqmx seqpoly.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -198,7 +198,7 @@ Context `{eq_of A}.
 Proof.
 rewrite refinesE=> _ _ [a a' ha1 ha2 ha3] _ _ [b b' hb1 hb2 hb3].
 rewrite /heq_ssr /heq_seqmx.
-rewrite eq_seqE; [|by rewrite ha1 hb1].
+rewrite eq_seqE; [by rewrite ha1 hb1|].
 have SzAs : seq.size (zip a' b') = m2.
 { by rewrite size1_zip ha1 // hb1. }
 match goal with

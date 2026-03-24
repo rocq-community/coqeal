@@ -2,7 +2,7 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq.
 From mathcomp Require Import fintype ssralg perm choice.
 From mathcomp Require Import matrix  bigop zmodp mxalgebra poly mxpoly.
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Import GRing.Theory.
 
@@ -68,7 +68,7 @@ Lemma line_scale_eq : forall n m k a (M: 'M[R]_(n,m)),
   line_scale k a M = line_scale_mx k a M.
 Proof.
 move => n m k a M; apply/matrixP => i j; rewrite !mxE.
-rewrite (bigD1 i) //= big1 /=; first by rewrite !mxE addr0 eqxx.
+rewrite (bigD1 i) //= big1 /=; last by rewrite !mxE addr0 eqxx.
 by move => x /negbTE hx; rewrite !mxE [i == x]eq_sym hx mulr0n mul0r.
 Qed.
 
@@ -77,9 +77,9 @@ Lemma det_line_scale_mx : forall n k a (M: 'M[R]_n),
   \det (line_scale_mx k a M) = a * \det M.
 Proof.
 rewrite /line_scale_mx => n k a M.
-rewrite det_mulmx det_diag (bigD1 k) //= big1 /=;
-  first by rewrite !mxE mulr1 eqxx.
-by move => i /negbTE h; rewrite !mxE h.
+rewrite det_mulmx det_diag (bigD1 k) //= big1 /=.
+  by move => i /negbTE h; rewrite !mxE h.
+by rewrite !mxE mulr1 eqxx.
 Qed.
 
 (* line_scale scales the determinant by a *)
@@ -174,11 +174,11 @@ have h : row k (line_comb k l a M) = 1 *: row k M +
   a *: row k (\matrix_(i < n) if i == k then row l M else row i M).
   by rewrite scale1r; apply/rowP => i; rewrite !mxE eqxx !mxE.
 rewrite (determinant_multilinear h).
-- rewrite mul1r [X in a * X](determinant_alternate hkl).
-  + by rewrite mulr0 addr0.
-  by move => x; rewrite !mxE eqxx eq_sym (negbTE hkl).
 - by apply/matrixP => i j; rewrite !mxE eq_sym (negbTE (neq_lift k i)) !mxE.
-by apply/matrixP => i j; rewrite !mxE eq_sym (negbTE (neq_lift k i)) !mxE.
+- by apply/matrixP => i j; rewrite !mxE eq_sym (negbTE (neq_lift k i)) !mxE.
+rewrite mul1r [X in a * X](determinant_alternate hkl).
+  by move => x; rewrite !mxE eqxx eq_sym (negbTE hkl).
+by rewrite mulr0 addr0.
 Qed.
 
 Lemma det_lines_comb m a l (M: 'M[R]_m) s:

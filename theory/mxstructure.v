@@ -32,7 +32,7 @@ Require Import ssrcomplements dvdring.
                                                                               *)
 
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -147,9 +147,9 @@ elim=> [M _|n IHn]; first by rewrite det_mx00 big_ord0.
 rewrite -[n.+1]add1n=> M.
 rewrite -(submxK M)=> HM.
 rewrite (upper_triangular_block_mxdl HM) // det_ublock IHn.
-  rewrite {1}[ulsubmx M]mx11_scalar det_scalar1 big_split_ord big_ord1.
-  by rewrite block_mxEul; congr *%R; apply:eq_bigr=> i _; rewrite block_mxEdr.
-exact: (upper_triangular_block_mxdr HM).
+  exact: (upper_triangular_block_mxdr HM).
+rewrite {1}[ulsubmx M]mx11_scalar det_scalar1 big_split_ord big_ord1.
+by rewrite block_mxEul; congr *%R; apply:eq_bigr=> i _; rewrite block_mxEdr.
 Qed.
 
 Lemma char_poly_mx_triangular_mx n (M : 'M[R]_n) :
@@ -495,20 +495,20 @@ Lemma diag_mx_seq_deltal m n (i : 'I_m) (j : 'I_n) (s : seq R) :
   delta_mx i j *m diag_mx_seq n n s = s`_j *: delta_mx i j.
 Proof.
 apply/matrixP=> k l; rewrite !mxE (bigD1 l) //= big1 ?addr0.
-  rewrite !mxE eqxx; case: (eqVneq l j)=>[->/=|_]; last by rewrite andbF mulr0 mul0r.
-  by rewrite andbT; case: eqP=> _; [rewrite mulr1 mul1r | rewrite mulr0 mul0r].
-move=> p; rewrite !mxE=> /negbTE; rewrite (inj_eq (@ord_inj _))=> ->.
-by rewrite mulr0.
+  move=> p; rewrite !mxE=> /negbTE; rewrite (inj_eq (@ord_inj _))=> ->.
+  by rewrite mulr0.
+rewrite !mxE eqxx; case: (eqVneq l j)=>[->/=|_]; last by rewrite andbF mulr0 mul0r.
+by rewrite andbT; case: eqP=> _; [rewrite mulr1 mul1r | rewrite mulr0 mul0r].
 Qed.
 
 Lemma diag_mx_seq_deltar m n (i : 'I_m) (j : 'I_n) (s : seq R) :
   diag_mx_seq m m s *m  delta_mx i j  = s`_i *: delta_mx i j.
 Proof.
 apply/matrixP=> k l; rewrite !mxE (bigD1 k) //= big1 ?addr0.
-  rewrite !mxE eqxx; case: (eqVneq k i)=>[->/=|_]; last by rewrite !mulr0.
-  by case: eqP.
-move=> p; rewrite !mxE=> /negbTE; rewrite (inj_eq (@ord_inj _)) eq_sym=> ->.
-by rewrite mul0r.
+  move=> p; rewrite !mxE=> /negbTE; rewrite (inj_eq (@ord_inj _)) eq_sym=> ->.
+  by rewrite mul0r.
+rewrite !mxE eqxx; case: (eqVneq k i)=>[->/=|_]; last by rewrite !mulr0.
+by case: eqP.
 Qed.
 
 Lemma diag_mx_seq_takel m n (s : seq R) :
@@ -538,12 +538,12 @@ Lemma mul_pid_mx_diag m n p r s :
 Proof.
 move=> le_r_p; apply/matrixP=> i j; rewrite !mxE.
 have [le_p_i | lt_i_p] := leqP p i.
-  rewrite big1; last first.
+  rewrite big1.
     by move=> k _; rewrite !mxE eqn_leq leqNgt (leq_trans (ltn_ord k)) // mul0r.
   rewrite nth_default ?mul0rn // size_take.
   case: ltnP=> [_|le_s_r]; first exact: (leq_trans le_r_p).
   by apply: (leq_trans le_s_r); exact: (leq_trans le_r_p).
-rewrite (bigD1 (Ordinal lt_i_p)) //= !mxE big1; last first.
+rewrite (bigD1 (Ordinal lt_i_p)) //= !mxE big1.
   by move=> k; rewrite /eq_op /= => neq_k_i; rewrite !mxE eq_sym (negbTE neq_k_i) mul0r.
 rewrite eqxx addr0 /=.
 have [lt_i_r | le_r_i] := ltnP i r; first by rewrite nth_take // mul1r.
@@ -689,11 +689,11 @@ have [le_nj|lt_nj] := leqP n j.
   move=> _; rewrite big1 // => k _.
   by rewrite mxE ltn_eqF ?mulr0 // (leq_trans _ le_nj).
 rewrite (bigD1 (Ordinal lt_nj)) // !mxE /= eqxx mulr1n.
-rewrite big1 ?addr0; last first.
+rewrite big1 ?addr0.
   move=> k; rewrite -val_eqE /= => neq_k_j.
   by rewrite mxE (negPf neq_k_j) mulr0n mulr0.
 rewrite (bigD1 (Ordinal lt_nj)) // !mxE /= eqxx.
-rewrite big1 ?addr0 /=; last first.
+rewrite big1 ?addr0 /=.
   move=> k; rewrite -val_eqE /= => neq_k_j.
   by rewrite mxE (negPf neq_k_j) mulr0n mulr0.
 have [small_j|big_j] := ltnP; last by rewrite mulr0.

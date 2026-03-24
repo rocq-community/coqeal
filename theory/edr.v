@@ -9,7 +9,7 @@ Require Import ssrcomplements dvdring mxstructure similar minor binetcauchy.
 Require Import stronglydiscrete.
 Require Import coherent.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -148,8 +148,7 @@ Lemma mulmx_diag_mx m n (M : 'M_(m, n)) :
 Proof.
 rewrite /col_ebase /diag_mx /row_ebase /diag /smith_seq !invmxK.
 case: smithP=> L0 d R0 h1 h2 _ _.
-rewrite diag_mx_seq_filter0.
-  by rewrite diag_mx_seq_take_min.
+rewrite diag_mx_seq_filter0; last by rewrite diag_mx_seq_take_min.
 exact: (sorted_take (@dvdr_trans [the dvdRingType of R])).
 Qed.
 
@@ -250,8 +249,7 @@ Lemma mulmx_diag_mx m n (M : 'M_(m, n)) :
 Proof.
 rewrite /col_ebase /diag_mx /row_ebase /diag /smith_seq !invmxK.
 case: smithP=> L0 d R0 h1 h2 _ _.
-rewrite diag_mx_seq_filter0.
-  by rewrite diag_mx_seq_take_min.
+rewrite diag_mx_seq_filter0; last by rewrite diag_mx_seq_take_min.
 exact: (sorted_take (@dvdr_trans [dvdRingType of R])).
 Qed.
 
@@ -287,7 +285,7 @@ have Hfg0 i : g (p i) = f i.
   have {2}-> : i = enum_val (Ordinal He) by rewrite enum_val_ord; apply: ord_inj.
   rewrite -(nth_image (f ord0)) Hp -tnth_nth tnth_mktuple (tnth_nth (f ord0)).
   by rewrite /= codomE (nth_map ord0) ?nth_ord_enum // size_enum_ord.
-rewrite /minor (expand_det_row _ ((p^-1)%g ord0)) big_ord_recl big1=>[|i _]; last first.
+rewrite /minor (expand_det_row _ ((p^-1)%g ord0)) big_ord_recl big1=>[i _|].
   rewrite !mxE /= (inj_eq (@ord_inj _)) -Hfg0 (inj_eq Hg) permKV.
   by rewrite (negbTE (neq_lift _ _)) mul0r.
 rewrite /cofactor !mxE /=; set B := diag_mx_seq _ _ _; set M := row' _ _.
@@ -306,11 +304,11 @@ have Hfg2 : {subset codom f2 <= codom g2}.
   by rewrite (inj_eq (@perm_inj _ _)) eq_sym (negbTE (neq_lift _ _)).
 rewrite addr0 (bigD1 ((p^-1)%g ord0)) //= -Hfg0 permKV eqxx eqd_mull //.
 rewrite -[X in _ %= X]mul1r eqd_mul ?eqd1 ?unitrX ?unitrN ?unitr1 //.
-rewrite (eq_bigl (fun i => p0 != i)); last by move=> i /=; rewrite eq_sym.
+rewrite (eq_bigl (fun i => p0 != i)); first by move=> i /=; rewrite eq_sym.
 apply: (eqd_trans (IHj _ _ Hf2 Hg2 Hfg2)); apply: eq_eqd; rewrite /f2.
 case: (pickP 'I_j) => [k0 _ | n0]; last first.
-  by rewrite !big1 // => [k' /unlift_some[i] | i _]; have:= n0 i.
-rewrite (reindex (lift p0)); first by apply: eq_bigl=> k'; rewrite neq_lift.
+  by rewrite !big1 // => [i _ | k' /unlift_some[i]]; have:= n0 i.
+rewrite (reindex (lift p0)); last by apply: eq_bigl=> k'; rewrite neq_lift.
 exists (fun k => odflt k0 (unlift p0 k)) => k'; first by rewrite liftK.
 by case/unlift_some=> k'' -> ->.
 Qed.
@@ -324,7 +322,7 @@ rewrite /minor /submatrix.
 elim: k Hk=>[H|j /= IHj Hj]; first by rewrite det_mx00 big_ord0.
 have IH : j <= (minn m n) by apply: ltnW.
 apply: esym; rewrite (expand_det_row _ ord_max) big_ord_recr /=.
-rewrite big1 ?add0r /cofactor=> [|i _]; last first.
+rewrite big1 ?add0r /cofactor=> [i _|].
   by rewrite !mxE !ffunE eqn_leq leqNgt (ltn_ord i) andFb mul0r.
 rewrite !mxE !ffunE eqxx exprD -expr2 sqrr_sign mul1r.
 rewrite /row' /col'; set M := matrix_of_fun _ _.

@@ -8,7 +8,7 @@ From CoqEAL Require Import ssrcomplements minor dvdring.
 
 Import GRing.Theory Pdiv.Ring Pdiv.CommonRing Pdiv.RingMonic.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -245,9 +245,9 @@ set M0 := block_mx d%:M l c M.
 (* d is the 1x1 principal minor of M0 *)
 have hh : d = minor (widen_ord (ltn0Sn _)) (widen_ord (ltn0Sn _)) M0.
 - rewrite (@minor_eq _ _ _ _ _ (fun _ => 0) _ (fun _ => 0)) ?minor1 //.
+  + by move => x; rewrite ord1; apply: val_inj.
+  + by move => x; rewrite ord1; apply: val_inj.
   + by rewrite /M0 blockE00.
-  + by move => x; rewrite ord1; apply: val_inj.
-  + by move => x; rewrite ord1; apply: val_inj.
 (* all principal minors of M0 are lreg, so M 0 0 is *)
 have h2 : lreg d.
 - by rewrite hh /M0; apply hN.
@@ -309,11 +309,10 @@ rewrite h8.
 apply/lregM; first by apply/lregX.
 rewrite (@minor_eq _ _ _ _ _ (widen_ord (size_tool h)) _
                              (widen_ord (size_tool h'))) ?hN.
+- by move => x; apply: val_inj; rewrite lift_pred_widen_ord.
+- by move => x; apply: val_inj; rewrite lift_pred_widen_ord.
 - by apply: hN.
-- by move => x; apply: val_inj; rewrite lift_pred_widen_ord.
-- by move => x; apply: val_inj; rewrite lift_pred_widen_ord.
 Qed.
-
 
 (*
   formal definition of bareiss algorithm
@@ -367,8 +366,7 @@ move: (hi d (dvd_step a (d *: N - c *m l)) hM00 h1 h3').
 set r := bareiss_rec _ _ => hh.
 have : a ^+ m.+1 *( d ^+m * r) =
        a ^+ m.+1 * \det (dvd_step a (d *: N - c *m l)) by rewrite hh.
-rewrite det_dvd_step //; last by
-  move => i j; apply (det_dvd_step_tool h2).
+rewrite det_dvd_step //; first by move => i j; apply (det_dvd_step_tool h2).
 move => heq2.
 have hX : lreg (M 0 0 ^+ (1 + m)) by apply/lregX.
 apply/hX.
@@ -414,10 +412,10 @@ Lemma pminor_char_poly_mx_monic: forall m p (M: 'M[R]_m) (h h': p.+1 <= m),
   pminor h h' (char_poly_mx M) \is monic.
 Proof.
 rewrite /pminor => m p M h h'.
-rewrite (@minor_eq _ _ _ _ _ (widen_ord h) _ (widen_ord h)); first last.
-- by apply: widen_ord_eq.
+rewrite (@minor_eq _ _ _ _ _ (widen_ord h) _ (widen_ord h)).
 - by move => x.
-rewrite /minor submatrix_char_poly_mx; last by apply: inj_widen_ord.
+- by apply: widen_ord_eq.
+rewrite /minor submatrix_char_poly_mx; first by apply: inj_widen_ord.
 by apply/char_poly_monic.
 Qed.
 

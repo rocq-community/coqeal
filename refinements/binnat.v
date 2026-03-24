@@ -12,7 +12,7 @@ From CoqEAL Require Import hrel param refinements pos.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -437,12 +437,12 @@ simpl.
 case: n => [|n]; last case: n => [|n]; last by rewrite IHm.
 - rewrite subn0 IHm.
   have->: (m.*2.+1 - m = m.+1)%N.
-    rewrite -addnn subSn; first by rewrite addnK.
+    rewrite -addnn subSn; last by rewrite addnK.
     exact: leq_addr.
   by rewrite !(maxn_idPr _) // Nat2Pos_xI.
 - rewrite subn1 IHm.
   have->: (m.*2.+1 - m = m.+1)%N.
-    rewrite -addnn subSn; first by rewrite addnK.
+    rewrite -addnn subSn; last by rewrite addnK.
     exact: leq_addr.
   by rewrite !(maxn_idPr _) // Nat2Pos_xO.
 Qed.

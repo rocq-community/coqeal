@@ -23,7 +23,7 @@ From CoqEAL Require Import similar perm_eq_image.
 *)
 
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -87,7 +87,7 @@ rewrite /Smith_seq.
 case: (SmithP find1P find2P find_pivotP) => L0 d R0 _ H HL0 HR0.
 case: d H=> //= a l H.
 have/allP Ha: all (%|%R a) l by exact: (order_path_min (@dvdr_trans _)).
-rewrite path_min_sorted; [exact: (path_sorted H) | apply/allP=> x Hx].
+rewrite path_min_sorted; [apply/allP=> x Hx | exact: (path_sorted H)].
 apply/(dvdr_trans _ (Ha x Hx))/dvdrP; exists (\det R0 * \det L0).
 by rewrite -invrM ?mulVKr // unitrM -!unitmxE HR0.
 Qed.
@@ -150,34 +150,34 @@ have Hfg0 i : g (p i) = f i.
   have {2}->: i = enum_val (Ordinal He) by rewrite enum_val_ord; apply: ord_inj.
   rewrite -(nth_image (f ord0)) Hp -tnth_nth tnth_mktuple (tnth_nth (f ord0)).
   by rewrite /= codomE (nth_map ord0) ?nth_ord_enum // size_enum_ord.
-rewrite (expand_det_row _ ((p^-1)%g ord0)) big_ord_recl big1=>[|i _].
-  rewrite /cofactor !mxE.
-  set B := diag_mx_seq _ _ _.
-  set M := row' _ _.
-  pose f2 x :=  f (lift ((p^-1)%g ord0) x).
-  pose g2 x :=  g (lift ord0 x).
-  have Hf2: injective f2.
-   by apply/(inj_comp Hf)/lift_inj.
-  have Hg2: injective g2.
-   by apply/(inj_comp Hg)/lift_inj.
-  pose f' i := widen_ord (geq_minl m n) (f2 i).
-  pose g' i := widen_ord (geq_minr m n) (g2 i).
-  have ->: M = submatrix f' g' B.
-    by apply/matrixP=> r t; rewrite !mxE.
-  have Hfg2: {subset codom f2 <= codom g2}.
-    move=> x /codomP [y ->].
-    rewrite codomE /f2 /g2 -Hfg0 map_comp (mem_map Hg).
-    set i := p _.
-    have:= mem_ord_enum i.
-    rewrite -enum_ord_enum enum_ordSl in_cons -(permKV p ord0).
-    by rewrite /i (inj_eq (@perm_inj _ _)) eq_sym (negbTE (neq_lift _ _)).
-  rewrite addr0 (bigD1 ((p^-1)%g ord0)) //= -Hfg0 permKV eqxx eqd_mull //.
-  rewrite -[X in _ %= X]mul1r eqd_mul ?eqd1 ?unitrX ?unitrN ?unitr1 //.
-  rewrite (eq_bigl (fun i => (p^-1)%g ord0 != i)) ?big_lift_ord /=; last first.
-    by move=> i /=; rewrite eq_sym.
+rewrite (expand_det_row _ ((p^-1)%g ord0)) big_ord_recl big1=>[i _|].
+  rewrite !mxE /= (inj_eq (@ord_inj _)) -Hfg0 (inj_eq Hg) permKV.
+  by rewrite (negbTE (neq_lift _ _)) mul0r.
+rewrite /cofactor !mxE.
+set B := diag_mx_seq _ _ _.
+set M := row' _ _.
+pose f2 x :=  f (lift ((p^-1)%g ord0) x).
+pose g2 x :=  g (lift ord0 x).
+have Hf2: injective f2.
+  by apply/(inj_comp Hf)/lift_inj.
+have Hg2: injective g2.
+  by apply/(inj_comp Hg)/lift_inj.
+pose f' i := widen_ord (geq_minl m n) (f2 i).
+pose g' i := widen_ord (geq_minr m n) (g2 i).
+have ->: M = submatrix f' g' B.
+  by apply/matrixP=> r t; rewrite !mxE.
+have Hfg2: {subset codom f2 <= codom g2}.
+  move=> x /codomP [y ->].
+  rewrite codomE /f2 /g2 -Hfg0 map_comp (mem_map Hg).
+  set i := p _.
+  have:= mem_ord_enum i.
+  rewrite -enum_ord_enum enum_ordSl in_cons -(permKV p ord0).
+  by rewrite /i (inj_eq (@perm_inj _ _)) eq_sym (negbTE (neq_lift _ _)).
+rewrite addr0 (bigD1 ((p^-1)%g ord0)) //= -Hfg0 permKV eqxx eqd_mull //.
+rewrite -[X in _ %= X]mul1r eqd_mul ?eqd1 ?unitrX ?unitrN ?unitr1 //.
+rewrite (eq_bigl (fun i => (p^-1)%g ord0 != i)) ?big_lift_ord /=; last first.
   exact: (IHj _ _ Hf2 Hg2 Hfg2).
-rewrite !mxE /= (inj_eq (@ord_inj _)) -Hfg0 (inj_eq Hg) permKV.
-by rewrite (negbTE (neq_lift _ _)) mul0r.
+by move=> i /=; rewrite eq_sym.
 Qed.
 
 Lemma prod_minor_seq :
@@ -189,20 +189,20 @@ rewrite /minor /submatrix.
 elim: k Hk=>[H|j /= IHj Hj]; first by rewrite det_mx00 big_ord0.
 have IH:= ltnW Hj.
 apply: esym; rewrite (expand_det_row _ ord_max) big_ord_recr /= big1 ?add0r.
-  rewrite /cofactor  /col' /row' !mxE !ffunE !matrix_comp.
-  rewrite eqxx exprD -expr2 sqrr_sign mul1r.
-  set M := matrix_of_fun _ _.
-  have ->: M =
-         (\matrix_(i, j) (diag_mx_seq m n s)
-                           ([ffun x => widen_minl (widen_ord IH x)] i)
-                           ([ffun x => widen_minr (widen_ord IH x)] j)).
-    apply/matrixP=> i l; rewrite !mxE !ffunE.
-    have Hr: forall p, widen_ord Hj (lift ord_max p) = widen_ord IH p.
-      by move=> p; apply: ord_inj=> /=; rewrite /bump leqNgt (ltn_ord p) add0n.
-    by rewrite !Hr.
+  move=> i _; rewrite !mxE !ffunE /=.
+  by rewrite eqn_leq leqNgt (ltn_ord i) andFb mul0r.
+rewrite /cofactor  /col' /row' !mxE !ffunE !matrix_comp.
+rewrite eqxx exprD -expr2 sqrr_sign mul1r.
+set M := matrix_of_fun _ _.
+suff ->: M =
+       (\matrix_(i, j) (diag_mx_seq m n s)
+                         ([ffun x => widen_minl (widen_ord IH x)] i)
+                         ([ffun x => widen_minr (widen_ord IH x)] j)).
   by rewrite -(IHj IH) big_ord_recr /= mulrC.
-move=> i _; rewrite !mxE !ffunE /=.
-by rewrite eqn_leq leqNgt (ltn_ord i) andFb mul0r.
+apply/matrixP=> i l; rewrite !mxE !ffunE.
+have Hr: forall p, widen_ord Hj (lift ord_max p) = widen_ord IH p.
+  by move=> p; apply: ord_inj=> /=; rewrite /bump leqNgt (ltn_ord p) add0n.
+by rewrite !Hr.
 Qed.
 
 Lemma minor_eq0l (R : comRingType) k1 m1 n1  (s1 : seq R) x :

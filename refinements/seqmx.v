@@ -3,7 +3,7 @@ From mathcomp Require Import path choice fintype tuple finset bigop poly matrix 
 
 From CoqEAL Require Import hrel param refinements trivial_seq.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -520,12 +520,12 @@ Proof.
                ?h2 ?h'2.
   rewrite mxE (nth_map ([::], [::])) ?nth_zip /= ?nth_cat ?size1_zip ?h1 ?h'1
           ?h2 ?h'2 //.
+  - by rewrite -(nat_R_eq rm).
+  - by rewrite -(nat_R_eq rm).
   case: (splitP j)=> k hk; rewrite ?(h3, h'3) hk -?(nat_R_eq rn1).
-        by rewrite ltn_ord.
-      rewrite ifN; first by rewrite addnC -addnBA ?subnn ?addn0.
-      by rewrite ltnNge leq_addr.
-    by rewrite -(nat_R_eq rm).
-  by rewrite -(nat_R_eq rm).
+    by rewrite ltn_ord.
+  rewrite ifN; last by rewrite addnC -addnBA ?subnn ?addn0.
+  by rewrite ltnNge leq_addr.
 Qed.
 
 Instance Rseqmx_col_seqmx m11 m12 (rm1 : nat_R m11 m12) m21 m22
@@ -542,7 +542,7 @@ Proof.
   rewrite mxE nth_cat h1.
   case: (splitP i)=> k hk; rewrite ?(h3, h'3) hk -(nat_R_eq rm1).
     by rewrite ltn_ord.
-  rewrite ifN; last by rewrite ltnNge leq_addr.
+  rewrite ifN; first by rewrite ltnNge leq_addr.
   by rewrite addnC -addnBA ?subnn ?addn0.
 Qed.
 
@@ -608,7 +608,7 @@ Proof.
   elim: s k ltks hs=> [_ _ _|a s ihs k ltks hs] //=.
   rewrite zipwithE (nth_map (0%C, [::])) ?nth_zip /= ?size1_zip ?size_fold;
     have /= ha := hs 0%N; rewrite ?ha //;
-    first (case: k ltks=> [|k' ltk's] //=; rewrite ?ihs //);
+    last (case: k ltks=> [|k' ltk's] //=; rewrite ?ihs //);
     by move=> q hq; rewrite -(hs q.+1).
 Qed.
 
@@ -952,10 +952,10 @@ Instance Rseqmx_opp m1 m2 (rm : nat_R m1 m2) n1 n2 (rn : nat_R n1 n2) :
 Proof.
 rewrite refinesE=> ? ? [A M h1 h2 h3].
 constructor=> [|i ltim|i j]; first by rewrite size_map h1.
-  rewrite (nth_map [::]); last by rewrite h1.
+  rewrite (nth_map [::]); first by rewrite h1.
   by rewrite size_map h2.
-rewrite mxE (nth_map [::]); last by rewrite h1 -(nat_R_eq rm) ltn_ord.
-rewrite (nth_map 0); first by rewrite h3.
+rewrite mxE (nth_map [::]); first by rewrite h1 -(nat_R_eq rm) ltn_ord.
+rewrite (nth_map 0); last by rewrite h3.
 by rewrite h2 -?(nat_R_eq rm) -?(nat_R_eq rn) ltn_ord.
 Qed.
 
@@ -1087,7 +1087,7 @@ Proof.
   rewrite !refinesE /mxtrace.
   elim: rm=> [|n1 n2 rn ih] /= M sM rM.
     by rewrite big_ord0.
-  rewrite big_ord_recl -(ih (drsubmx (M : 'M_(1 + n1, 1 + n1)))).
+  rewrite big_ord_recl -(ih (drsubmx (M : 'M_(1 + n1, 1 + n1)))); last first.
     have <- : M ord0 ord0 = top_left_seqmx sM.
       apply refinesP; rewrite -[M _ _]/((fun (M : 'M_(_)) => M _ _) _).
       eapply refines_apply.
@@ -1131,8 +1131,7 @@ Instance Rseqmx_spec_l m1 m2 (rm : nat_R m1 m2) n1 n2 (rn : nat_R n1 n2) :
   refines (Rseqmx (R:=R) rm rn ==> Logic.eq) spec_id spec.
 Proof.
   rewrite refinesE=> _ _ [M sM h1 h2 h3].
-  rewrite /spec /spec_seqmx /spec_id /spec /specR /spec_id /map_seqmx map_id_in;
-    last first.
+  rewrite /spec /spec_seqmx /spec_id /spec /specR /spec_id /map_seqmx map_id_in.
     by move=> x; rewrite map_id.
   by apply/matrixP=> i j; rewrite h3 mxE.
 Qed.

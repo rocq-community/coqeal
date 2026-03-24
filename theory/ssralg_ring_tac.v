@@ -1,7 +1,7 @@
 Require Import Ncring Ncring_tac.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq choice fintype.
 From mathcomp Require Import div finfun bigop prime binomial ssralg matrix.
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Section ring_tac.
 

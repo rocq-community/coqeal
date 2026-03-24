@@ -7,7 +7,7 @@ From mathcomp Require Import matrix bigop zmodp mxalgebra.
 Require Import gauss.
 Import GRing.Theory.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -38,7 +38,7 @@ Lemma rank_block0dl m n a Aur (Adr : 'M[F]_(m,n)) :
   a != 0 -> \rank (block_mx (a%:M : 'M_1) Aur 0 Adr) = (1 + \rank Adr)%N.
 Proof.
 move=> nz_a.
-rewrite /block_mx -addsmxE mxrank_disjoint_sum.
+rewrite /block_mx -addsmxE mxrank_disjoint_sum; last first.
   rewrite rank_row0mx rank_rV.
   have->//: row_mx a%:M Aur != 0.
     apply/eqP => /matrixP/(_ 0 0); rewrite !mxE.
@@ -46,8 +46,8 @@ rewrite /block_mx -addsmxE mxrank_disjoint_sum.
 apply/eqP/rowV0P => v0; rewrite sub_capmx; case/andP=> /sub_rVP [k Hv0k].
 rewrite Hv0k; case/submxP => D /matrixP/(_ 0 0); rewrite !mxE.
 case: splitP => // j _; rewrite ord1 mxE mulr1n big1.
+  by move=> i _; rewrite !mxE; case: splitP=> // l _; rewrite mxE mulr0.
 by move/eqP; rewrite mulf_eq0 (negbTE nz_a) orbF => /eqP ->; rewrite scale0r.
-by move=> i _; rewrite !mxE; case: splitP=> // l _; rewrite mxE mulr0.
 Qed.
 
 Lemma row'_row_perm m n M k :

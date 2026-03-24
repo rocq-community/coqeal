@@ -13,7 +13,7 @@ From CoqEAL Require Import hrel param refinements pos.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -210,7 +210,7 @@ Instance Rrat_eq : refines (Rrat ==> Rrat ==> bool_R) eqtype.eq_op eq_op.
 Proof.
 apply: refines_abstr2 => x [na [da da_gt0]] rx y [nb [db db_gt0]] ry.
 rewrite /eq_op /eqQ /cast /cast_pos_int /pos_to_int /=; simpC.
-rewrite [x]RratE [y]RratE /= GRing.eqr_div; last 2 first.
+rewrite [x]RratE [y]RratE /= GRing.eqr_div.
 - by rewrite gt_eqF // ltr0z.
 - by rewrite gt_eqF // ltr0z.
 rewrite -!rmorphM /= eqr_int !natz.

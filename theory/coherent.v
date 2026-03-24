@@ -6,7 +6,7 @@ From mathcomp Require Import fintype ssralg perm choice matrix bigop zmodp mxalg
 
 Require Import ssrcomplements dvdring stronglydiscrete.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

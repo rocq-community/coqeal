@@ -6,7 +6,7 @@ From mathcomp Require Import fintype ssralg matrix mxalgebra bigop zmodp perm ch
 
 Require Import dvdring mxstructure minor stronglydiscrete coherent edr.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -116,7 +116,7 @@ rewrite /smith1xn; case: smith2xnP; rewrite [2%N]/(1+1)%N=> P d Q h_eq hs hP hQ.
 have [d0|d_neq0] := (boolP (d`_0 == 0)).
   constructor; rewrite ?unitmx1 // ?simplmx; apply/matrixP=> i j.
   move/(canRL (mulmxK hQ))/(canRL (mulKmx hP))/matrixP: h_eq.
-  rewrite diag_mx_seq0; last by rewrite sorted_dvd0r // sorted_cons // dvd0r.
+  rewrite diag_mx_seq0; first by rewrite sorted_dvd0r // sorted_cons // dvd0r.
   rewrite mul0mx mulmx0 ord1 {i} diag_mx_seq_nil.
   by move/(_ (widen_ord (lt0n 2) 0) j); rewrite !mxE split1; case: unliftP.
 move/matrixP: h_eq; rewrite -mulmxA [col_mx M 0 *m _]mul_col_mx mul0mx=> h_eq.
@@ -647,9 +647,9 @@ have dvd_b2_bd: b2 %| a ^+ d.
 have eq_b : b %= b1 * b2.
   rewrite eqd_def /b1 /b2.
   rewrite -[b as X in _ %| X](addrNK (b * s)).
-  rewrite -[X in X - b * s]mulr1 -mulrBr dvdr_add ?andbT //=; last 2 first.
-    by rewrite mulrC dvdr_mul // (dvdr_gcdl, dvdr_gcdr).
-  by rewrite dvdr_mul // (dvdr_gcdl, dvdr_gcdr).
+  rewrite -[X in X - b * s]mulr1 -mulrBr dvdr_add ?andbT //=.
+  - by rewrite mulrC dvdr_mul // (dvdr_gcdl, dvdr_gcdr).
+  - by rewrite dvdr_mul // (dvdr_gcdl, dvdr_gcdr).
   have [[x y gbs] [x' y' gbs']] := (bezoutP b s, bezoutP b (1 - s)).
   rewrite (eqd_dvdr _ (eqd_mulr _ gbs')) (eqd_dvdr _ (eqd_mull _ gbs)).
   rewrite [1 - s]lock !(mulrDr, mulrDl) -!lock !addrA dvdr_add //=.
@@ -664,9 +664,9 @@ have: coprimer b1 b2.
 have b2_eq : gcdr b s %= gcdr b (a ^+ d).
   rewrite eqd_def !dvdr_gcd !dvdr_gcdl /=.
   rewrite -[a ^+ d as X in _ %| X](addrNK ((a ^+ d) * s)).
-  rewrite dvdr_add //=; last 2 first.
-    by rewrite (dvdr_trans (dvdr_gcdl _ _)).
-    by rewrite dvdr_mull ?dvdr_gcdr.
+  rewrite dvdr_add //=.
+  - by rewrite (dvdr_trans (dvdr_gcdl _ _)).
+  - by rewrite dvdr_mull ?dvdr_gcdr.
   rewrite -[s as X in _ %| X](addrNK (k * (a ^+ d))) dvdr_add //.
     by rewrite (dvdr_trans (dvdr_gcdl _ _)).
   by rewrite dvdr_mull ?dvdr_gcdr.
@@ -689,10 +689,10 @@ have /sigW : (exists (x : nat * (R * R)),
   by case: factored => n [b1 [b2]]; exists (n,(b1,b2)).
 case=> /= [[n [b1 b2]]] /= /and4P [ngt0 /eqP -> ca1b dvda2bn aneq0].
 exists b1; constructor => /= [|||d] //; first by rewrite dvdr_mulr.
-rewrite mulrC dvdr_mul2l ?unitd1 => [dvdda2|].
-  apply: contra; rewrite -(@coprimer_pexpr _ n) //.
-  apply: dvdr_coprime; exact: (dvdr_trans dvdda2 dvda2bn).
-by apply: contraNneq aneq0 => ->; rewrite mul0r.
+rewrite mulrC dvdr_mul2l ?unitd1 => [|dvdda2].
+  by apply: contraNneq aneq0 => ->; rewrite mul0r.
+apply: contra; rewrite -(@coprimer_pexpr _ n) //.
+apply: dvdr_coprime; exact: (dvdr_trans dvdda2 dvda2bn).
 Qed.
 
 Definition krull1_gdco a b := projT1 (krull1_adequate a b).

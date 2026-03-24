@@ -9,7 +9,7 @@ From CoqEAL Require Import minor hrel param refinements seqmx.
 Import GRing.Theory Pdiv.Ring Pdiv.CommonRing Pdiv.RingMonic.
 Import Refinements.Op.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Set Implicit Arguments.
 Unset Strict Implicit.

@@ -1,5 +1,5 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -64,8 +64,8 @@ Lemma big_lift_ord n F j :
   \big[op/idx]_( i < n.+1 | j != i ) F i = \big[op/idx]_i F (lift j i).
 Proof.
 case: (pickP 'I_n) => [k0 _ | n0]; last first.
-  by rewrite !big1 // => [i _ | k /unlift_some[i]]; have:= n0 i.
-rewrite (reindex (lift j)).
+  by rewrite !big1 // => [k /unlift_some[i] | i _]; have:= n0 i.
+rewrite (reindex (lift j)); last first.
   by apply: eq_bigl=> k; rewrite neq_lift.
 exists (fun k => odflt k0 (unlift j k)) => k; first by rewrite liftK.
 by case/unlift_some=> k' -> ->.
@@ -121,7 +121,7 @@ Lemma mxminpolyP n (A : 'M[F]_n.+1) (p : {poly F}) :
   p = mxminpoly A.
 Proof.
 move=> pmon eqpA0 pdvq.
-apply/eqP; rewrite -eqp_monic //; last exact: mxminpoly_monic.
+apply/eqP; rewrite -eqp_monic //; first exact: mxminpoly_monic.
 apply/andP; split.
   by apply/pdvq/mx_root_minpoly.
 exact: mxminpoly_min.

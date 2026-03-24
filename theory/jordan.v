@@ -20,7 +20,7 @@ From CoqEAL Require Import frobenius_form.
                                                                               *)
 
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -57,7 +57,7 @@ Local Open Scope ring_scope.
 
 Lemma det_Jordan_block (lam : R) n : \det (Jordan_block lam n) = lam ^+ n.
 Proof.
-rewrite det_triangular_mx; last by apply: upt_Jordan_block.
+rewrite det_triangular_mx; first by apply: upt_Jordan_block.
 rewrite -{8}[n]card_ord -prodr_const.
 by apply: eq_bigr=> i _; rewrite mxE eqxx eqn_leq ltnn addr0.
 Qed.
@@ -72,17 +72,17 @@ elim: k =>[|k IHk].
 rewrite exprS IHk.
 apply/matrixP=> i j; rewrite !mxE.
 case: (eqVneq i ord_max) => Hi.
-- rewrite (bigD1 i) //= !mxE big1 ?addr0=>[|l /negbTE Hl].
-  - rewrite eqxx eqn_leq ltnn addr0.
-    have ->: (j - i)%N = 0%N by apply/eqP; rewrite subn_eq0 Hi -ltnS.
-    by rewrite !bin0 !mul1r !subn0 mulrnAr exprS.
-  rewrite !mxE eq_sym [(_ == _ :> nat)]Hl Hi eqn_leq.
-  by rewrite ltnNge -ltnS ltn_ord addr0 mul0r.
+  rewrite (bigD1 i) //= !mxE big1 ?addr0=>[l /negbTE Hl|].
+    rewrite !mxE eq_sym [(_ == _ :> nat)]Hl Hi eqn_leq.
+    by rewrite ltnNge -ltnS ltn_ord addr0 mul0r.
+  rewrite eqxx eqn_leq ltnn addr0.
+  have ->: (j - i)%N = 0%N by apply/eqP; rewrite subn_eq0 Hi -ltnS.
+  by rewrite !bin0 !mul1r !subn0 mulrnAr exprS.
 have Ho: (i.+1 < n.+1)%N by rewrite ltn_neqAle Hi ltn_ord.
-rewrite (bigD1 i) //= (bigD1 (Ordinal Ho)); last first.
+rewrite (bigD1 i) //= (bigD1 (Ordinal Ho)).
   by rewrite -(inj_eq (@ord_inj _)) eqn_leq ltnn.
 rewrite !mxE eqxx (@eq_sym nat i) !eqn_leq !ltnn addr0 add0r.
-rewrite !leqnn mul1r subnS /= big1 ?addr0; last first.
+rewrite !leqnn mul1r subnS /= big1 ?addr0.
   move=> l /andP [] /negbTE Hil /negbTE Hl.
   by rewrite !mxE eq_sym [_ == _ :>nat]Hil eq_sym [_ == _ :>nat]Hl addr0 mul0r.
 case: (ltngtP i j)=> Hij; last first.
@@ -110,7 +110,7 @@ Qed.
 Lemma char_poly_Jordan_block (lam : R) n :
   char_poly (Jordan_block lam n) = ('X - lam%:P) ^+n.
 Proof.
-rewrite char_poly_triangular_mx; last by apply: upt_Jordan_block.
+rewrite char_poly_triangular_mx; first by apply: upt_Jordan_block.
 rewrite  (eq_bigr (fun _ => ('X - lam%:P))) ?prodr_const ?card_ord //.
 by move=> i; rewrite mxE eqxx eqn_leq ltnn addr0.
 Qed.
@@ -161,7 +161,7 @@ have {H} Hd1: d %= 1.
     rewrite !eqn_leq !(leqNgt _ j) ltnS (ltnW Hij) ltnNge Hij.
     by rewrite andbF addr0 subr0.
   rewrite -det_tr (det_triangular_mx Hut).
-  rewrite (eq_bigr (fun _ => -1)) ?prodr_const ?card_ord; last first.
+  rewrite (eq_bigr (fun _ => -1)) ?prodr_const ?card_ord.
     move=> i; rewrite !mxE !ffunE -(inj_eq (@ord_inj _)) lift0 lift_max.
     by rewrite eqxx !eqn_leq ltnn andbF sub0r add0r.
   by apply/dvdrP; exists ((-1)^+ n); rewrite -expr2 sqrr_sign.
@@ -217,7 +217,7 @@ apply: similar_diag_block=> // i; rewrite /s1.
 rewrite (nth_map 0) ?size_map //.
 rewrite !(nth_map (0,0%N)) ?size_map //.
 set x := nth _ _ _.
-rewrite -(@prednK x.2); first exact: similar_cj.
+rewrite -(@prednK x.2); last exact: similar_cj.
 have/flattenP [s Hfs Hx] := mem_nth (0,0%N) Hi; move: Hfs.
 case/(nthP nil)=> m; rewrite !size_map=> Hm Heq.
 move: Heq Hx; rewrite (nth_map 0) // => <-.
@@ -294,26 +294,25 @@ rewrite size_map size_enum_ord in Hs.
 rewrite Hs.
 set s1 := mkseq _ _.
 set s2 := map _ _.
-have ->: s2 = s1.
-  apply: (@eq_from_nth _ 0).
-    rewrite size_map size_enum_ord Heq size_mkseq.
-    rewrite size_sum_big.
-      rewrite (eq_big_seq (fun _ => 1%N)).
-        by rewrite (big_nth 0%N) sum_nat_const_nat subn0 muln1.
-      by move=> x /(nthP 0%N) [i Hi]; rewrite Hn=> <-.
-    rewrite -size_eq0 size_map size_flatten sumn_big !big_map.
-    have H0: (0 < (size (invariant_factors A)))%N.
-      by rewrite lt0n size_eq0 nnil_inv_factors.
-    rewrite (big_nth 0) big_mkord (bigD1 (Ordinal H0)) //.
-    rewrite size_map -lt0n addn_gt0 lt0n size_eq0.
-    apply/orP; left; apply/eqP=>/undup_nil; apply/eqP.
-    rewrite -root_seq_nil -ltnNge.
-    have:= (mem_nth 0 H0).
-    by rewrite mem_filter; case/andP=> ->.
+suff ->: s2 = s1 by exact: similar_refl.
+apply: (@eq_from_nth _ 0); last first.
   move=> i; rewrite size_map size_enum_ord=> Hi.
   rewrite (nth_map 0) ?size_enum_ord //.
   by rewrite (nth_ord_enum 0 (Ordinal Hi)) !mxE eqxx.
-exact: similar_refl.
+rewrite size_map size_enum_ord Heq size_mkseq.
+rewrite size_sum_big; last first.
+  rewrite (eq_big_seq (fun _ => 1%N)).
+    by move=> x /(nthP 0%N) [i Hi]; rewrite Hn=> <-.
+  by rewrite (big_nth 0%N) sum_nat_const_nat subn0 muln1.
+rewrite -size_eq0 size_map size_flatten sumn_big !big_map.
+have H0: (0 < (size (invariant_factors A)))%N.
+  by rewrite lt0n size_eq0 nnil_inv_factors.
+rewrite (big_nth 0) big_mkord (bigD1 (Ordinal H0)) //.
+rewrite size_map -lt0n addn_gt0 lt0n size_eq0.
+apply/orP; left; apply/eqP=>/undup_nil; apply/eqP.
+rewrite -root_seq_nil -ltnNge.
+have:= (mem_nth 0 H0).
+by rewrite mem_filter; case/andP=> ->.
 Qed.
 
 Lemma ex_diagonalization n (A : 'M[R]_n.+1) : uniq (root_seq (mxminpoly A)) ->
