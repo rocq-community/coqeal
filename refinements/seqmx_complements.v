@@ -16,7 +16,7 @@ Import Refinements.Op.
 
 (** * Extra material about CoqEAL *)
 
-Arguments refines A%type B%type R%rel _ _. (* Fix a scope issue with refines *)
+Arguments refines A%_type B%_type R%_rel _ _. (* Fix a scope issue with refines *)
 
 Arguments refinesP {T T' R x y} _.
 

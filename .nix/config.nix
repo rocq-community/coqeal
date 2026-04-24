@@ -140,13 +140,5 @@
     }; coqPackages = common-bundles // {
       coq.override.version = "9.0";
     }; };
-    "coq-8.20".coqPackages = common-bundles // {
-      coq.override.version = "8.20";
-      coq-elpi.override.version = "2.5.0";
-      coq-elpi.override.elpi-version = "2.0.7";
-      hierarchy-builder.override.version = "1.8.1";
-      mathcomp.override.version = "2.3.0";
-      mathcomp-apery.job = false;
-    };
   };
 }

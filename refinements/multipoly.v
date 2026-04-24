@@ -30,7 +30,7 @@ Import Refinements.Op.
 Local Open Scope ring_scope.
 
 (** BEGIN FIXME this is redundant with PR CoqEAL/CoqEAL#3 *)
-Arguments refines A%type B%type R%rel _ _. (* Fix a scope issue with refines *)
+Arguments refines A%_type B%_type R%_rel _ _. (* Fix a scope issue with refines *)
 
 #[export] Hint Resolve nil_R : core.
 (** END FIXME this is redundant with PR CoqEAL/CoqEAL#3 *)

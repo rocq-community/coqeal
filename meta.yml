@@ -76,8 +76,8 @@ license:
   identifier: MIT
 
 supported_coq_versions:
-  text: 8.20 or later (use releases for other Coq versions)
-  opam: '{(>= "8.20" & < "9.1~") | (= "dev")}'
+  text: 9.0 or later (use releases for other Rocq versions)
+  opam: '{(>= "9.0" & < "9.2~") | (= "dev")}'
 
 dependencies:
 - opam:
@@ -115,12 +115,8 @@ dependencies:
     [MathComp real-closed](https://math-comp.github.io) 2.0 or later
 
 tested_coq_opam_versions:
-- version: '2.3.0-coq-8.20'
-  repo: 'mathcomp/mathcomp'
 - version: '2.4.0-rocq-prover-9.0'
   repo: 'mathcomp/mathcomp'
-- version: 'coq-8.20'
-  repo: 'mathcomp/mathcomp-dev'
 - version: 'coq-dev'
   repo: 'mathcomp/mathcomp-dev'
 
