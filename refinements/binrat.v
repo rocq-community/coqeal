@@ -353,7 +353,7 @@ End Zint.
 (** ** Link between [bigQ] (Coq standard lib) and [rat] (Mathcomp) *)
 Section binrat_theory.
 
-Arguments refines A%type B%type R%rel _ _. (* Fix a scope issue with refines *)
+Arguments refines A%_type B%_type R%_rel _ _. (* Fix a scope issue with refines *)
 
 (** *** Conversion from [bigQ] to [rat] *)
 Program Definition bigQ2rat_def (bq : bigQ) :=

@@ -25,7 +25,7 @@ Section refinements.
 Fact refines_key : unit. Proof. done. Qed.
 Class refines A B (R : A -> B -> Type) (m : A) (n : B) :=
   refines_rel : (locked_with refines_key R) m n.
-Arguments refines A B R%rel m n.
+Arguments refines A B R%_rel m n.
 
 Lemma refinesE A B (R : A -> B -> Type) : refines R = R.
 Proof. by rewrite /refines unlock. Qed.
@@ -50,7 +50,7 @@ Fact composable_lock : unit. Proof. done. Qed.
 Class composable A B C
   (rAB : A -> B -> Type) (rBC : B -> C -> Type) (rAC : A -> C -> Type) :=
   Composable : locked_with composable_lock (rAB \o rBC <= rAC).
-Arguments composable A B C rAB%rel rBC%rel rAC%rel.
+Arguments composable A B C rAB%_rel rBC%_rel rAC%_rel.
 
 Lemma composableE A B C
  (rAB : A -> B -> Type) (rBC : B -> C -> Type) (rAC : A -> C -> Type) :
@@ -207,7 +207,7 @@ Qed.
 
 End refinements.
 
-Arguments refines [A B]%type R%rel m n.
+Arguments refines [A B]%_type R%_rel m n.
 Arguments refinesP {T T' R x y} _.
 
 #[export] Hint Mode refines - - - + - : typeclass_instances.
