@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import all_boot.
 From mathcomp Require Import all_algebra.
 From mathcomp Require Import all_real_closed.
 From CoqEAL Require Import ssrcomplements.
@@ -46,7 +46,7 @@ Definition root_seq : {poly F} -> seq F :=
       else [::]
   in fun p => loop p (size p).
 
-Lemma root_root_seq (p : {poly F}) x : p != 0 -> x \in root_seq p = root p x.
+Lemma root_root_seq (p : {poly F}) x : p != 0 -> (x \in root_seq p) = root p x.
 Proof.
 rewrite /root_seq; set loop := fix loop p n := if n is _.+1 then _ else _.
 elim: size {-2 5}p (erefl (size p))=> /= {p} [|n ihn] p /=.

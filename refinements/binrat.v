@@ -1,6 +1,6 @@
 (** * A refinement of Mathcomp's rationals [rat] with [bigQ] from Coq standard library. *)
 
-Require Import ZArith QArith Lia.
+From Stdlib Require Import ZArith QArith Lia.
 From Bignums Require Import BigQ.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat order.
 From mathcomp Require Import ssralg ssrnum ssrint rat div intdiv.
@@ -39,7 +39,7 @@ Proof. by elim: p =>//= p IHp; rewrite NatTrec.doubleE double_gt0. Qed.
 Lemma nat_of_pos_gtr0 p : (0 < Posz (nat_of_pos p))%R.
 Proof. by rewrite -[0%R]/(Posz 0) ltz_nat nat_of_pos_gt0. Qed.
 
-Lemma Posz_nat_of_pos_neq0 p : Posz (nat_of_pos p) == 0%R = false.
+Lemma Posz_nat_of_pos_neq0 p : (Posz (nat_of_pos p) == 0%R) = false.
 Proof.
 rewrite -binnat.to_natE.
 case E: (Pos.to_nat _)=>//; exfalso; move: E.
@@ -544,7 +544,6 @@ rewrite /eq_op /eq_bigQ BigQ.spec_eq_bool.
 case: (BigQ.to_Q a) => na da {a}.
 case: (BigQ.to_Q b) => nb db {b}.
 rewrite /Qeq_bool !Z2int_Qred /=.
-do ?[rewrite /Zeq_bool -Z.eqb_compare].  (* remove line when requiring Rocq >= 9.0 *)
 rewrite GRing.eqr_div ?intq_eq0 ?Posz_nat_of_pos_neq0 //.
 rewrite !nat_of_pos_Z_to_pos.
 rewrite !gez0_abs; [by rewrite -[0%R]int2ZK Z2int_le..|].

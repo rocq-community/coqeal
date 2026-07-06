@@ -13,7 +13,7 @@ Import Prenex Implicits.
 Open Scope ring_scope.
 
 Section atomic_operations.
-Variable R: comRingType.
+Variable R: comPzRingType.
 
 (* describe simple line / column combination operators *)
 

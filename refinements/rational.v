@@ -364,30 +364,37 @@ Require Import binnat binint.
 Section tests.
 
 Goal (0 == 0 :> rat).
+Proof.
 by coqeal.
 Abort.
 
 Goal (1 == 1 :> rat).
+Proof.
 by coqeal.
 Abort.
 
 Goal (3%:~R / 4%:~R == - (- (3 * 10)%:Z)%:~R / (2 * 20)%N%:~R :> rat).
+Proof.
 by coqeal.
 Abort.
 
 Goal ((3%:~R / 4%:~R) * (20%:~R / 15%:~R) == 1 :> rat).
+Proof.
 by coqeal.
 Abort.
 
 Goal ((1 / 2%:~R)^+3 == (1 / 2%:~R) - (3%:~R / 8%:~R) :> rat).
+Proof.
 by coqeal.
 Abort.
 
 Goal ((1 / 10%:~R)^-1 == 10%:~R :> rat).
+Proof.
 by coqeal.
 Abort.
 
 Goal ((1 / 15%:~R) / (2%:~R / 21%:~R) == 7%:~R / 10%:~R :> rat).
+Proof.
 by coqeal.
 Abort.
 

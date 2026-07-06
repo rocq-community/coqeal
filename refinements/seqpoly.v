@@ -1,4 +1,4 @@
-From Coq Require List.
+From Stdlib Require List.
 From elpi Require Import derive.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq ssralg.
 From mathcomp Require Import path choice fintype tuple finset bigop poly polydiv.
@@ -104,7 +104,7 @@ Elpi derive.param2 lead_coef_seqpoly.
 
 Section seqpoly_more_op.
 
-Variable R : ringType.
+Variable R : nzRingType.
 
 Context (C : Type).
 Context `{zero_of C, one_of C, add_of C, opp_of C, eq_of C}.
@@ -187,7 +187,7 @@ Arguments spec_seqpoly / _ _ _ _ _ _ _ _ _ : assert.
 
 Section seqpoly_theory.
 
-Variable R : ringType.
+Variable R : nzRingType.
 
 Local Instance zeroR : zero_of R := 0%R.
 Local Instance oneR  : one_of R  := 1%R.
@@ -222,7 +222,7 @@ Qed.
 Local Instance Rseqpoly_1 : refines Rseqpoly 1%R 1%C.
 Proof.
   rewrite refinesE /Rseqpoly /fun_hrel /poly_of_seqpoly poly_def /=.
-  by rewrite zmodp.big_ord1 expr0 alg_polyC [(1%:P)]/(1%C) polyC1.
+  by rewrite big_ord1 expr0 alg_polyC [(1%:P)]/(1%C) polyC1.
 Qed.
 
 Local Instance Rseqpoly_cons :
@@ -239,7 +239,7 @@ Qed.
 Local Instance Rseqpoly_cast : refines (eq ==> Rseqpoly) polyC cast_op.
 Proof.
   rewrite refinesE /Rseqpoly /fun_hrel /poly_of_seqpoly=> _ x ->.
-  rewrite /cast /cast_seqpoly /= poly_def zmodp.big_ord1 /=.
+  rewrite /cast /cast_seqpoly /= poly_def big_ord1 /=.
   by rewrite expr0 alg_polyC.
 Qed.
 
@@ -358,7 +358,7 @@ Proof.
   case sp: (size (\poly_(i < size p) p`_i))=> [|n] /=; simpC.
     move /eqP: sp; rewrite size_poly_eq0; move/eqP=> ->.
     by rewrite mul0r addr0 size_polyC; case: (a == 0).
-  by rewrite addrC size_addl size_mulX ?sp ?size_polyC ?[RHS]addn1;
+  by rewrite addrC size_polyDl size_mulX ?sp ?size_polyC ?[RHS]addn1;
     case: (a != 0)=> //; apply/negP; rewrite -size_poly_eq0 sp.
 Qed.
 
@@ -664,109 +664,132 @@ From CoqEAL Require Import binnat binint.
 Section testpoly.
 
 Goal (0 == 0 :> {poly int}).
+Proof.
 by coqeal.
 Abort.
 
 Goal (0 == (0 : {poly {poly {poly int}}})).
+Proof.
 (* by coqeal. *)
 Abort.
 
 Goal (1 == 1 :> {poly int}).
+Proof.
 by coqeal.
 Abort.
 
 Goal (1 == (1 : {poly {poly {poly int}}})).
+Proof.
 (* by coqeal. *)
 Abort.
 
 Goal ((1 + 2%:Z *: 'X + 3%:Z *: 'X^2) + (1 + 2%:Z%:P * 'X + 3%:Z%:P * 'X^2)
       == (1 + 1 + (2%:Z + 2%:Z) *: 'X + (3%:Z + 3%:Z)%:P * 'X^2)).
+Proof.
 rewrite -[X in (X == _)]/(spec_id _) [spec_id _]refines_eq /=.
 (* by coqeal. *)
 Abort.
 
 Goal (Poly [:: 1; 2%:Z; 3%:Z] + Poly [:: 1; 2%:Z; 3%:Z]) ==
       Poly [:: 1 + 1; 2%:Z + 2%:Z; 2%:Z + 4%:Z].
+Proof.
 by coqeal.
 Abort.
 
 Goal (- 1 == - (1: {poly {poly int}})).
+Proof.
 (* by coqeal. *)
 Abort.
 
 Goal (- (1 + 2%:Z *: 'X + 3%:Z%:P * 'X^2) == -1 - 2%:Z%:P * 'X - 3%:Z *: 'X^2).
+Proof.
 by coqeal.
 Abort.
 
 Goal (- Poly [:: 1; 2%:Z; 3%:Z]) == Poly [:: - 1; - 2%:Z; - 3%:Z].
+Proof.
 by coqeal.
 Abort.
 
 Goal (1 + 2%:Z *: 'X + 3%:Z *: 'X^2 - (1 + 2%:Z *: 'X + 3%:Z *: 'X^2) == 0).
+Proof.
 by coqeal.
 Abort.
 
 Goal (Poly [:: 1; 2%:Z; 3%:Z] - Poly [:: 1; 2%:Z; 3%:Z]) == 0.
+Proof.
 by coqeal.
 Abort.
 
 Goal ((1 + 2%:Z *: 'X) * (1 + 2%:Z%:P * 'X) == 1 + 4%:Z *: 'X + 4%:Z *: 'X^2).
+Proof.
 by coqeal.
 Abort.
 
 Goal (Poly [:: 1; 2%:Z] * Poly [:: 1; 2%:Z]) == Poly [:: 1; 4%:Z; 4%:Z].
+Proof.
 by coqeal.
 Abort.
 
 (* (1 + xy) * x = x + x^2y *)
 Goal ((1 + 'X * 'X%:P) * 'X == 'X + 'X^2 * 'X%:P :> {poly {poly int}}).
+Proof.
 rewrite -[X in (X == _)]/(spec_id _) [spec_id _]refines_eq /=.
 (* by coqeal. *)
 Abort.
 
 Goal (Poly [:: Poly [:: 1; 0]; 1] * Poly [:: 1; 0]) ==
       Poly [:: Poly [:: 1; 0]; 1 ; 0] :> {poly {poly int}}.
+Proof.
 rewrite -[X in (X == _)]/(spec_id _) [spec_id _]refines_eq /=.
 by coqeal.
 Abort.
 
 Goal (sizep ('X^2 : {poly int}) ==
       sizep (- 3%:Z *: 'X^(sizep ('X : {poly int})))).
+Proof.
 by coqeal.
 Abort.
 
 Goal (sizep (1 + 2%:Z *: 'X + 3%:Z *: 'X^2) == 3%N).
+Proof.
 by coqeal.
 Abort.
 
 Goal (sizep (Poly [:: 1; 2%:Z; 3%:Z]) == 3%nat).
+Proof.
 by coqeal.
 Abort.
 
 Goal ((1 + 2%:Z *: 'X) * (1 + 2%:Z%:P * 'X^(sizep (1 : {poly int}))) ==
       1 + 4%:Z *: 'X + 4%:Z *: 'X^(sizep (10%:Z *: 'X))).
+Proof.
 by coqeal.
 Abort.
 
 Goal (splitp 2 (1 + 2%:Z *: 'X + 3%:Z%:P * 'X^2 + 4%:Z *: 'X^3) ==
       (3%:Z%:P + 4%:Z *: 'X, 1 + 2%:Z%:P * 'X)).
+Proof.
 by coqeal.
 Abort.
 
 Goal (splitp (sizep ('X : {poly int}))
              (1 + 2%:Z *: 'X + 3%:Z%:P * 'X^2 + 4%:Z *: 'X^3) ==
       (3%:Z%:P + 4%:Z *: 'X, 1 + 2%:Z%:P * 'X)).
+Proof.
 by coqeal.
 Abort.
 
 Goal (splitp 2%nat (Poly [:: 1; 2%:Z; 3%:Z; 4%:Z]) ==
      (Poly [:: 3%:Z; 4%:Z], Poly [:: 1; 2%:Z])).
+Proof.
 rewrite /= [_ == _]refines_eq.
 by compute.
 Abort.
 
 (* Test shiftp *)
 Goal (2%:Z *: shiftp 2%nat 1 == Poly [:: 0; 0; 2%:Z]).
+Proof.
 by coqeal.
 Abort.
 

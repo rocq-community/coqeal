@@ -43,7 +43,7 @@ Section Triangular.
 
 Local Open Scope ring_scope.
 
-Variable R : ringType.
+Variable R : pzRingType.
 
 Definition upper_part_mx m n (M : 'M[R]_(m,n)) :=
   \matrix_(i, j) (M i j *+ (i <= j)).
@@ -88,7 +88,7 @@ Section TriangularBlock.
 
 Local Open Scope ring_scope.
 
-Variable R : ringType.
+Variable R : pzRingType.
 Variables m1 m2 n1 n2 : nat.
 Variables (Aul : 'M[R]_(m1, n1)) (Aur : 'M[R]_(m1, n2)).
 Variables  (Adl : 'M[R]_(m2, n1)) (Adr : 'M[R]_(m2, n2)).
@@ -138,7 +138,7 @@ End TriangularBlock.
 Section SquareTriangular.
 
 Local Open Scope ring_scope.
-Variable R : comRingType.
+Variable R : comNzRingType.
 
 Lemma det_triangular_mx : forall n (M : 'M[R]_n),
   upper_triangular_mx M -> \det M = \prod_i M i i.
@@ -175,7 +175,7 @@ End SquareTriangular.
 Section SquareTriangular2.
 
 Local Open Scope ring_scope.
-Variable R : comRingType.
+Variable R : comNzRingType.
 
 Lemma char_poly_triangular_mx n (M : 'M[R]_n) :
   upper_triangular_mx M -> char_poly M = \prod_i ('X - (M i i)%:P).
@@ -191,7 +191,7 @@ End SquareTriangular2.
 
 Section diag_block_ringType.
 
-Variable R : ringType.
+Variable R : pzRingType.
 Local Open Scope ring_scope.
 Import GRing.Theory.
 
@@ -321,7 +321,7 @@ End diag_block_ringType.
 
 Section diag_block_ringType2.
 
-Variable R : ringType.
+Variable R : nzRingType.
 Local Open Scope ring_scope.
 Import GRing.Theory.
 
@@ -338,7 +338,7 @@ End diag_block_ringType2.
 
 Section diag_block_comRingType.
 
-Variable R : comRingType.
+Variable R : comNzRingType.
 Local Open Scope ring_scope.
 Import GRing.Theory.
 
@@ -413,7 +413,7 @@ End diag_block_comUnitRingType.
 
 Section diag_mx_seq.
 
-Variable R : ringType.
+Variable R : pzRingType.
 Local Open Scope ring_scope.
 Import GRing.Theory.
 
@@ -581,7 +581,7 @@ End diag_mx_seq.
 
 Section diag_mx_seq2.
 
-Variable R : ringType.
+Variable R : pzRingType.
 Local Open Scope ring_scope.
 Import GRing.Theory.
 
@@ -609,7 +609,7 @@ End diag_mx_seq2.
 
 Section diag_mx_seq_comRingType.
 
-Variable R : comRingType.
+Variable R : comPzRingType.
 Local Open Scope ring_scope.
 Import GRing.Theory.
 

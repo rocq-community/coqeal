@@ -196,7 +196,7 @@ Elpi derive.param2 head_hpoly.
 
 Section hpoly_more_op.
 
-Variable R : ringType.
+Variable R : nzRingType.
 Context (pos N C: Type).
 Context `{zero_of C, one_of C, eq_of C}.
 Context `{spec_of C R, spec_of N nat}.
@@ -275,7 +275,7 @@ Arguments spec_hpoly / _ _ _ _ _ _ _ _ _ _ _ : assert.
 (******************************************************************************)
 Section hpoly_theory.
 
-Variable A : ringType.
+Variable A : nzRingType.
 
 Instance zeroA : zero_of A   := 0%R.
 Instance oneA  : one_of A    := 1%R.
@@ -434,7 +434,7 @@ Proof.
   by rewrite ih -mul_polyC mulrDr mulrA /mul_op /mulA.
 Qed.
 
-Lemma mulXnC (R : ringType) (p : {poly R}) n : p * 'X^n = 'X^n * p.
+Lemma mulXnC (R : nzRingType) (p : {poly R}) n : p * 'X^n = 'X^n * p.
 Proof.
   apply/polyP=> i.
   by rewrite coefMXn coefXnM.
@@ -499,11 +499,11 @@ Proof.
 Qed.
 
 (* Add to ssr? *)
-Lemma size_MXnaddC (R : ringType) (p : {poly R}) (c : R) n :
+Lemma size_MXnaddC (R : nzRingType) (p : {poly R}) (c : R) n :
   size (p * 'X^(n.+1) + c%:P) = if (p == 0) then size c%:P else (n.+1 + size p)%N.
 Proof.
 have [->|/eqP hp0] := eqP; first by rewrite mul0r add0r.
-rewrite size_addl polyseqMXn ?size_ncons // size_polyC.
+rewrite size_polyDl polyseqMXn ?size_ncons // size_polyC.
 by case: (c == 0)=> //=; rewrite ltnS ltn_addl // size_poly_gt0.
 Qed.
 
@@ -539,7 +539,7 @@ Proof.
   by case: ifP=> //=; simpC; rewrite size_polyC; case: ifP.
 Qed.
 
-Lemma lead_coef_MXnaddC (R : ringType) (p : {poly R}) (c : R) n :
+Lemma lead_coef_MXnaddC (R : nzRingType) (p : {poly R}) (c : R) n :
   lead_coef (p * 'X^(n.+1) + c%:P) = if (lead_coef p == 0) then c
                                    else lead_coef p.
 Proof.
@@ -571,8 +571,8 @@ Proof.
     rewrite [p in LHS](@rdivp_eq _ 'X^(m.+1 - n)) ?monicXn //.
     rewrite mulrDl -addrA -mulrA -exprD subnK ?rdivp_addl_mul_small //.
       by rewrite monicXn.
-    rewrite size_polyXn (leq_ltn_trans (size_add _ _)) // gtn_max.
-    rewrite (leq_ltn_trans (size_mul_leq _ _)) /=; last first.
+    rewrite size_polyXn (leq_ltn_trans (size_polyD _ _)) // gtn_max.
+    rewrite (leq_ltn_trans (size_polyMleq _ _)) /=; last first.
       by rewrite size_polyC; case: (a != 0).
     rewrite size_polyXn addnS -pred_Sn addnC -ltn_subRL [X in (_ < X)]subSn //.
     by rewrite -[X in (_ < X)](size_polyXn A) ltn_rmodp monic_neq0 ?monicXn.
@@ -591,8 +591,8 @@ Proof.
     rewrite [p in LHS](@rdivp_eq _ 'X^(m.+1 - n)) ?monicXn //.
     rewrite mulrDl -addrA -mulrA -exprD subnK ?rmodp_addl_mul_small //.
       by rewrite monicXn.
-    rewrite size_polyXn (leq_ltn_trans (size_add _ _)) // gtn_max.
-    rewrite (leq_ltn_trans (size_mul_leq _ _)) /=; last first.
+    rewrite size_polyXn (leq_ltn_trans (size_polyD _ _)) // gtn_max.
+    rewrite (leq_ltn_trans (size_polyMleq _ _)) /=; last first.
       by rewrite size_polyC; case: (a != 0).
     rewrite size_polyXn addnS -pred_Sn addnC -ltn_subRL [X in (_ < X)]subSn //.
     by rewrite -[X in (_ < X)](size_polyXn A) ltn_rmodp monic_neq0 ?monicXn.
@@ -853,73 +853,88 @@ From CoqEAL Require Import binnat binint.
 Section testpoly.
 
 Goal (0 == 0 :> {poly int}).
+Proof.
 by coqeal.
 Abort.
 
 Goal (0 == (0 : {poly {poly {poly int}}})).
+Proof.
 (* by coqeal. *)
 Abort.
 
 Goal (1 == 1 :> {poly int}).
+Proof.
 by coqeal.
 Abort.
 
 Goal (1 == (1 : {poly {poly {poly int}}})).
+Proof.
 (* by coqeal. *)
 Abort.
 
 Goal ((1 + 2%:Z *: 'X + 3%:Z *: 'X^2) + (1 + 2%:Z%:P * 'X + 3%:Z%:P * 'X^2)
       == (1 + 1 + (2%:Z + 2%:Z) *: 'X + (3%:Z + 3%:Z)%:P * 'X^2)).
+Proof.
 rewrite -[X in (X == _)]/(spec_id _) [spec_id _]refines_eq /=.
 (* by coqeal. *)
 Abort.
 
 Goal (- 1 == - (1: {poly {poly int}})).
+Proof.
 by coqeal.
 Abort.
 
 Goal (- (1 + 2%:Z *: 'X + 3%:Z%:P * 'X^2) == -1 - 2%:Z%:P * 'X - 3%:Z *: 'X^2).
+Proof.
 by coqeal.
 Abort.
 
 Goal (1 + 2%:Z *: 'X + 3%:Z *: 'X^2 - (1 + 2%:Z *: 'X + 3%:Z *: 'X^2) == 0).
+Proof.
 by rewrite -[X in (X == _)]/(spec_id _) [spec_id _]refines_eq /=.
 Abort.
 
 Goal ((1 + 2%:Z *: 'X) * (1 + 2%:Z%:P * 'X) == 1 + 4%:Z *: 'X + 4%:Z *: 'X^2).
+Proof.
 by coqeal.
 Abort.
 
 (* (1 + xy) * x = x + x^2y *)
 Goal ((1 + 'X * 'X%:P) * 'X == 'X + 'X^2 * 'X%:P :> {poly {poly int}}).
+Proof.
 rewrite -[X in (X == _)]/(spec_id _) [spec_id _]refines_eq /=.
 (* by coqeal. *)
 Abort.
 
 Goal (sizep ('X^2 : {poly int}) ==
       sizep (- 3%:Z *: 'X^(sizep ('X : {poly int})))).
+Proof.
 by coqeal.
 Abort.
 
 Definition test := [coqeal simpl of sizep (1 + 2%:Z *: 'X + 3%:Z *: 'X^2)].
 
 Goal (sizep (1 + 2%:Z *: 'X + 3%:Z *: 'X^2) = 3%N).
+Proof.
 by coqeal.
 Qed.
 
 Goal ((1 + 2%:Z *: 'X) * (1 + 2%:Z%:P * 'X^(sizep (1 : {poly int}))) ==
       1 + 4%:Z *: 'X + 4%:Z *: 'X^(sizep (10%:Z *: 'X))).
+Proof.
 by coqeal.
 Abort.
 
 Goal (splitp 2 (1 + 2%:Z *: 'X + 3%:Z%:P * 'X^2 + 4%:Z *: 'X^3) ==
       (3%:Z%:P + 4%:Z *: 'X, 1 + 2%:Z%:P * 'X)).
+Proof.
 by coqeal.
 Abort.
 
 Goal (splitp (sizep ('X : {poly int}))
              (1 + 2%:Z *: 'X + 3%:Z%:P * 'X^2 + 4%:Z *: 'X^3) ==
       (3%:Z%:P + 4%:Z *: 'X, 1 + 2%:Z%:P * 'X)).
+Proof.
 by coqeal.
 Abort.
 

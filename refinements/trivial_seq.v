@@ -1,6 +1,6 @@
 From elpi Require Import derive.
 
-Require Import ZArith.
+From Stdlib Require Import ZArith.
 
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq zmodp.
 From mathcomp Require Import path choice fintype tuple finset ssralg ssrnum bigop ssrint.

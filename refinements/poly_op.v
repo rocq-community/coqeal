@@ -44,7 +44,7 @@ Section poly_op.
 
 Local Open Scope ring_scope.
 
-Variable R : ringType.
+Variable R : nzRingType.
 
 Definition splitp : nat -> {poly R} -> {poly R} * {poly R} :=
   fun n p => (rdivp p 'X^n, rmodp p 'X^n).

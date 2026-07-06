@@ -17,12 +17,12 @@ Import GRing.Theory.
 Local Open Scope ring_scope.
 
 (** Strongly discrete rings *)
-Variant member_spec (R : ringType) n (x : R) (I : 'cV[R]_n)
+Variant member_spec (R : pzRingType) n (x : R) (I : 'cV[R]_n)
   : option 'rV[R]_n -> Type :=
 | Member J of x%:M = J *m I : member_spec x I (Some J)
 | NMember of (forall J, x%:M != J *m I) : member_spec x I None.
 
-HB.mixin Record Ring_isStronglyDiscrete R & GRing.Ring R := {
+HB.mixin Record Ring_isStronglyDiscrete R & GRing.PzRing R := {
   member : forall n, R -> 'cV_n -> option 'rV_n;
   member_specP : forall n (x : R) (I : 'cV_n), member_spec x I (member n x I)
 }.

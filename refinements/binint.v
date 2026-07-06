@@ -472,34 +472,41 @@ From CoqEAL Require Import binnat.
 Section testint.
 
 Goal (0 == 0 :> int).
+Proof.
 by coqeal.
 Abort.
 
 
 Goal (1 == 1 :> int).
+Proof.
 by coqeal.
 Abort.
 
 Goal (- 1%:Z == - 1%:Z).
+Proof.
 by coqeal.
 Abort.
 
 Goal (10%:Z - 5%:Z == 1 + 4%:Z).
+Proof.
 rewrite -[X in (X == _)]/(spec_id _) [spec_id _]refines_eq /=.
 by coqeal.
 Abort.
 
 Goal (-(1 + 2%:Z * 4%:Z) == -(1 + 2%:Z * 4%:Z)).
+Proof.
 rewrite -[X in (X == _)]/(spec_id _).
 rewrite [spec_id _]refines_eq /=.
 by coqeal.
 Abort.
 
 Goal (1000%:Z == 998%:Z + 2%:Z).
+Proof.
 by coqeal.
 Abort.
 
 Goal (1000%:Z == 2%:Z * 500%:Z).
+Proof.
 by coqeal.
 Abort.
 

@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import all_boot.
 From mathcomp Require Import all_algebra.
 From mathcomp Require Import all_fingroup.
 From mathcomp Require Import all_real_closed.
@@ -27,7 +27,7 @@ Unset Printing Implicit Defensive.
 
 Section def.
 
-Variable R : ringType.
+Variable R : nzRingType.
 Import GRing.Theory.
 Local Open Scope ring_scope.
 
@@ -50,7 +50,7 @@ End def.
 
 Section trigonal.
 
-Variable R : comRingType.
+Variable R : comNzRingType.
 Import GRing.Theory.
 Local Open Scope ring_scope.
 

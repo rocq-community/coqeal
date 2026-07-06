@@ -20,7 +20,7 @@ Ltac suff_eq Rxx :=
     suff H : a = b; first (rewrite H; eapply Rxx =>//)
   end.
 
-Require Import ProofIrrelevance. (* for opaque terms *)
+From Stdlib Require Import ProofIrrelevance. (* for opaque terms *)
 
 (* data types *)
 Elpi derive.param2 option.
@@ -71,10 +71,7 @@ Elpi derive.param2 eqb.
 (** ssrnat *)
 Elpi derive.param2 Nat.sub.
 Elpi derive.param2 subn.
-Elpi derive.param2 subn_rec.
 Elpi derive.param2 Nat.add.
-Elpi derive.param2 addn.
-Elpi derive.param2 addn_rec.
 Elpi derive.param2 addn.
 Elpi derive.param2 eqn.
 
@@ -100,14 +97,10 @@ Elpi derive.param2 iteri.
 Elpi derive.param2 iterop.
 Elpi derive.param2 Nat.mul.
 Elpi derive.param2 muln.
-Elpi derive.param2 muln_rec.
 Elpi derive.param2 expn.
-Elpi derive.param2 expn_rec.
 Elpi derive.param2 factorial.
-Elpi derive.param2 fact_rec.
 Elpi derive.param2 odd.
 Elpi derive.param2 double.
-Elpi derive.param2 double_rec.
 
 (* Obtained from paramcoq *)
 Definition half_R :=

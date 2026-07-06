@@ -47,14 +47,15 @@ Module RPdiv.
 
 Section RingPseudoDivision.
 
-Variable R : ringType.
+Variable R : nzRingType.
 Implicit Types d p q r : {poly R}.
 
 Definition id_converse_def := (fun x : R => x : R^c).
-Lemma add_id : additive id_converse_def.
+Lemma add_id : zmod_morphism id_converse_def.
 Proof. by []. Qed.
 
-HB.instance Definition _ := GRing.isAdditive.Build R R^c id_converse_def add_id.
+HB.instance Definition _ := Algebra.isZmodMorphism.Build R R^c id_converse_def
+  add_id.
 Definition id_converse : {additive _ -> _} := id_converse_def.
 
 Lemma expr_rev (x : R) k : (x : R^c) ^+ k = x ^+ k.
@@ -62,14 +63,14 @@ Proof. by elim:k=> // k IHk; rewrite exprS exprSr IHk. Qed.
 
 Definition phi (p : {poly R}^c) := map_poly id_converse p.
 
-Fact phi_is_rmorphism : multiplicative phi.
+Fact phi_is_rmorphism : monoid_morphism phi.
 Proof.
-split=> [p q|]; apply/polyP=> i; last by rewrite coef_map !coef1.
+split=> [|p q]; apply/polyP=> i; first by rewrite coef_map !coef1.
 by rewrite coefMr coef_map coefM; apply: eq_bigr => j _; rewrite !coef_map.
 Qed.
 
 HB.instance Definition _ := GRing.Additive.copy phi phi.
-HB.instance Definition _ := GRing.isMultiplicative.Build _ _ _ phi_is_rmorphism.
+HB.instance Definition _ := GRing.isMonoidMorphism.Build _ _ _ phi_is_rmorphism.
 
 Definition phi_inv (p : {poly R^c}) :=
   map_poly (fun x : R^c => x : R) p : {poly R}^c.
@@ -83,8 +84,8 @@ Proof. by move=> p; rewrite /phi -map_poly_comp_id0 // map_poly_id. Qed.
 Lemma phi_bij : bijective phi.
 Proof. by exists phi_inv; first exact: phiK; exact: phi_invK. Qed.
 
-Lemma monic_map_inj (aR rR : ringType) (f : aR -> rR) (p : {poly aR}) :
-  injective f -> f 0 = 0 -> f 1 = 1 -> map_poly f p \is monic = (p \is monic).
+Lemma monic_map_inj (aR rR : nzRingType) (f : aR -> rR) (p : {poly aR}) :
+  injective f -> f 0 = 0 -> f 1 = 1 -> (map_poly f p \is monic) = (p \is monic).
 Proof.
 move=> inj_f eq_f00 eq_f11; rewrite !monicE lead_coef_map_inj ?rmorph0 //.
 by rewrite -eq_f11 inj_eq.
@@ -114,7 +115,7 @@ Module mon.
 
 Section MonicDivisor.
 
-Variable R : ringType.
+Variable R : nzRingType.
 Implicit Types p q r : {poly R}.
 
 Variable d : {poly R}.
@@ -509,12 +510,12 @@ have HN0: size N0 <= 1.
   by rewrite -ltnS -[leqRHS](size_XsubC B) ltn_rmodp polyXsubC_eq0.
 case: (eqVneq R1 0) => HR1; last first.
   have: size ((1 - ('X - B%:P) * R1) * ('X - B%:P)) <= 2.
-    rewrite -H; apply:(leq_trans (size_mul_leq _ _)).
+    rewrite -H; apply:(leq_trans (size_polyMleq _ _)).
     rewrite (size1_polyC HN0) size_polyC -subn1 leq_subLR addnC.
-    apply/(leq_add (leq_b1 _))/(leq_trans (size_mul_leq _ _)).
+    apply/(leq_add (leq_b1 _))/(leq_trans (size_polyMleq _ _)).
     by rewrite (size1_polyC HM0) size_polyC size_XsubC addnC; exact:leq_b1.
   have Hsize: size (1 - ('X - B%:P) * R1) = (size R1).+1.
-    rewrite addrC size_addl size_opp (size_monicM (monicXsubC B) HR1).
+    rewrite addrC size_polyDl size_polyN (size_monicM (monicXsubC B) HR1).
       rewrite size_polyC oner_neq0 size_XsubC.
       by move:(size_poly_eq0 R1); case:(size R1)=> //; rewrite (negbTE HR1).
     by rewrite {1}size_XsubC.

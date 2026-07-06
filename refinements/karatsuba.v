@@ -55,7 +55,7 @@ Section karatsuba_correctness.
 
 Local Open Scope rel_scope.
 
-Variable R : ringType.
+Variable R : nzRingType.
 
 Instance add_polyR : add_of {poly R} := +%R.
 Instance mul_polyR : mul_of {poly R} := *%R.
@@ -141,10 +141,12 @@ From CoqEAL Require Import binnat binint seqpoly.
 Section karatsuba_test.
 
 Goal ((1 + 2%:Z *: 'X) * (1 + 2%:Z%:P * 'X) == 1 + 4%:Z *: 'X + 4%:Z%:P * 'X^2).
+Proof.
 by coqeal.
 Abort.
 
 Goal (Poly [:: 1; 2%:Z] * Poly [:: 1; 2%:Z]) == Poly [:: 1; 4%:Z; 4%:Z].
+Proof.
 by coqeal.
 Abort.
 
@@ -167,10 +169,12 @@ Let q2 := Eval simpl in bigpoly 2%N 10.
 
 (* TODO: Translate Poly directly? *)
 Goal (Poly p1 * Poly p2 == Poly p2 * Poly p1).
+Proof.
 by coqeal.
 Abort.
 
 Goal (q1 * q2 == q2 * q1).
+Proof.
 by coqeal.
 Abort.
 

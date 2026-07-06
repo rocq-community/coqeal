@@ -83,7 +83,7 @@ End lifting.
 
 Section submatrix_theory.
 
-Variable R : ringType.
+Variable R : pzRingType.
 
 Lemma submatrix_eq m n p q (f1 g1 : 'I_p -> 'I_m) (f2 g2 : 'I_q -> 'I_n)
   (M : 'M[R]_(m,n)) (h1 : f1 =1 g1) (h2 : f2 =1 g2) :
@@ -150,7 +150,7 @@ End submatrix_theory.
 (* This must be put in a new section as it uses the theory on submatrix *)
 Section submatrix_char_poly_mx.
 
-Variable R : ringType.
+Variable R : nzRingType.
 
 Lemma submatrix_char_poly_mx m p (M : 'M[R]_m)
   (f : 'I_p -> 'I_m) (hf : injective f) :
@@ -164,7 +164,7 @@ End submatrix_char_poly_mx.
 (* Minors *)
 Section minor_def.
 
-Variable R : ringType.
+Variable R : pzRingType.
 
 Definition minor (m n p : nat) (f : 'I_p -> 'I_m) (g : 'I_p -> 'I_n)
   (A : 'M[R]_(m,n)) := \det (submatrix f g A).
@@ -179,7 +179,7 @@ Arguments minor {R m n p} f g A.
 
 Section minor_theory.
 
-Variable R : comRingType.
+Variable R : comPzRingType.
 
 Lemma minor1 m n (A : 'M[R]_(m,n)) i j :
   minor (fun (_ : 'I_1) => i) (fun _ => j) A = A i j.
@@ -265,7 +265,7 @@ End minor_theory.
 
 Section minor_char_poly_mx.
 
-Variable R : comRingType.
+Variable R : comNzRingType.
 
 (* all principal minor of the characteristic matrix are monic *)
 Lemma pminor_char_poly_mx_monic m p (M : 'M[R]_m) (h h': p.+1 <= m) :

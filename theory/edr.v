@@ -331,7 +331,7 @@ apply/matrixP=> i l; rewrite !mxE !ffunE /= /bump.
 by do 2!rewrite leqNgt (ltn_ord _) add0n.
 Qed.
 
-Lemma minor_eq0l (R' : comRingType) k1 m1 n1 (s1 : seq R') x :
+Lemma minor_eq0l (R' : comNzRingType) k1 m1 n1 (s1 : seq R') x :
   forall (f : 'I_k1 -> 'I_m1) g, n1 <= f x ->
   minor f g (diag_mx_seq m1 n1 s1) = 0.
 Proof.
@@ -339,7 +339,7 @@ move=> f g H; rewrite /minor (expand_det_row _ x) big1 // => i _.
 by rewrite !mxE gtn_eqF ?mul0r // (leq_trans _ H).
 Qed.
 
-Lemma minor_eq0r (R' : comRingType) k1 m1 n1 (s1 : seq R') x :
+Lemma minor_eq0r (R' : comNzRingType) k1 m1 n1 (s1 : seq R') x :
   forall f (g : 'I_k1 -> 'I_n1) , m1 <= g x ->
   minor f g (diag_mx_seq m1 n1 s1) = 0.
 Proof.
