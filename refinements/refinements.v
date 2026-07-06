@@ -256,7 +256,7 @@ Lemma refines_goal (G G' : Type) : refines (fun T T' => T' -> T) G G' -> G' -> G
 Proof. by rewrite refinesE. Qed.
 
 #[export] Instance refines_leibniz_eq (T : eqType) (x y : T) b :
-  refines bool_R (x == y) b -> refines (fun T' T => T -> T') (x = y) b.
+  refines bool_R (x == y) b -> refines (fun (T' T : Type) => T -> T') (x = y) b.
 Proof. by move=> /refines_bool_eq; rewrite !refinesE => <- /eqP. Qed.
 
 Module Refinements.
