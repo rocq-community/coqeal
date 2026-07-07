@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import all_boot.
 From mathcomp Require Import all_algebra.
 From mathcomp Require Import all_fingroup.
 From mathcomp Require Import all_real_closed.
@@ -205,7 +205,7 @@ have Hr: forall p, widen_ord Hj (lift ord_max p) = widen_ord IH p.
 by rewrite !Hr.
 Qed.
 
-Lemma minor_eq0l (R : comRingType) k1 m1 n1  (s1 : seq R) x :
+Lemma minor_eq0l (R : comNzRingType) k1 m1 n1  (s1 : seq R) x :
   forall (f : 'I_k1 -> 'I_m1) g, (n1 <= f x)%N ->
   minor f g (diag_mx_seq m1 n1 s1) = 0.
 Proof.
@@ -214,7 +214,7 @@ rewrite /minor (expand_det_row _ x) big1 // => i _.
 by rewrite !mxE gtn_eqF ?mul0r // (leq_trans _ H).
 Qed.
 
-Lemma minor_eq0r (R : comRingType) k1 m1 n1  (s1 : seq R) x :
+Lemma minor_eq0r (R : comNzRingType) k1 m1 n1  (s1 : seq R) x :
   forall f (g : 'I_k1 -> 'I_n1) , (m1 <= g x)%N ->
   minor f g (diag_mx_seq m1 n1 s1) = 0.
 Proof.

@@ -13,7 +13,7 @@ Open Scope ring_scope.
 
 Section split_poly.
 
-Variable R : ringType.
+Variable R : nzRingType.
 
 Implicit Types p : {poly R}.
 
@@ -110,7 +110,7 @@ elim=> //= m ih p q. (* ; case: ifP=> // h. *)
 set sp := split_poly _ _ p; set sq := split_poly _ _ q.
 set ep := evaluate sp; set eq := evaluate sq.
 have hspq : size (sp * sq) <= d.
-  rewrite (leq_trans (size_mul_leq _ _)) // /d -!subn1 leq_sub2r // -addnn.
+  rewrite (leq_trans (size_polyMleq _ _)) // /d -!subn1 leq_sub2r // -addnn.
   by apply/leq_add; rewrite size_poly.
 have -> : \row_i toom_rec m (ep 0 i) (eq 0 i) = \row_i (sp * sq).[points`_i].
   by apply/rowP=> i; rewrite mxE ih /ep /eq !evaluateE !mxE hornerM.

@@ -15,7 +15,7 @@ Import GRing.Theory Pdiv.Ring Pdiv.CommonRing Pdiv.RingMonic.
 
 Section karatsuba.
 
-Variable R : ringType.
+Variable R : nzRingType.
 Definition split_poly n (p : {poly R}) := (rdivp p 'X^n, rmodp p 'X^n).
 Definition shift_poly n : {poly R} -> {poly R} := *%R^~ 'X^n.
 Definition normalize (p : {poly R}) := p.

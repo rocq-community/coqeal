@@ -1,11 +1,11 @@
-Require Import Ncring Ncring_tac.
+From Stdlib Require Import Ncring Ncring_tac.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq choice fintype.
 From mathcomp Require Import div finfun bigop prime binomial ssralg matrix.
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Section ring_tac.
 
-Variable R : ringType.
+Variable R : pzRingType.
 
 Import GRing.Theory.
 
@@ -14,6 +14,7 @@ Import GRing.Theory.
             (fun a b : R => a - b)%R (@GRing.opp R) eq := {}.
 
 #[export] Instance R_is_ring: (@Ring _ _ _ _ _ _ _ _ Rops).
+Proof.
 constructor=> //.
   exact:eq_equivalence.
   by move=> x y H1 u v H2; rewrite H1 H2.

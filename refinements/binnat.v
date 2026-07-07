@@ -1,6 +1,6 @@
 (** This file is part of CoqEAL, the Coq Effective Algebra Library.
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
-Require Import ZArith Lia.
+From Stdlib Require Import ZArith Lia.
 
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat div seq zmodp.
 From mathcomp Require Import path choice fintype tuple finset ssralg ssrnum bigop ssrint.
@@ -448,6 +448,7 @@ case: n => [|n]; last case: n => [|n]; last by rewrite IHm.
 Qed.
 
 Lemma bin_of_natE : bin_of_nat =1 N.of_nat.
+Proof.
 move=> n.
 by rewrite -[bin_of_nat n]nat_of_binK bin_of_natK.
 Qed.

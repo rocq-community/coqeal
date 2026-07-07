@@ -1,6 +1,6 @@
 (** This file is part of CoqEAL, the Coq Effective Algebra Library.
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
-Require Import ZArith Ncring Ncring_tac.
+From Stdlib Require Import ZArith Ncring Ncring_tac.
 From mathcomp Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq choice fintype.
 From mathcomp Require Import div finfun bigop prime binomial ssralg finset fingroup finalg.
 From mathcomp Require Import perm zmodp matrix.
@@ -18,7 +18,7 @@ Unset Printing Implicit Defensive.
 Local Open Scope ring_scope.
 
 Section Strassen.
-Variable (R : ringType) (K : positive).
+Variable (R : pzRingType) (K : positive).
 
 Local Coercion nat_of_pos : positive >-> nat.
 
@@ -115,7 +115,7 @@ rewrite /GRing.add /= /GRing.opp /=.
 by congr block_mx; non_commutative_ring.
 Qed.
 
-Lemma mulmx_cast {R' : ringType} {m n p m' n' p'} {M:'M[R']_(m,p)} {N:'M_(p,n)}
+Lemma mulmx_cast {R' : pzRingType} {m n p m' n' p'} {M:'M[R']_(m,p)} {N:'M_(p,n)}
   {eqm : m = m'} (eqp : p = p') {eqn : n = n'} :
   matrix.castmx (eqm,eqn) (M *m N) = matrix.castmx (eqm,eqp) M *m matrix.castmx (eqp,eqn) N.
 Proof. by case eqm; case eqn; case eqp. Qed.

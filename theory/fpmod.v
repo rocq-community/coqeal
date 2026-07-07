@@ -16,16 +16,16 @@ Import Prenex Implicits.
 Local Open Scope ring_scope.
 Local Open Scope mxpresentation_scope.
 
-Reserved Notation "{ 'fpmod' T }" (at level 0, format "{ 'fpmod' T }").
-Reserved Notation "''Mor' ( M , N )" (at level 8, format "''Mor' ( M ,  N )").
-Reserved Notation "''Mono' ( M , N )" (at level 8, format "''Mono' ( M ,  N )").
-Reserved Notation "''Epi' ( M , N )" (at level 8, format "''Epi' ( M ,  N )").
-Reserved Notation "''Iso' ( M , N )" (at level 8, format "''Iso' ( M ,  N )").
-Reserved Notation "''End' ( M )" (at level 8, format "''End' ( M )").
-Reserved Notation "''Aut' ( M )" (at level 8, format "''Aut' ( M )").
+Reserved Notation "{ 'fpmod' T }" (format "{ 'fpmod' T }").
+Reserved Notation "''Mor' ( M , N )" (format "''Mor' ( M ,  N )").
+Reserved Notation "''Mono' ( M , N )" (format "''Mono' ( M ,  N )").
+Reserved Notation "''Epi' ( M , N )" (format "''Epi' ( M ,  N )").
+Reserved Notation "''Iso' ( M , N )" (format "''Iso' ( M ,  N )").
+Reserved Notation "''End' ( M )" (format "''End' ( M )").
+Reserved Notation "''Aut' ( M )" (format "''Aut' ( M )").
 Reserved Notation "M %= N" (at level 70, no associativity).
 Reserved Notation "A ** B" (at level 40, left associativity, format "A  **  B").
-Reserved Notation "x ^^-1" (at level 3, left associativity, format "x ^^-1").
+Reserved Notation "x ^^-1" (at level 1, left associativity, format "x ^^-1").
 
 Section morphismDef.
 
@@ -55,9 +55,9 @@ End morphismDef.
 
 Notation "{ 'fpmod' T }" := (fpmod_of (Phant T)).
 Coercion matrix_of_morphism : morphism_of >-> matrix.
-Notation "M %:m" := (M : 'M__) (at level 2, format "M %:m").
+Notation "M %:m" := (M : 'M__) (format "M %:m").
 Notation "''Mor' ( M , N )" := (morphism_of M N) : type_scope.
-Notation "M %:mor" := (M : 'Mor(_,_)) (at level 2, format "M %:mor").
+Notation "M %:mor" := (M : 'Mor(_,_)) (format "M %:mor").
 Notation "''End' ( M )" := (morphism_of M M) : type_scope.
 
 Definition source (R : coherentRingType) (M N : {fpmod R}) (phi : 'Mor(M, N)) := M.

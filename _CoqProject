@@ -12,6 +12,13 @@
 -arg -w -arg +deprecated-typeclasses-transparency-without-locality
 -arg -w -arg -ambiguous-paths
 -arg -w -arg +implicit-core-hint-db
+-arg -w -arg +level-tolerance
+# handle when requiring Rocq >= 9.2
+-arg -w -arg -notation-for-abbreviation
+# handle when requiring Rocq >= 9.3
+-arg -w -arg -rewrite-rw
+# handle when requiring MC >= 2.6
+-arg -w -arg -deprecated-library-file-since-mathcomp-2.6.0
 
 theory/atomic_operations.v
 theory/bareiss_dvdring.v

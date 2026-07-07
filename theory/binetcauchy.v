@@ -32,7 +32,7 @@ Unset Printing Implicit Defensive.
 Open Scope ring_scope.
 
 Section BinetCauchy.
-Variable R : comRingType.
+Variable R : comNzRingType.
 Variable k l : nat.
 
 Let Z := ({ffun 'I_k -> 'I_l} * ('S_k))%type.
@@ -115,7 +115,7 @@ rewrite sign_tilt2 // !mulNr mul1r -mulrBr.
 set b1 := \big[*%R/1]_( _ < _ ) _.
 set b2 := \big[*%R/1]_( _ < _ ) _.
 suff -> : b1 = b2 by rewrite subrr mulr0.
-rewrite /b1 {b1} /b2 {b2} (bigD1 j) //= (bigD1 i) //=.
+rewrite /b1 {b1} /b2 (bigD1 j) //= (bigD1 i) //=.
 rewrite [RHS](bigD1 j) //= [X in _ = _ * X](bigD1 i) //=.
 rewrite !permM tpermR tpermL hf !mulrA.
 congr (_ * _).
@@ -406,7 +406,7 @@ have inj_s : injective (sigma phi).
 - rewrite /sigma => p1 p2 /permP heq.
   apply/permP => x.
   move: (heq (phi x)).
-  by rewrite !permE /= /invg /= permK.
+  by rewrite !permE /= /inv /= permK.
 rewrite /minor /determinant.
 rewrite (reindex_inj inj_s) /=.
 apply/eq_big => // pi _.

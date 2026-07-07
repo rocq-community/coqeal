@@ -21,14 +21,14 @@ of the ForMath EU FP7 project (2009-2013). It has two parts:
 build: [make "-j%{jobs}%"]
 install: [make "install"]
 depends: [
-  "coq" {(>= "9.0" & < "9.2~") | (= "dev")}
+  "coq" {(>= "9.0" & < "9.3~") | (= "dev")}
   "coq-bignums" 
   "coq-elpi" {>= "2.4.1" | = "dev"}
-  "coq-hierarchy-builder" {>= "1.4.0"}
-  "coq-mathcomp-ssreflect" {>= "2.3"}
+  "coq-hierarchy-builder" {>= "1.9.0"}
+  "coq-mathcomp-ssreflect" {>= "2.5"}
   "coq-mathcomp-algebra" 
-  "coq-mathcomp-multinomials" {>= "2.0"}
-  "coq-mathcomp-real-closed" {>= "2.0"}
+  "coq-mathcomp-multinomials" {>= "2.4"}
+  "coq-mathcomp-real-closed" {>= "2.0.3"}
 ]
 
 tags: [

@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import all_boot.
 From mathcomp Require Import all_algebra.
 From CoqEAL Require Import ssrcomplements mxstructure.
 
@@ -20,7 +20,7 @@ Section Companion.
 Local Open Scope ring_scope.
 Import GRing.Theory.
 
-Variable R : comRingType.
+Variable R : comNzRingType.
 
 Definition companion_mxn n (p : {poly R}) :=
   \matrix_(i, j < n ) ((i == j.+1 :> nat)%:R

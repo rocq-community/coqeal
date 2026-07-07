@@ -22,7 +22,7 @@ Local Open Scope ring_scope.
 Section npoly.
 
 Variable n : nat.
-Variable R : ringType.
+Variable R : nzRingType.
 
 Record npolynomial : predArgType := Npolynomial {
   poly_of_npoly :> {poly R};
@@ -45,7 +45,7 @@ Notation "'{poly_' n R }" := (npoly_of n (Phant R))
 
 
 Section npoly_theory.
-Context {n : nat} (R : ringType).
+Context {n : nat} (R : nzRingType).
 
 Lemma size_npoly (p : {poly_n R}) : (size p <= n)%N. Proof. exact: valP p. Qed.
 Hint Resolve size_npoly : core.
@@ -78,7 +78,7 @@ End npoly_theory.
 
 Section fin_npoly.
 
-Variable R : finRingType.
+Variable R : finNzRingType.
 Variable n : nat.
 Implicit Types p q : {poly_n R}.
 
@@ -243,7 +243,7 @@ Definition enum_npoly : seq P :=
 
 End enum_npoly.
 
-Lemma enum_npolyE (n : nat) (R : finRingType) s :
+Lemma enum_npolyE (n : nat) (R : finNzRingType) s :
   perm_eq (Finite.enum R) s ->
   perm_eq (Finite.enum {poly_n R})
                (enum_npoly n iter s (@npoly_of_seq _ _)).
@@ -264,7 +264,7 @@ Elpi derive.param2 enum_npoly.
 
 Section RnpolyC.
 
-Context (A : finRingType).
+Context (A : finNzRingType).
 Context (C : Type) (rAC : A -> C -> Type).
 Context (N : Type) (rN : nat -> N -> Type).
 Context (n : nat) (n' : N) `{!refines rN n n'}.
@@ -293,6 +293,7 @@ Admitted.
 
 #[export] Instance refines_RnpolyCpoly (x : {poly_n A}) (y : seqpoly C)
        `{!refines RnpolyC x y} : refines (RseqpolyC rAC) (poly_of_npoly x) y.
+Proof.
 Admitted.
 
 End RnpolyC.
@@ -306,6 +307,7 @@ Admitted.
 Section LaurentsProblem.
 
 #[export] Instance refines_predn : refines (Rnat ==> Rnat) predn (fun n => (n - 1)%C).
+Proof.
 Admitted.
 
 Lemma test_irred : irreducible_poly ('X^5 + 'X^2 + 1 : {poly 'F_2}).

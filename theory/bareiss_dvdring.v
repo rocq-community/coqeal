@@ -16,7 +16,7 @@ Open Scope ring_scope.
 
 
 Section Bareiss1.
-Variable R: comRingType.
+Variable R: comPzRingType.
 
 Lemma L1 m (a d: R) (l: 'rV[R]_m) (c: 'cV[R]_m) (M: 'M[R]_m):
   \det (block_mx d%:M l (a *: c) (a *: M)) =

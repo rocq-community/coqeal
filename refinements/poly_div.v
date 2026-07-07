@@ -59,7 +59,7 @@ Elpi derive.param2 scal_poly.
 
 Section division_correctness.
 
-Variable R : ringType.
+Variable R : nzRingType.
 
 Local Instance lt_nat : lt_of nat := ltn.
 Local Instance sub_nat : sub_of nat := subn.

@@ -20,7 +20,7 @@ Delimit Scope mxpresentation_scope with MP.
 Local Open Scope mxpresentation_scope.
 
 (** Coherent rings *)
-HB.mixin Record Ring_isCoherent R & GRing.Ring R := {
+HB.mixin Record Ring_isCoherent R & GRing.PzRing R := {
   dim_ker : forall m n, 'M[R]_(m,n) -> nat;
   ker : forall m n (M : 'M_(m,n)), 'M_(dim_ker _ _ M,m);
   kerP_subproof : forall m n (M : 'M_(m,n)) (X : 'rV_m),
@@ -182,7 +182,7 @@ Definition ker_mod m0 m1 m2 (M : 'M[R]_(m0,m2)) (N : 'M[R]_(m1,m2)) :=
   rsubmx (ker (col_mx M N)).
 
 Local Notation "M .-ker" := (ker_mod M)
-  (at level 10, format "M .-ker") : mxpresentation_scope.
+  (at level 1, format "M .-ker") : mxpresentation_scope.
 
 Lemma dvd_ker k m0 m1 m2
   (M : 'M[R]_(m0,m2)) (N : 'M[R]_(m1,m2)) (X : 'M_(k, m1)) :
@@ -248,7 +248,7 @@ Proof. by apply/dvd_col_mxP; exists 0; rewrite mul0mx subr0. Qed.
 End CoherentRingTheory.
 
 Notation "M .-ker" := (ker_mod M)
-  (at level 10, format "M .-ker") : mxpresentation_scope.
+  (at level 1, format "M .-ker") : mxpresentation_scope.
 Notation "M %| B" := (dvdmx M B) : mxpresentation_scope.
 
 #[export] Hint Resolve dvdmx_refl dvd1mx : core.
@@ -259,7 +259,7 @@ Notation "M %| B" := (dvdmx M B) : mxpresentation_scope.
    be coherent *)
 Section ker_col.
 
-Variable R : comRingType.
+Variable R : comPzRingType.
 
 Variable dim_ker_col : forall m, 'cV[R]_m -> nat.
 Variable ker_col : forall m (M : 'cV[R]_m), 'M[R]_(dim_ker_col M,m).

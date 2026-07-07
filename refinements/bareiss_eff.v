@@ -74,7 +74,7 @@ Elpi derive.param2 bdet.
 (* First some general lemmas *)
 Section prelude.
 
-Variable R : comRingType.
+Variable R : comNzRingType.
 
 Lemma key_lemma m d l (c : 'cV[R]_m) M :
   d ^+ m * \det (block_mx d%:M l c M) = d * \det (d *: M - c *m l).
@@ -106,7 +106,7 @@ End prelude.
 
 Section bareiss_correctness.
 
-Variable R : comRingType.
+Variable R : comNzRingType.
 
 Instance : zero_of R := 0.
 Instance : one_of {poly R} := 1.
@@ -419,12 +419,14 @@ Section test_bareiss.
 Definition M : 'M[int]_(2,2) := \matrix_(i,j < 2) 3%:Z.
 
 Goal \det M == 0.
+Proof.
 by coqeal [(\det _)%pattern] vm_compute.
 Qed.
 
 Definition detM := [coqeal vm_compute of \det M].
 
 Goal \det (1 : 'M[int]_(3)) = 1.
+Proof.
 by coqeal.
 Abort.
 

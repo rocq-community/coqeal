@@ -81,7 +81,7 @@ Section BigOp.
 
 Import GRing.Theory.
 
-Variable R : comRingType.
+Variable R : comPzRingType.
 Variable T : eqType.
 
 Open Scope ring_scope.
@@ -144,7 +144,7 @@ End matrix_raw_type.
 
 Section matrix_ringType.
 
-Variable R : ringType.
+Variable R : pzRingType.
 
 Lemma mulmx_rsub m n p k (A : 'M[R]_(m, n)) (B : 'M[R]_(n, p + k)) :
   A *m rsubmx B = (rsubmx (A *m B)).
@@ -183,7 +183,7 @@ rewrite (bigD1 i) // big1 /= ?addr0 ?mxE ?eqxx ?mul1r // => j /negbTE Hj.
 by rewrite !mxE eq_sym Hj mul0r.
 Qed.
 
-Lemma row'_col'_char_poly_mx m i (M : 'M[R]_m) :
+Lemma row'_col'_char_poly_mx (R' : nzRingType) m i (M : 'M[R']_m) :
   row' i (col' i (char_poly_mx M)) = char_poly_mx (row' i (col' i M)).
 Proof.
 apply/matrixP=> k l; rewrite !mxE.
@@ -200,7 +200,7 @@ rewrite !exprS IHk /GRing.mul /= (mulmx_block A 0 0 B (A ^+ k)).
 by rewrite !mulmx0 !mul0mx !add0r !addr0.
 Qed.
 
-Lemma char_block_mx m n (A : 'M[R]_m) (B : 'M[R]_n) :
+Lemma char_block_mx (R' : nzRingType) m n (A : 'M[R']_m) (B : 'M[R']_n) :
   char_poly_mx (block_mx A 0 0 B) =
   block_mx (char_poly_mx A) 0 0 (char_poly_mx B).
 Proof.
@@ -268,14 +268,15 @@ Module RPdiv.
 
 Section RingPseudoDivision.
 
-Variable R : ringType.
+Variable R : nzRingType.
 Implicit Types d p q r : {poly R}.
 
 Definition id_converse_def := (fun x : R => x : R^c).
-Lemma add_id : additive id_converse_def.
+Lemma add_id : zmod_morphism id_converse_def.
 Proof. by []. Qed.
 
-HB.instance Definition _ := GRing.isAdditive.Build R R^c id_converse_def add_id.
+HB.instance Definition _ := Algebra.isZmodMorphism.Build R R^c id_converse_def
+  add_id.
 Definition id_converse : {additive _ -> _} := id_converse_def.
 
 Lemma expr_rev (x : R) k : (x : R^c) ^+ k = x ^+ k.
@@ -283,14 +284,14 @@ Proof. by elim:k=> // k IHk; rewrite exprS exprSr IHk. Qed.
 
 Definition phi (p : {poly R}^c) := map_poly id_converse p.
 
-Fact phi_is_rmorphism : multiplicative phi.
+Fact phi_is_rmorphism : monoid_morphism phi.
 Proof.
-split=> [p q|]; apply/polyP=> i; last by rewrite coef_map !coef1.
+split=> [|p q]; apply/polyP=> i; first by rewrite coef_map !coef1.
 by rewrite coefMr coef_map coefM; apply: eq_bigr => j _; rewrite !coef_map.
 Qed.
 
 HB.instance Definition _ := GRing.Additive.copy phi phi.
-HB.instance Definition _ := GRing.isMultiplicative.Build _ _ _ phi_is_rmorphism.
+HB.instance Definition _ := GRing.isMonoidMorphism.Build _ _ _ phi_is_rmorphism.
 
 Definition phi_inv (p : {poly R^c}) :=
   map_poly (fun x : R^c => x : R) p : {poly R}^c.
@@ -304,8 +305,8 @@ Proof. by move=> p; rewrite /phi -map_poly_comp_id0 // map_poly_id. Qed.
 Lemma phi_bij : bijective phi.
 Proof. by exists phi_inv; first exact: phiK; exact: phi_invK. Qed.
 
-Lemma monic_map_inj (aR rR : ringType) (f : aR -> rR) (p : {poly aR}) :
-  injective f -> f 0 = 0 -> f 1 = 1 -> map_poly f p \is monic = (p \is monic).
+Lemma monic_map_inj (aR rR : nzRingType) (f : aR -> rR) (p : {poly aR}) :
+  injective f -> f 0 = 0 -> f 1 = 1 -> (map_poly f p \is monic) = (p \is monic).
 Proof.
 move=> inj_f eq_f00 eq_f11; rewrite !monicE lead_coef_map_inj ?rmorph0 //.
 by rewrite -eq_f11 inj_eq.
@@ -335,7 +336,7 @@ Module mon.
 
 Section MonicDivisor.
 
-Variable R : ringType.
+Variable R : nzRingType.
 Implicit Types p q r : {poly R}.
 
 Variable d : {poly R}.
@@ -356,9 +357,8 @@ End mon.
 
 End RPdiv.
 
-
 Section prelude.
-Variable R : comRingType.
+Variable R : comNzRingType.
 
 Let lreg := GRing.lreg.
 Let rreg := GRing.rreg.

@@ -1,5 +1,5 @@
 (** Authors: Erik Martin-Dorel and Pierre Roux, 2016-2017 *)
-Require Import ZArith NArith FMaps FMapAVL.
+From Stdlib Require Import ZArith NArith FMaps FMapAVL.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.
 From mathcomp Require Import choice finfun tuple fintype order ssralg bigop.
 From CoqEAL Require Import hrel.
@@ -55,7 +55,7 @@ Section effmpoly_generic.
 Definition mnmd {n} (i : 'I_n) (d : nat) :=
   [multinom (if (i == j :> nat) then d else 0%N) | j < n].
 
-Definition mpvar {T : ringType} {n} (c : T) d i : {mpoly T[n]} :=
+Definition mpvar {T : nzRingType} {n} (c : T) d i : {mpoly T[n]} :=
   c *: 'X_[mnmd i d].
 
 Definition seqmultinom := seq binnat.N.
@@ -348,7 +348,7 @@ Qed.
 
 End MoreProps.
 
-Definition list_of_mpoly {R : ringType} {n} (p : {mpoly R[n]}) :
+Definition list_of_mpoly {R : nzRingType} {n} (p : {mpoly R[n]}) :
   seq ('X_{1..n} * R) := [seq (m, p@_m) | m <- path.sort mnmc_le (msupp p)].
 
 Section effmpoly_generic_2.
@@ -751,17 +751,17 @@ apply f_equal2 => [|//].
 by rewrite -Hh1 -Hh2; move: Heq12 => /Neqb_ok => ->.
 Qed.
 
-Definition mpoly_of_effmpoly (T : ringType) n (p' : effmpoly T) : option (mpoly n T) :=
+Definition mpoly_of_effmpoly (T : nzRingType) n (p' : effmpoly T) : option (mpoly n T) :=
   if P.for_all (fun k _ => size k == n)%N p' then
     Some [mpoly [freeg [seq (a.2, multinom_of_seqmultinom_val n a.1) |
                         a <- M.elements p']]]
   else None.
 
-Definition mpoly_of_effmpoly_val (T : ringType) n (p' : effmpoly T) : mpoly n T :=
+Definition mpoly_of_effmpoly_val (T : nzRingType) n (p' : effmpoly T) : mpoly n T :=
   odflt 0 (mpoly_of_effmpoly n p').
 
 (** Main refinement predicate for multivariate polynomials *)
-Definition Reffmpoly `{T : ringType, n : nat} :=
+Definition Reffmpoly `{T : nzRingType, n : nat} :=
   ofun_hrel (@mpoly_of_effmpoly T n).
 
 Lemma eq_key_elt_eq T x y : (M.eq_key_elt (elt:=T)) x y <-> x = y.
@@ -810,7 +810,7 @@ apply/andP; split; [|by apply Hind].
 by apply/negP => Hin; apply H1, in_fst_InA_eq_key_iff.
 Qed.
 
-Lemma refine_size_mpoly (n : nat) (T : ringType)
+Lemma refine_size_mpoly (n : nat) (T : nzRingType)
     (p : mpoly n T) (p' : effmpoly T) `{ref_pp' : !refines Reffmpoly p p'} :
   forall m, M.In m p' -> size m == n.
 Proof.
@@ -821,7 +821,7 @@ rewrite /t (P.for_all_iff _); [by move=> m _ /mnmc_eq_seqP /eqP <-|].
 by move=> H _ m [e Hme]; apply (H m e).
 Qed.
 
-Lemma refine_find_mpoly (n : nat) (T : ringType)
+Lemma refine_find_mpoly (n : nat) (T : nzRingType)
     (p : mpoly n T) (p' : effmpoly T) : refines Reffmpoly p p' ->
   forall m m', refines Rseqmultinom m m' -> p@_m = odflt 0 (M.find m' p').
 Proof.
@@ -867,7 +867,7 @@ rewrite (H_sz xe.1 xe.2) in Hf => //; apply M.elements_2.
 by rewrite -in_InA_eq_key_elt_iff -surjective_pairing.
 Qed.
 
-Lemma refine_effmpolyP (n : nat) (T : ringType)
+Lemma refine_effmpolyP (n : nat) (T : nzRingType)
   (p : mpoly n T) (p' : effmpoly T) :
   (forall m, M.In m p' -> size m == n)%N ->
   (forall m m', refines Rseqmultinom m m' -> p@_m = odflt 0 (M.find m' p')) ->
@@ -917,7 +917,7 @@ Qed.
 
 (** *** Data refinement for effmpoly *)
 
-Context {T : ringType}.
+Context {T : nzRingType}.
 Instance : zero_of T := 0.
 Instance : one_of T := 1.
 Instance : add_of T := +%R.
@@ -1030,7 +1030,7 @@ move=> m; rewrite path.mem_sort; apply/idP/idP.
   rewrite mcoeff_msupp=>Hin; apply/mapP; exists (m', p@_m).
   { rewrite mem_filter /= Hin /= in_InA_iff; apply M.elements_1, M.find_2.
     move: Hin; erewrite (@refine_find_mpoly _ _ _ _ rp _ m').
-    { by case (M.find _ _)=>//; rewrite eqxx. }
+    { by case: (M.find _ _)=>//; rewrite eqxx. }
     apply refine_seqmultinom_of_multinom. }
   by rewrite /= /m' /multinom_of_seqmultinom_val seqmultinom_of_multinomK. }
 move/mapP=> [] mc; rewrite mem_filter=>/andP [] Hmc2; rewrite in_InA_iff.
@@ -1208,6 +1208,7 @@ Definition mpoly_sub {n} (p : {mpoly T[n]}) q := mpoly_add p (mpoly_opp q).
 #[export] Instance refine_mpoly_sub_eff n :
   refines (Reffmpoly ==> Reffmpoly ==> Reffmpoly (T := T) (n := n))
   mpoly_sub mpoly_sub_eff.
+Proof.
 apply refines_abstr => p p' ref_p.
 apply refines_abstr => q q' ref_q.
 rewrite /mpoly_add_eff.
@@ -1263,7 +1264,7 @@ have Hmm : ~ k = mm.
 { move=> Hmmm; apply/Hmm'/mnmc_eq_seqP.
   by rewrite -(Rseqmultinom_eq Hk ref_mm); apply/eqP. }
 rewrite (refine_find_mpoly Hp ref_mm).
-by have ->: (k == mm = false); [apply/eqP|rewrite mulr0 subr0].
+by have ->: ((k == mm) = false); [apply/eqP|rewrite mulr0 subr0].
 Qed.
 
 Lemma refine_mpoly_sum_eff n k f f' (p : mpoly k T) p' :
@@ -1575,7 +1576,7 @@ Derive Inversion inv_HdRel with
 
 Section effmpoly_parametricity.
 
-Context (A : ringType) (C : Type) (rAC : A -> C -> Type).
+Context (A : nzRingType) (C : Type) (rAC : A -> C -> Type).
 
 Definition M_hrel (m : M.t A) (m' : M.t C) : Type :=
   ((forall k, M.In k m <-> M.In k m')

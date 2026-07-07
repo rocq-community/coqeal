@@ -18,7 +18,7 @@ Local Open Scope ring_scope.
 (* First some general lemmas *)
 Section prelude.
 
-Variable R : comRingType.
+Variable R : comPzRingType.
 
 Lemma bareiss_key_lemma m d l (c : 'cV[R]_m) M :
   d ^+ m * \det (block_mx d%:M l c M) = d * \det (d *: M - c *m l).
@@ -59,7 +59,7 @@ Require Import polydvd.
 Module poly.
 Section bareiss.
 
-Variable R : comRingType.
+Variable R : comNzRingType.
 
 Fixpoint bareiss_rec m (a : {poly R}) :
    'M[{poly R}]_(1 + m, 1 + m) -> {poly R} :=
@@ -87,7 +87,7 @@ End bareiss.
 
 Section bareiss_correctness.
 
-Variable R : comRingType.
+Variable R : comNzRingType.
 
 Lemma bareiss_recE : forall m a (M : 'M[{poly R}]_(1 + m)),
   a \is monic ->

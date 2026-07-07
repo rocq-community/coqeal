@@ -288,7 +288,7 @@ End Bezout_hermite.
 
 Section Mx2.
 
-Variable R : comRingType.
+Variable R : comPzRingType.
 
 Definition mx2 a b c d := block_mx (a%:M : 'M[R]_1) b%:M c%:M d%:M.
 

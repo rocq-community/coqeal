@@ -1,7 +1,8 @@
 (** This file is part of CoqEAL, the Coq Effective Algebra Library.
 (c) Copyright INRIA and University of Gothenburg, see LICENSE *)
 From HB Require Import structures.
-From Coq Require Import ssreflect ssrfun ssrbool Arith.Wf_nat.
+From mathcomp Require Import ssreflect ssrfun ssrbool.
+From Stdlib Require Import Arith.Wf_nat.
 From mathcomp Require Import eqtype ssrnat div seq path.
 From mathcomp Require Import fintype ssralg perm tuple choice generic_quotient.
 From mathcomp Require Import matrix bigop zmodp mxalgebra poly.
@@ -41,11 +42,11 @@ End GUARD.
 (** Explicit divisibility ring *)
 
 (* Specification of division: div_spec a b == b | a *)
-Variant div_spec (R : ringType) (a b : R) : option R -> Type :=
+Variant div_spec (R : pzRingType) (a b : R) : option R -> Type :=
 | DivDvd x of a = x * b : div_spec a b (Some x)
 | DivNDvd of (forall x, a != x * b) : div_spec a b None.
 
-HB.mixin Record Ring_hasDiv R & GRing.Ring R := {
+HB.mixin Record Ring_hasDiv R & GRing.PzRing R := {
   div : R -> R -> option R;
   div_subdef : forall a b, div_spec a b (div a b)
 }.
@@ -93,40 +94,40 @@ Implicit Types a b c : R.
 Lemma odivrP : forall a b, div_spec a b (a %/? b).
 Proof. exact: div_subdef. Qed.
 
-Lemma odiv0r a : a != 0 -> 0 %/? a = Some 0.
+Lemma odiv0r a : a != 0 -> (0 %/? a) = Some 0.
 Proof.
 case: odivrP=> [x|H _]; last by move: (H 0); rewrite mul0r eqxx.
 by move/eqP; rewrite eq_sym mulf_eq0 orbC; case: eqP => //= _ /eqP->.
 Qed.
 
-Lemma odivr0 a : a != 0 -> a %/? 0 = None.
+Lemma odivr0 a : a != 0 -> (a %/? 0) = None.
 Proof.
 by case: odivrP=> // x; rewrite mulr0=> ->; rewrite eqxx.
 Qed.
 
-Lemma odivr1 a : a %/? 1 = Some a.
+Lemma odivr1 a : (a %/? 1) = Some a.
 Proof.
 case: odivrP=> [x|H]; first by rewrite mulr1=> ->.
 by move: (H a); rewrite mulr1 eqxx.
 Qed.
 
-Lemma odivrr a : a != 0 -> a %/? a = Some 1.
+Lemma odivrr a : a != 0 -> (a %/? a) = Some 1.
 Proof.
 move=> a0; case: odivrP=> [x|H].
   by rewrite -{1}[a]mul1r; move/(mulIf a0) <-.
 by move: (H 1); rewrite mul1r eqxx.
 Qed.
 
-Lemma odivr_mulrK a b : a != 0 -> b * a %/? a = Some b.
+Lemma odivr_mulrK a b : a != 0 -> (b * a %/? a) = Some b.
 Proof.
 move=> a0; case: odivrP=> [x|H]; first by move/(mulIf a0) ->.
 by move: (H b); rewrite eqxx.
 Qed.
 
-Lemma odivr_mulKr a b : a != 0 -> a * b %/? a = Some b.
+Lemma odivr_mulKr a b : a != 0 -> (a * b %/? a) = Some b.
 Proof. by move=> a0; rewrite mulrC odivr_mulrK. Qed.
 
-Lemma odivr_mul2l a b c : a != 0 -> b != 0 -> a * b %/? (a * c) = (b %/? c).
+Lemma odivr_mul2l a b c : a != 0 -> b != 0 -> (a * b %/? (a * c)) = (b %/? c).
 Proof.
 move=> a0 b0.
 case c0: (c == 0); first by rewrite (eqP c0) mulr0 !odivr0 // mulf_neq0.
@@ -137,10 +138,10 @@ case: odivrP=> [x|H].
 by case: odivrP=> //x Hbxc; move: (H x); rewrite mulrCA Hbxc eqxx.
 Qed.
 
-Lemma odivr_mul2r a b c : a != 0 -> b != 0 -> b * a %/? (c * a) = (b %/? c).
+Lemma odivr_mul2r a b c : a != 0 -> b != 0 -> (b * a %/? (c * a)) = (b %/? c).
 Proof. by move=> a0 b0; rewrite mulrC [_ * a]mulrC odivr_mul2l. Qed.
 
-Lemma odivr_some a b c : a %/? b = Some c -> a = b * c.
+Lemma odivr_some a b c : (a %/? b) = Some c -> a = b * c.
 Proof. by case: odivrP=>// x -> [<-]; rewrite mulrC. Qed.
 
 (** Properties of dvdr *)
@@ -274,7 +275,7 @@ Qed.
 
 (** Properties of eqd *)
 
-Lemma eqd_def : forall a b, a %= b = (a %| b) && (b %| a).
+Lemma eqd_def : forall a b, (a %= b) = (a %| b) && (b %| a).
 Proof. by []. Qed.
 
 Lemma eqdd a : a %= a.
@@ -431,7 +432,7 @@ Proof. by rewrite unitd1. Qed.
 Lemma dvdUr a b : a %= 1 -> a %| b.
 Proof. by move=> a1; rewrite (eqd_dvd a1 (eqdd _)) dvd1r. Qed.
 
-Lemma dvdrU b a : b %= 1 -> a %| b = (a %= 1).
+Lemma dvdrU b a : b %= 1 -> (a %| b) = (a %= 1).
 Proof. by move=> b1; rewrite (eqd_dvd (eqdd _) b1) dvdr1. Qed.
 
 Lemma dvdr_mulr_l b a : b != 0 -> (a * b %| b) = (a %= 1).
@@ -468,7 +469,7 @@ Qed.
 
 (** Properties of sdvdr *)
 
-Lemma sdvdr_def : forall a b, a %<| b = (a %| b) && ~~(b %| a).
+Lemma sdvdr_def : forall a b, (a %<| b) = (a %| b) && ~~(b %| a).
 Proof. by []. Qed.
 
 Lemma sdvdrW a b : a %<| b -> a %| b.
@@ -477,10 +478,10 @@ Proof. by case/andP. Qed.
 Lemma sdvdrNW a b : a %<| b -> ~~(b %| a).
 Proof. by case/andP. Qed.
 
-Lemma sdvdr0 a : a %<| 0 = (a != 0).
+Lemma sdvdr0 a : (a %<| 0) = (a != 0).
 Proof. by rewrite sdvdr_def dvdr0 dvd0r. Qed.
 
-Lemma sdvd0r a : 0 %<| a = false.
+Lemma sdvd0r a : (0 %<| a) = false.
 Proof. by rewrite sdvdr_def dvdr0 andbF. Qed.
 
 (****)
@@ -590,7 +591,7 @@ End DvdRingTheory.
 
 HB.mixin Record DvdRing_hasGcd R & DvdRing R := {
   gcdr : R -> R -> R;
-  gcdr_subdef : forall d a b, d %| gcdr a b = (d %| a) && (d %| b)
+  gcdr_subdef : forall d a b, (d %| gcdr a b) = (d %| a) && (d %| b)
 }.
 
 HB.structure Definition GcdDomain := { R of DvdRing_hasGcd R & DvdRing R }.
@@ -602,8 +603,9 @@ Notation "[ 'gcdDomainType' 'of' T 'for' cT ]" := (GcdDomain.clone T cT)
 Notation "[ 'gcdDomainType' 'of' T ]" := (GcdDomain.clone T _)
   (at level 0, format "[ 'gcdDomainType'  'of'  T ]") : form_scope.
 
-Definition lcmr R a b := nosimpl
+Definition lcmr R a b :=
   (if (a == 0) || (b == 0) then 0 else odflt 0 ((a * b) %/? (@gcdr R a b))).
+Arguments lcmr : simpl never.
 
 Definition gcdsr R := foldr (@gcdr R) 0.
 Definition lcmsr R := foldr (@lcmr R) 1.
@@ -617,7 +619,7 @@ Variable R : gcdDomainType.
 
 Implicit Types a b : R.
 
-Lemma dvdr_gcd : forall d a b, d %| gcdr a b = (d %| a) && (d %| b) :> bool.
+Lemma dvdr_gcd : forall d a b, (d %| gcdr a b) = (d %| a) && (d %| b) :> bool.
 Proof. exact: gcdr_subdef. Qed.
 
 Lemma dvdr_gcdl a b : gcdr a b %| a.
@@ -953,7 +955,7 @@ Proof. by []. Qed.
 Lemma gcdsr_cons : forall a s, gcdsr (a :: s) = gcdr a (gcdsr s).
 Proof. by []. Qed.
 
-Lemma dvdr_gcds : forall (l : seq R) (g : R), g %| gcdsr l = all (%|%R g) l.
+Lemma dvdr_gcds : forall (l : seq R) (g : R), (g %| gcdsr l) = all (%|%R g) l.
 Proof. by elim=> [|a l ihl] g; rewrite /= ?dvdr0 // dvdr_gcd ihl. Qed.
 
 Lemma dvdr_mem_gcds (l : seq R) x : x \in l -> gcdsr l %| x.
@@ -967,7 +969,7 @@ Proof. by []. Qed.
 Lemma lcmsr_cons : forall a s, lcmsr (a :: s) = lcmr a (lcmsr s).
 Proof. by []. Qed.
 
-Lemma dvdr_lcms : forall (l : seq R) (m : R), lcmsr l %| m = all (%|%R^~ m) l.
+Lemma dvdr_lcms : forall (l : seq R) (m : R), (lcmsr l %| m) = all (%|%R^~ m) l.
 Proof. by elim=> [|a l ihl] m; rewrite /= ?dvd1r // dvdr_lcm ihl. Qed.
 
 Lemma dvdr_mem_lcms (l : seq R) x : x \in l -> x %| lcmsr l.
@@ -1061,19 +1063,19 @@ Qed.
 
 (** Irreducible and prime elements *)
 
-Definition primer a := ((a == 0 = false)
-                      * (a %= 1 = false)
-                      * (forall b c, a %| (b * c) = (a %| b) || (a %| c) :> bool)%R)%type.
+Definition primer a := (((a == 0) = false)
+                      * ((a %= 1) = false)
+                      * (forall b c, (a %| (b * c)) = (a %| b) || (a %| c) :> bool)%R)%type.
 
-Definition irredr a := ((a == 0 = false)
-                      * (a %= 1 = false)
+Definition irredr a := (((a == 0) = false)
+                      * ((a %= 1) = false)
                       * (forall b c, a %= b * c -> (b %= 1) || (c %= 1))%R)%type.
 
 Lemma irredrP : forall a, irredr a ->
   forall b c, a %= b * c -> b %= 1 \/ c %= 1.
 Proof. by move=> ? [ha ia] *; apply/orP; rewrite ia. Qed.
 
-Lemma irredr_dvd : forall a b, irredr a -> a %| b = ~~(coprimer a b) :> bool.
+Lemma irredr_dvd : forall a b, irredr a -> (a %| b) = ~~(coprimer a b) :> bool.
 Proof.
 rewrite /coprimer=> a b ia; case g1: (_ %= 1)=> /=.
   apply/negP=> hab; suff: a %= 1 by rewrite ia.
@@ -1359,6 +1361,7 @@ Qed.
 
 Lemma Bezout_step_mx00 m n (M : 'M_(1 + m,1 + n)) {k : 'I_m} :
  (Bezout_step (M 0 0) (M (lift 0 k) 0) M k) 0 0 %= gcdr (M 0 0) (M (lift 0 k) 0).
+Proof.
 rewrite /Bezout_step; have [g u v a' b' Bezout_a'b' gcd_g H1 H2] := egcdrP.
 by rewrite !mxE !addr0 {1}H1 {1}H2 !mulrA -mulrDl Bezout_a'b' mul1r.
 Qed.
@@ -1471,12 +1474,12 @@ Definition sdvdr_ind := (well_founded_ind (@sdvdr_wf R)).
 
 End PIDTheory.
 
-Variant edivr_spec (R : ringType)
+Variant edivr_spec (R : pzRingType)
   (norm : R -> nat) (a b : R) : R * R -> Type :=
   EdivrSpec q r of a = q * b + r & (b != 0) ==> (norm r < norm b)
   : edivr_spec norm a b (q,r).
 
-HB.mixin Record Ring_isEuclidean R & GRing.Ring R := {
+HB.mixin Record Ring_isEuclidean R & GRing.PzRing R := {
   enorm : R -> nat;
   ediv : R -> R -> (R * R);
   norm_mul : forall a b, a != 0 -> enorm b <= enorm (a * b);
@@ -1658,6 +1661,7 @@ HB.builders Context R & IntegralDomain_isEuclidean R.
   by apply: contra a0; move/eqP=> x0; move/sdvdrW:hx; rewrite x0 dvd0r.
   Qed.
 
+  #[warning="-HB.no-new-instance"]
   HB.instance Definition _ := DvdRing_isWellFounded.Build R sdvdr_wf.
 
   Lemma mod_eq0 a b : (a %% b == 0) = (b %| a).
@@ -1689,6 +1693,7 @@ HB.builders Context R & IntegralDomain_isEuclidean R.
 
   Definition acc_gcd (n:nat) (hn: Acc (fun x y => x < y) n) :
     forall (a b:R), n  = norm b -> R.
+  Proof.
   elim hn using acc_dep. clear n hn.
   move => n hn hi a b heq.
   move : (@tool a b).
@@ -1705,7 +1710,7 @@ HB.builders Context R & IntegralDomain_isEuclidean R.
 
   Lemma acc_gcdP : forall (n:nat) (hn: Acc (fun x y => x < y) n)
     (a b: R) (hb: n = norm b) (g :R),
-    g %| (acc_gcd hn a hb) = (g %| a) && (g %| b).
+    (g %| (acc_gcd hn a hb)) = (g %| a) && (g %| b).
   Proof.
   move=> n hn; elim/acc_dep: hn => {}n {}hn hi a b heq g /=.
   move: (@tool a b).
@@ -1723,7 +1728,7 @@ HB.builders Context R & IntegralDomain_isEuclidean R.
   Definition GCD (a b:R) : R :=
     acc_gcd (guarded 100 ssr_lt_wf (norm b)) a (refl_equal (norm b)).
 
-  Lemma GCDP : forall d a b, d %| GCD a b = (d %| a) && (d %| b).
+  Lemma GCDP : forall d a b, (d %| GCD a b) = (d %| a) && (d %| b).
   Proof. by rewrite /GCD => d a b; apply: acc_gcdP. Qed.
 
   (* HB.instance Definition _ := DvdRing_hasGcd.Build R GCDP. *)
@@ -1737,7 +1742,7 @@ HB.builders Context R & IntegralDomain_isEuclidean R.
         if n is n1.+1 then loop n1 bb rr else rr in
     loop (norm a1) a1 b1.
 
-  Lemma gcdP : forall d a b, d %| gcd a b = (d %| a) && (d %| b).
+  Lemma gcdP : forall d a b, (d %| gcd a b) = (d %| a) && (d %| b).
   Proof.
   move=> d a b; rewrite /gcd.
   wlog nba: a b / norm b <= norm a=>[hwlog|].

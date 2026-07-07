@@ -283,11 +283,9 @@ Elpi derive.param2 col_mx_of.
 Elpi derive.param2 col_seqmx.
 Elpi derive.param2 block_mx_of.
 Elpi derive.param2 block_seqmx.
-Elpi derive.param2 mkseqmx_ord.
 Elpi derive.param2 nat_of_ord.
 Elpi derive.param2 delta_seqmx.
 Elpi derive.param2 trace_seqmx.
-Elpi derive.param2 pid_seqmx.
 Elpi derive.param2 pid_seqmx.
 Elpi derive.param2 copid_seqmx.
 
@@ -897,7 +895,7 @@ End seqmx.
 
 Section seqmx_ring.
 
-Variable R : ringType.
+Variable R : pzRingType.
 
 (* The "#[export]" is needed for lemma RseqmxC_char_poly_mx below. *)
 #[export] Instance zeroR : zero_of R := 0%R.
@@ -1357,7 +1355,7 @@ Section seqmx_poly.
 
 Local Open Scope rel_scope.
 
-Variable R : ringType.
+Variable R : nzRingType.
 Context (C : Type) (rAC : R -> C -> Type).
 Context (polyC : Type) (RpolyC : {poly R} -> polyC -> Type).
 Variable polyX : polyC.
@@ -1402,36 +1400,44 @@ From CoqEAL Require Import binnat binint seqpoly binord.
 Section testmx.
 
 Goal ((0 : 'M[int]_(2,2)) == 0).
+Proof.
 by coqeal.
 Abort.
 
 Goal (1 : 'M[int]_(2)) == 1.
+Proof.
 by coqeal.
 Abort.
 
 Goal ((- 0 : 'M[int]_(2,2)) == - - - 0).
+Proof.
 by coqeal.
 Abort.
 
 Goal ((- 0 : 'M[{poly int}]_(2,2)) == - - - 0).
+Proof.
 by coqeal.
 Abort.
 
 Goal (\tr (1 : 'M[{poly int}]_(10)) == 10%:Z%:P).
+Proof.
 by coqeal.
 Abort.
 
 Goal (pid_mx 3 + copid_mx 3 == 1 :> 'M[int]_(10)).
+Proof.
 (* by coqeal. *)
 Abort.
 
 Goal (pid_mx 4 * copid_mx 4 == 0 :> 'M[{poly {poly int}}]_(5)).
+Proof.
 Time by coqeal.
 Abort.
 
 Definition Maddm : 'M[int]_(2) := \matrix_(i, j < 2) (i + j * i)%:Z.
 
 Goal (Maddm == Maddm).
+Proof.
 by coqeal.
 Abort.
 
@@ -1442,27 +1448,33 @@ Definition M6 : 'M[int]_(2,2) := \matrix_(i,j < 2) 6%:Z.
 Definition V : 'rV[int]_(3) := \matrix_(i < 1, j < 3) 3%:Z.
 
 Goal (diag_mx V == 2%:Z *: diag_mx V - diag_mx V).
+Proof.
 (* by coqeal. *)
 Abort.
 
 Goal (delta_mx ord0 ord0 + delta_mx (Ordinal (ltnSn 1)) (Ordinal (ltnSn 1)) ==
       1 :> 'M[{poly int}]_(2)).
+Proof.
 (* by coqeal. *)
 Abort.
 
 Goal (- - M3 == M3).
+Proof.
 by coqeal.
 Abort.
 
 Goal (- M3 == Mn3).
+Proof.
 by coqeal.
 Abort.
 
 Goal (M3 - M3 == 0).
+Proof.
 (* by coqeal. *)
 Abort.
 
 Goal (M3 + M3 == M6).
+Proof.
 (* rewrite -[X in X == _]/(spec_id _) [spec_id _]refines_eq /=. *)
 (* by coqeal. *)
 Abort.
@@ -1475,6 +1487,7 @@ Goal (Mp + -Mp == 0).
 Abort.
 
 Goal (Mp *m 0 == 0 :> 'M[_]_(2,2)).
+Proof.
 by coqeal.
 Abort.
 

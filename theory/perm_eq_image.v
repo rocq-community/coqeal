@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_boot all_algebra.
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -130,7 +130,7 @@ Qed.
 End matrix_fieldType.
 
 Section matrix_ringType.
-Variable R : ringType.
+Variable R : nzRingType.
 
 
 Lemma char_block_mx m n (A : 'M[R]_m) (D : 'M[R]_n) B C :

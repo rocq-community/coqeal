@@ -89,9 +89,9 @@ move: (erefl om); rewrite /om /d; case: {2}_ / ihn.
   rewrite addrAC -!addrA [xx in _ + (_ + xx)]addrC -scalerAl.
   rewrite [_ ^+ _ * (_ * _)]mulrCA -exprD subnKC //.
   rewrite scalerAr -scalerA [_ *: _]scale_polyE subrr addr0.
-  rewrite ltnS (leq_trans (size_add _ _)) //.
+  rewrite ltnS (leq_trans (size_polyD _ _)) //.
   rewrite geq_max (leq_trans (size_poly _ _)) //.
-  rewrite size_opp (leq_trans (size_mul_leq _ _)) //.
+  rewrite size_polyN (leq_trans (size_polyMleq _ _)) //.
   have [-> | x0] := eqVneq x 0.
     rewrite polyC0 mul0r size_poly0 addn0.
     rewrite -subn1 leq_subLR (leq_trans (size_poly _ _)) //.
@@ -119,7 +119,7 @@ Qed.
 End PolyDvdRing.
 End PolyDvdRing.
 
-Definition poly_of (R : semiRingType) := {poly R}.
+Definition poly_of (R : nzSemiRingType) := {poly R}.
 
 HB.instance Definition _ (R : dvdRingType) :=
   GRing.IntegralDomain.on (poly_of R).
@@ -285,10 +285,10 @@ move=> p; case: (gcdsr_primitive p)=> x [? _]; apply/dvdrP.
 by exists x; rewrite mulrC.
 Qed.
 
-Lemma gcdsr_odivp :
-  forall p, p != 0 -> exists x, p %/? (gcdsr p)%:P = Some (x : {poly R}) /\ primitive x.
+Lemma gcdsr_odivp p :
+  p != 0 -> exists x, (p %/? (gcdsr p)%:P) = Some (x : {poly R}) /\ primitive x.
 Proof.
-move=> p p0; case: (gcdsr_primitive p)=> x [Hp primx].
+move=> p0; case: (gcdsr_primitive p)=> x [Hp primx].
 exists x; split=> //.
 rewrite {1}Hp odivr_mulKr //.
 by apply: contraPneq Hp => ->; apply/eqP; rewrite mul0r.
@@ -483,7 +483,7 @@ move=> p.
 have [-> | p0] := eqVneq p 0; first by rewrite pp0.
 have gp0: (gcdsr p != 0) by rewrite gcdsr_eq0.
 apply/eqP; rewrite eqn_leq; apply/andP; split.
-  move: (size_mul_leq (gcdsr p)%:P (pp p)).
+  move: (size_polyMleq (gcdsr p)%:P (pp p)).
   by rewrite {5}(ppP p) size_polyC gp0.
 rewrite {2}(ppP p).
 elim/poly_ind: (pp p)=> [|q c IH]; first by rewrite size_poly0 leq0n.
@@ -519,7 +519,7 @@ by apply/andP; rewrite (dvdr_trans gp2 gp1) dvd1r.
 Qed.
 
 Lemma dvdrp_prim_mull : forall a p q,
-  a != 0 -> primitive q -> p %| a%:P * q = (gcdsr p %| a) && (pp p %| q).
+  a != 0 -> primitive q -> (p %| a%:P * q) = (gcdsr p %| a) && (pp p %| q).
 Proof.
 move=> a p q a0 pq; case/andP: (pq)=> pq1 pq2.
 rewrite dvdrp_spec.
@@ -537,7 +537,7 @@ case/andP: (pp_prim pq)=> G1 _.
 by rewrite (dvdr_trans (dvdr_trans Hpp G1)); case/andP: (pp_mull q a0).
 Qed.
 
-Lemma dvdrpC : forall a p, (a%:P : poly_of R) %| p = (a %| gcdsr p).
+Lemma dvdrpC : forall a p, ((a%:P : poly_of R) %| p) = (a %| gcdsr p).
 Proof.
 move=> a p.
 apply/idP/idP=> [|H]; last exact: (dvdr_trans (polyC_inj_dvdr H) (gcdsr_dvdr p)).
@@ -593,7 +593,7 @@ Qed.
 (* Show that gcdp_rec return a primitive polynomial that is the gcd of p and q *)
 Lemma gcdp_recP : forall n p q g,
    size q <= n -> q != 0 -> primitive q ->
-  (g %| (gcdp_rec n p q : poly_of R) = (g %| p) && (g %| q))
+  ((g %| (gcdp_rec n p q : poly_of R)) = (g %| p) && (g %| q))
   /\ primitive (gcdp_rec n p q).
 Proof.
 elim=> /= [p q g|n IH p q g sqn q0 pq].
@@ -644,7 +644,7 @@ by rewrite (pp_prim_eq (primitive0 (dvdrp_primr gq pq))); case/andP.
 Qed.
 
 (* Correctness of gcdp *)
-Lemma gcdpP g p q : g %| (gcdp p q : poly_of R) = (g %| p) && (g %| q).
+Lemma gcdpP g p q : (g %| (gcdp p q : poly_of R)) = (g %| p) && (g %| q).
 Proof.
 rewrite /gcdp.
 
@@ -761,9 +761,9 @@ case: {1}_ / h=> //.
   rewrite !mulrA -polyCM -!mulrA [_ * q`_sq]mulrC divff.
     by apply: contra Hq0; rewrite -lead_coef_eq0 /lead_coef hsq.
   rewrite mulr1 subrr addr0.
-  rewrite ltnS (leq_trans (size_add _ _)) //.
+  rewrite ltnS (leq_trans (size_polyD _ _)) //.
   rewrite geq_max (leq_trans (size_poly _ _)) //.
-  rewrite size_opp (leq_trans (size_mul_leq _ _)) //.
+  rewrite size_polyN (leq_trans (size_polyMleq _ _)) //.
   have [-> | x0] := eqVneq (p`_sp / q`_sq) 0.
     rewrite polyC0 mul0r size_poly0 addn0.
     rewrite -subn1 leq_subLR (leq_trans (size_poly _ _)) //.
@@ -800,6 +800,7 @@ Qed.
 
 HB.instance Definition _ := IntegralDomain_isEuclidean.Build (polynomial F)
   poly_size_mull edivP.
+#[warning="-HB.no-new-instance"]
 HB.instance Definition _ := EuclideanDomain.on {poly F}.
 HB.instance Definition _ := BezoutDomain.on {poly F}.
 
