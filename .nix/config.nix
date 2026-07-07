@@ -113,6 +113,7 @@
       bignums.override.version = "master";
       rocq-elpi.override.version = "master";
       hierarchy-builder.override.version = "master";
+      micromega-plugin.override.version = "master";
       mathcomp.override.version = "master";
       mathcomp-finmap.override.version = "master";
       mathcomp-bigenough.override.version = "master";
