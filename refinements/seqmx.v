@@ -244,7 +244,11 @@ Elpi derive.param2 map_seqmx.
 Elpi derive.param2 zipwith_seqmx.
 Elpi derive.param2 hzero_of.
 Elpi derive.param2 seqmx0.
-Definition diag_seqmx_simpl := Eval cbv in diag_seqmx.
+Definition diag_seqmx_simpl (A : Type) {zero : zero_of A} (s : seqmx) :=
+   @mkseqmx_ord A _ _
+     (fun i j : 'I_(size (nth [::] s 0)) =>
+      if eqn i j then nth (@zero_op A zero) (nth [::] s 0) i else @zero_op A zero).
+Elpi derive.param2 nat_of_ord.
 Elpi derive.param2 diag_seqmx_simpl.
 Definition diag_seqmx_R := diag_seqmx_simpl_R.
 Elpi derive.param2.register diag_seqmx diag_seqmx_R.
@@ -283,7 +287,6 @@ Elpi derive.param2 col_mx_of.
 Elpi derive.param2 col_seqmx.
 Elpi derive.param2 block_mx_of.
 Elpi derive.param2 block_seqmx.
-Elpi derive.param2 nat_of_ord.
 Elpi derive.param2 delta_seqmx.
 Elpi derive.param2 trace_seqmx.
 Elpi derive.param2 pid_seqmx.
