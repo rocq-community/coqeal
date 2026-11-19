@@ -275,7 +275,7 @@ Local Instance Rseqpoly_add :
 Proof.
   rewrite refinesE /Rseqpoly /fun_hrel /poly_of_seqpoly=> _ sp <- _ sq <-.
   apply/polyP=> i.
-  by rewrite coef_add_poly !coef_poly_of_seqpoly coef_add_seqpoly.
+  by rewrite coefD !coef_poly_of_seqpoly coef_add_seqpoly.
 Qed.
 
 Lemma coef_opp_seqpoly (sp : seqpoly R) (i : nat) : (- sp)%C`_i = - sp`_i.
@@ -290,7 +290,7 @@ Local Instance Rseqpoly_sub :
 Proof.
   rewrite refinesE /Rseqpoly /fun_hrel /poly_of_seqpoly=> _ sp <- _ sq <-.
   apply/polyP=> i.
-  rewrite coef_add_poly coef_opp_poly !coef_poly_of_seqpoly coef_add_seqpoly.
+  rewrite coefD coefN !coef_poly_of_seqpoly coef_add_seqpoly.
   by rewrite coef_opp_seqpoly.
 Qed.
 

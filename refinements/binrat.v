@@ -410,29 +410,14 @@ Lemma Z2int_Qred n d :
   ((Z2int (Qnum (Qred (n # d))))%:Q / (nat_of_pos (Qden (Qred (n # d))))%:Q
    = (Z2int n)%:Q / (Z2int (Z.pos d))%:Q)%R.
 Proof.
-rewrite -(fracqE (Z2int n, Z2int (Z.pos d))) -[RHS]divq_num_den.
-rewrite /Qred.
+apply/eqP; rewrite eqr_div; try by rewrite intr_eq0 Posz_nat_of_pos_neq0.
+rewrite -2!intrM eqr_int -/(Z2int (Z.pos _)) -!Z2int_mul.
+apply/eqP; congr Z2int => /=.
 move: (Z.ggcd_gcd n (Z.pos d)) (Z.ggcd_correct_divisors n (Z.pos d)).
-move: (Z_ggcd_coprime n (Z.pos d)).
-case: Z.ggcd => g [n' d'] /=.
-case: g => [|g|g].
-{ by move=> _ _ [_]; rewrite Z.mul_0_l. }
-{ move=> coprime_n'_d' => _ [->].
-  rewrite (nat_of_pos_Z_to_pos d) => /[dup] posd' ->.
-  have d'n0 : `|Z2int d'| != 0%R.
-  { rewrite normr_eq0.
-    case: d' posd' {coprime_n'_d'} => // d' _.
-    by rewrite Posz_nat_of_pos_neq0. }
-  rewrite !Z2int_mul abszM PoszM gez0_abs; [by rewrite -[0%R]int2ZK Z2int_le|].
-  rewrite fracqMM ?Posz_nat_of_pos_neq0 // abszE.
-  move: (@valq_frac (Z2int n', `|Z2int d'|) d'n0).
-  rewrite scalqE // mul1r => [[neq deq]].
-  have -> : nat_of_pos (Z.to_pos d') = `|Z2int d'| :> int.
-  { rewrite nat_of_pos_Z_to_pos Z2Pos.id ?abszE //.
-    by case: d' posd' {coprime_n'_d' d'n0 neq deq}. }
-  rewrite [X in (X%:~R / _)%R]neq [X in (_ / X%:~R)%R]deq.
-  rewrite (_ : gcdn _ _ = 1%nat) ?mul1r //; exact/eqP/coprime_n'_d'. }
-by move: (Z.gcd_nonneg n (Z.pos d)) => + _ => /[swap] <-.
+case: Z.ggcd => g [n' d'] /= gE [nE dE].
+have/Z.le_lteq[|/esym/Z.gcd_eq_0_r//] := Z.gcd_nonneg n (Z.pos d).
+rewrite -{}gE; case: g d' nE dE => [|g|g] [|d'|d']// -> -> _.
+by rewrite [Z.pos g * n']Z.mul_comm -Z.mul_assoc.
 Qed.
 
 Lemma BigQ_red_den_nonzero q :
@@ -491,7 +476,7 @@ case: (BigQ.to_Q b) => nb db {b}.
 rewrite /Qplus !Z2int_Qred.
 rewrite Z2int_add !Z2int_mul /= nat_of_mul_pos.
 rewrite intrD PoszM !intrM.
-by rewrite [RHS]addf_div // intq_eq0 Posz_nat_of_pos_neq0.
+by rewrite [RHS]addf_div // intr_eq0 Posz_nat_of_pos_neq0.
 Qed.
 
 #[export] Instance refine_ratBigQ_sub :
@@ -544,7 +529,7 @@ rewrite /eq_op /eq_bigQ BigQ.spec_eq_bool.
 case: (BigQ.to_Q a) => na da {a}.
 case: (BigQ.to_Q b) => nb db {b}.
 rewrite /Qeq_bool !Z2int_Qred /=.
-rewrite GRing.eqr_div ?intq_eq0 ?Posz_nat_of_pos_neq0 //.
+rewrite GRing.eqr_div ?intr_eq0 ?Posz_nat_of_pos_neq0 //.
 rewrite !nat_of_pos_Z_to_pos.
 rewrite !gez0_abs; [by rewrite -[0%R]int2ZK Z2int_le..|].
 rewrite -!intrM -!Z2int_mul eqr_int.
