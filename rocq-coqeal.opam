@@ -21,14 +21,15 @@ of the ForMath EU FP7 project (2009-2013). It has two parts:
 build: [make "-j%{jobs}%"]
 install: [make "install"]
 depends: [
-  "rocq-core" {(>= "9.0" & < "9.3~") | (= "dev")}
+  "rocq-core" {>= "9.0"}
   "rocq-bignums" 
-  "rocq-elpi" {>= "2.4.1" | = "dev"}
-  "rocq-hierarchy-builder" {>= "1.9.0"}
-  "rocq-mathcomp-ssreflect" {>= "2.5"}
+  "rocq-elpi" 
+  "rocq-hierarchy-builder" 
+  "rocq-mathcomp-boot" {>= "2.5"}
+  "rocq-mathcomp-order" 
   "rocq-mathcomp-algebra" 
-  "rocq-mathcomp-multinomials" {>= "2.4"}
-  "rocq-mathcomp-real-closed" {>= "2.0.3"}
+  "rocq-mathcomp-multinomials" 
+  "rocq-mathcomp-real-closed" 
 ]
 
 tags: [

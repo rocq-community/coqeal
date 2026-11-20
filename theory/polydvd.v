@@ -88,7 +88,7 @@ move: (erefl om); rewrite /om /d; case: {2}_ / ihn.
   rewrite [m * _]mulrC /m hsp hsq subSS mulrDl opprD.
   rewrite addrAC -!addrA [xx in _ + (_ + xx)]addrC -scalerAl.
   rewrite [_ ^+ _ * (_ * _)]mulrCA -exprD subnKC //.
-  rewrite scalerAr -scalerA [_ *: _]scale_polyE subrr addr0.
+  rewrite scalerAr -scalerA -mul_polyC subrr addr0.
   rewrite ltnS (leq_trans (size_polyD _ _)) //.
   rewrite geq_max (leq_trans (size_poly _ _)) //.
   rewrite size_polyN (leq_trans (size_polyMleq _ _)) //.
@@ -757,7 +757,7 @@ case: {1}_ / h=> //.
   rewrite [x * _]mulrC /x hsp hsq subSS mulrDl opprD.
   rewrite addrAC -!addrA [xx in _ + (_ + xx)]addrC -scalerAl.
   rewrite [_ ^+ _ * (_ * _)]mulrCA -exprD subnKC //.
-  rewrite /lead_coef hsp hsq ![_.+1.-1]/= scalerAr ![_ *: _]scale_polyE.
+  rewrite /lead_coef hsp hsq ![_.+1.-1]/= scalerAr -!mul_polyC.
   rewrite !mulrA -polyCM -!mulrA [_ * q`_sq]mulrC divff.
     by apply: contra Hq0; rewrite -lead_coef_eq0 /lead_coef hsq.
   rewrite mulr1 subrr addr0.

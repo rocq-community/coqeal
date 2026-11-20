@@ -9,8 +9,8 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Zulip][zulip-shield]][zulip-link]
 
-[docker-action-shield]: https://github.com/coq-community/coqeal/actions/workflows/docker-action.yml/badge.svg?branch=master
-[docker-action-link]: https://github.com/coq-community/coqeal/actions/workflows/docker-action.yml
+[docker-action-shield]: https://github.com/rocq-community/coqeal/actions/workflows/docker-action.yml/badge.svg?branch=master
+[docker-action-link]: https://github.com/rocq-community/coqeal/actions/workflows/docker-action.yml
 
 [contributing-shield]: https://img.shields.io/badge/contributions-welcome-%23f7931e.svg
 [contributing-link]: https://github.com/coq-community/manifesto/blob/master/CONTRIBUTING.md
@@ -40,20 +40,21 @@ of the ForMath EU FP7 project (2009-2013). It has two parts:
   - Damien Rouhling
   - Pierre Roux
   - Vincent Siles (initial)
-- Coq-community maintainer(s):
+- Rocq-community maintainer(s):
   - Cyril Cohen ([**@CohenCyril**](https://github.com/CohenCyril))
   - Pierre Roux ([**@proux01**](https://github.com/proux01))
 - License: [MIT License](LICENSE)
-- Compatible Rocq versions: 9.0 or later (use releases for other Coq versions)
+- Compatible Rocq/Coq versions: 9.0 or later (use releases for other Rocq versions)
 - Additional dependencies:
-  - [Bignums](https://github.com/coq/bignums) same version as Coq
-  - [Coq-Elpi](https://github.com/LPCIC/coq-elpi) 2.4.1 or later
-  - [Hierarchy Builder](https://github.com/math-comp/hierarchy-builder) 1.4.0 or later
-  - [MathComp ssreflect](https://math-comp.github.io) 2.3 or later
-  - [MathComp algebra](https://math-comp.github.io) 2.1 or later
-  - [MathComp Multinomials](https://github.com/math-comp/multinomials) 2.0 or later
-  - [MathComp real-closed](https://math-comp.github.io) 2.0 or later
-- Coq namespace: `CoqEAL`
+  - [Bignums](https://github.com/rocq-community/bignums)
+  - [Rocq-Elpi](https://github.com/LPCIC/coq-elpi)
+  - [Hierarchy Builder](https://github.com/math-comp/hierarchy-builder)
+  - [MathComp boot](https://math-comp.github.io) 2.5 or later
+  - [MathComp order](https://math-comp.github.io)
+  - [MathComp algebra](https://math-comp.github.io)
+  - [MathComp Multinomials](https://github.com/math-comp/multinomials)
+  - [MathComp real-closed](https://math-comp.github.io)
+- Rocq/Coq namespace: `CoqEAL`
 - Related publication(s):
   - [A refinement-based approach to computational algebra in Coq](https://hal.inria.fr/hal-00734505/document) doi:[10.1007/978-3-642-32347-8_7](https://doi.org/10.1007/978-3-642-32347-8_7)
   - [Refinements for free!](https://hal.inria.fr/hal-01113453/document) doi:[10.1007/978-3-319-03545-1_10](https://doi.org/10.1007/978-3-319-03545-1_10)
@@ -71,15 +72,19 @@ The easiest way to install the latest released version of CoqEAL
 is via [OPAM](https://opam.ocaml.org/doc/Install.html):
 
 ```shell
-opam repo add coq-released https://coq.inria.fr/opam/released
-opam install coq-coqeal
+opam repo add rocq-released https://rocq-prover.org/opam/released
+opam install rocq-coqeal
 ```
 
-To instead build and install manually, do:
+To instead build and install manually, you need to make sure that all the
+libraries this development depends on are installed.  The easiest way to do that
+is still to rely on opam:
 
 ``` shell
-git clone https://github.com/coq-community/coqeal.git
+git clone https://github.com/rocq-community/coqeal.git
 cd coqeal
+opam repo add rocq-released https://rocq-prover.org/opam/released
+opam install --deps-only .
 make   # or make -j <number-of-cores-on-your-machine> 
 make install
 ```
