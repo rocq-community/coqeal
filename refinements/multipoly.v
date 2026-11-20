@@ -2,6 +2,7 @@
 From Stdlib Require Import ZArith NArith FMaps FMapAVL.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.
 From mathcomp Require Import choice finfun tuple fintype order ssralg bigop.
+From mathcomp Require Import finmap.
 From CoqEAL Require Import hrel.
 From CoqEAL Require Import refinements.
 From CoqEAL Require Import param binord binnat.
@@ -9,14 +10,14 @@ From CoqEAL Require Import seqmx (* for zipwith and eq_seq *).
 From CoqEAL Require Import ssrcomplements.
 (* Multivariate polynomials from
    https://github.com/math-comp/multinomials.git *)
-From mathcomp.multinomials Require Import mpoly freeg.
+From mathcomp.multinomials Require Import monalg mpoly.
 
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory.
+Import Order.Theory GRing.Theory.
 
 (** * CoqEAL refinement for effective multivariate polynomials built on FMaps *)
 
@@ -52,7 +53,7 @@ Section effmpoly_generic.
 (** Monomials *)
 
 (** [mnmd i d] represents the monomial X_i^d *)
-Definition mnmd {n} (i : 'I_n) (d : nat) :=
+Definition mnmd {n} (i : 'I_n) (d : nat) : 'X_{1..n} :=
   [multinom (if (i == j :> nat) then d else 0%N) | j < n].
 
 Definition mpvar {T : nzRingType} {n} (c : T) d i : {mpoly T[n]} :=
@@ -107,15 +108,11 @@ Lemma intro_eq x y :
 Proof.
 rewrite /mnmc_lt_seq /=.
 rewrite !Rnat_ltE !Rnat_eqE.
-case Hlt : (_ < _)=>//=; case Hlt' : (_ < _)=>//=; move: Hlt Hlt'.
-rewrite !ltnNge !negb_false_iff !eqn_leq =>->->/=.
+case: ltngtP => //= _.
 elim: x y => [|hx tx Hind]; case=> // hy ty.
 rewrite /= !Rnat_ltE !Rnat_eqE.
-case (ltnP (spec_N hx) (spec_N hy)) => //= Hxy;
-  case (ltnP (spec_N hy) (spec_N hx)) => //= Hyx.
-have Exy : (spec_N hx == spec_N hy).
-by apply/eqP/anti_leq; rewrite Hyx.
-rewrite /mnmc_eq_seq /= Rnat_eqE Exy; rewrite eq_sym in Exy; rewrite Exy /=.
+case: ltngtP => //= /eqP.
+rewrite -Rnat_eqE /mnmc_eq_seq /= => -> /=.
 exact: Hind.
 Qed.
 
@@ -423,16 +420,15 @@ Section effmpoly_theory.
 (** *** Data refinement for seqmultinom *)
 
 Definition multinom_of_seqmultinom n (m : seqmultinom) : option 'X_{1..n} :=
-  let m' := map spec_N m in
-  if sumb (size m' == n) is left prf then
-    Some (Multinom (@Tuple n nat m' prf))
+  if size m == n then
+    Some [multinom nth 0 (map spec_N m) i | i < n]%M
   else None.
 
 Definition multinom_of_seqmultinom_val n (m : seqmultinom) : 'X_{1..n} :=
   odflt (@mnm0 n) (multinom_of_seqmultinom n m).
 
-Definition seqmultinom_of_multinom n (m : 'X_{1..n}) :=
-  let: Multinom m' := m in map implem_N (tval m').
+Definition seqmultinom_of_multinom n (m : 'X_{1..n}) : seqmultinom :=
+  [tuple implem_N (m i) | i < n].
 
 Lemma implem_NK : cancel implem_N spec_N.
 Proof.
@@ -449,15 +445,23 @@ Lemma seqmultinom_of_multinomK n :
   pcancel (@seqmultinom_of_multinom n) (@multinom_of_seqmultinom n).
 Proof.
 move=> x; rewrite /seqmultinom_of_multinom /multinom_of_seqmultinom.
-case: sumb => [prf|].
-  congr Some; apply: val_inj; simpl; apply: val_inj; simpl; case: (x).
-  by move=> t; rewrite -map_comp (eq_map implem_NK) map_id.
-case: x => [t].
-by rewrite size_tuple eqxx.
+rewrite size_tuple eqxx; congr Some; apply/mnmP => i; rewrite mnmE.
+by rewrite -tnth_nth tnth_map tnth_mktuple implem_NK.
 Qed.
 
 (** Main refinement predicate for [multinom]s *)
 Definition Rseqmultinom {n} := ofun_hrel (@multinom_of_seqmultinom n).
+
+Lemma RseqmultinomP (n : nat) (m : 'X_{1..n}) (m' : seqmultinom) :
+  refines Rseqmultinom m m' -> m' = [seq implem_N (m i) | i <- enum 'I_n].
+Proof.
+rewrite refinesE /Rseqmultinom /ofun_hrel /= /multinom_of_seqmultinom.
+case: eqP => //= size_m' [mE]; apply/(@eq_from_nth _ 0%num).
+  by rewrite size_map size_enum_ord.
+move=> i; rewrite size_m' => ltin.
+rewrite (nth_map (Ordinal ltin)) ?size_enum_ord// -mE mnmE.
+by rewrite (nth_ord_enum _ (Ordinal ltin)) (nth_map 0%num) ?size_m' ?spec_NK.
+Qed.
 
 Lemma refine_size
   (n : nat) (m : 'X_{1..n}) (m' : seqmultinom)
@@ -466,9 +470,7 @@ Lemma refine_size
 Proof.
 move: ref_mm'.
 rewrite refinesE /Rseqmultinom /multinom_of_seqmultinom /ofun_hrel.
-case: sumb =>// prf _.
-rewrite size_map in prf.
-exact/eqP.
+by case: eqP.
 Qed.
 
 Lemma refine_nth_def
@@ -478,9 +480,7 @@ Lemma refine_nth_def
 Proof.
 move=> rMN; move: (rMN).
 rewrite refinesE /Rseqmultinom /multinom_of_seqmultinom /ofun_hrel.
-case: sumb =>// prf [] <-.
-rewrite multinomE /= (tnth_nth (spec_N x0)) (nth_map x0) //.
-by move: prf; rewrite size_map; move/eqP ->.
+by case: eqP => //= prf [] <-; rewrite mnmE -(nth_map _ 0%N) ?prf.
 Qed.
 
 Lemma refine_nth
@@ -497,12 +497,8 @@ Lemma refine_seqmultinomP
 Proof.
 move=> eq_sz eq_nth.
 rewrite refinesE /Rseqmultinom /multinom_of_seqmultinom /ofun_hrel.
-case: sumb => [prf|].
-  congr Some; apply: val_inj; simpl.
-  apply: eq_from_tnth => i.
-  rewrite (tnth_nth 0%N) /= (nth_map 0%num) ?eq_nth //.
-  by move: prf; rewrite size_map; move/eqP ->.
-by rewrite size_map eq_sz eqxx.
+case: eqVneq => [prf|]; last by rewrite eq_sz eqxx.
+by congr Some; apply/mnmP => i; rewrite mnmE (nth_map 0%num) ?prf.
 Qed.
 
 Lemma refine_seqmultinom_of_multinom (n : nat) (m : 'X_{1..n}) :
@@ -517,17 +513,14 @@ Lemma refine_multinom_of_seqmultinom_val (n : nat) (m : seqmultinom) :
 Proof.
 move=> Hsz.
 rewrite refinesE /Rseqmultinom /multinom_of_seqmultinom_val /ofun_hrel.
-case_eq (multinom_of_seqmultinom n m) => //.
-rewrite /multinom_of_seqmultinom; case sumb => //.
-by rewrite size_map Hsz.
+by rewrite /multinom_of_seqmultinom Hsz.
 Qed.
 
 Lemma refine_mnm0 n : refines Rseqmultinom (@mnm0 n) (@mnm0_seq n).
 Proof.
 apply refine_seqmultinomP.
   by rewrite size_nseq.
-move=> i; rewrite nth_nseq if_same multinomE (tnth_nth 0%N) nth_map //=.
-by rewrite size_enum_ord.
+by move=> i; rewrite mnm0E nth_nseq if_same.
 Qed.
 
 Lemma refine_mnmd {n1} :
@@ -541,27 +534,9 @@ apply: refine_seqmultinomP.
   rewrite /mnmd_seq !(size_cat,size_nseq) /= -subnDA addnA addn1 subnKC //.
   by move: ref_i; rewrite refinesE /Rord0; move<-.
 move=> k.
-rewrite /mnmd_seq /mnmd multinomE (tnth_nth 0%N) /=.
-rewrite !(nth_cat,nth_nseq).
-rewrite (nth_map ord0); first by rewrite size_enum_ord.
-case: ifP.
-  rewrite if_same size_nseq nth_enum_ord //.
-  move=> Hic; rewrite ifF //.
-  apply/negP; move/eqP => Keq.
-  move/Rord0_eq in ref_i.
-  by rewrite -ref_i -Keq ltnn in Hic.
-move/negbT; rewrite size_nseq -ltnNge ltnS => Hi.
-rewrite nth_enum_ord //.
-case: ifP.
-  move/eqP <-; move/Rord0_eq: ref_i <-.
-  rewrite subnn /=.
-  have->: j = spec_id j by [].
-  symmetry; eapply refinesP; refines_apply.
-move/negbT/eqP => Hneq.
-move/Rord0_eq in ref_i; rewrite -ref_i in Hi *.
-case: (ltnP i k) => Hci.
-  by rewrite -(@prednK (k - i)) ?subn_gt0 //= nth_nseq if_same.
-by exfalso; apply/Hneq/anti_leq; rewrite Hi.
+rewrite mnmE !(nth_cat, nth_nseq) !if_same size_nseq ltnS/= leq_subLR addn0.
+rewrite (Rord0_eq ref_i); case: ltngtP => //= <-.
+by rewrite subnn/= (RnatE ref_j).
 Qed.
 
 #[export] Instance refine_mnm_add n :
@@ -582,7 +557,7 @@ exact: nat_of_add_bin.
 Qed.
 
 #[export] Instance refine_mdeg n :
-  refines (Rseqmultinom ==> eq) (@mdeg n) mdeg_eff.
+  refines (Rseqmultinom ==> eq) (mdeg : 'X_{1..n} -> nat) mdeg_eff.
 Proof.
 rewrite refinesE.
 elim n => [|n' Hn'] m m' rm; apply trivial_refines in rm.
@@ -597,34 +572,35 @@ suff ->: s = foldl p z t; rewrite {}/p {}/z.
   { by rewrite /add_op /add_N N.add_comm nat_of_add_bin. }
   rewrite IH /add_op /add_N -!N.add_assoc; do 3 f_equal.
   by rewrite N.add_comm. }
-pose mt := [multinom m (fintype.lift ord0 i) | i < n'].
+pose mt := [multinom m (fintype.lift ord0 i) | i < n']%M.
 suff ->: s = mdeg mt.
 { apply Hn', refinesP, refine_seqmultinomP.
   { suff: size (h :: t) = n'.+1; [by rewrite /= => H; injection H|].
     by apply (@refine_size _ m _). }
-  by move=> i; rewrite multinomE tnth_mktuple -(refine_nth _ rm). }
+  by move=> i; rewrite mnmE -(refine_nth _ rm). }
 rewrite /s mdegE /mt; apply eq_bigr=> i _.
-by rewrite multinomE tnth_mktuple.
+by rewrite mnmE.
 Qed.
 
 Lemma multinom_of_seqmultinom_inj n x y :
   size x = n -> size y = n ->
   multinom_of_seqmultinom n x = multinom_of_seqmultinom n y -> x = y.
 Proof.
-move=> Sx Sy; rewrite /multinom_of_seqmultinom.
-case (sumb _) => [prfx|] /=; [|by rewrite size_map Sx eqxx].
-case (sumb _) => [prfy|] /=; [|by rewrite size_map Sy eqxx].
-case; exact: map_spec_N_inj.
+move=> Sx Sy; rewrite /multinom_of_seqmultinom Sx Sy eqxx => /Some_inj fsE.
+apply/map_spec_N_inj/(@eq_from_nth _ 0%N); first by rewrite !size_map Sx Sy.
+move=> i; rewrite size_map Sx => ltin.
+by move: fsE => /mnmP /(_ (Ordinal ltin)); rewrite !fsfunE !inE/=.
 Qed.
 
 Lemma multinom_of_seqmultinom_val_inj n x y :
   size x = n -> size y = n ->
   multinom_of_seqmultinom_val n x = multinom_of_seqmultinom_val n y -> x = y.
 Proof.
-move=> Sx Sy; rewrite /multinom_of_seqmultinom_val /multinom_of_seqmultinom.
-case (sumb _) => [prfx|] /=; [|by rewrite size_map Sx eqxx].
-case (sumb _) => [prfy|] /=; [|by rewrite size_map Sy eqxx].
-case; exact: map_spec_N_inj.
+move=> Sx Sy.
+rewrite /multinom_of_seqmultinom_val /multinom_of_seqmultinom Sx Sy eqxx => fsE.
+apply/map_spec_N_inj/(@eq_from_nth _ 0%N); first by rewrite !size_map Sx Sy.
+move=> i; rewrite size_map Sx => ltin.
+by move: fsE => /mnmP /(_ (Ordinal ltin)); rewrite !fsfunE !inE/=.
 Qed.
 
 Lemma Rseqmultinom_eq n (x : 'X_{1..n}) x' y y' :
@@ -653,111 +629,29 @@ rewrite -ltEmnm.
 case: (boolP (m1 == m2)) => /= [E|].
 { suff: mnmc_eq_seq m1' m2'.
   { move=> E'; symmetry.
-    move: E => /eqP ->; rewrite Order.POrderTheory.ltxx.
+    move: E => /eqP ->; rewrite ltxx.
     apply negbTE; apply /negP => K.
     by apply (E.lt_not_eq K). }
   by apply /mnmc_eq_seqP; rewrite -(Rseqmultinom_eq rm1 rm2). }
 move=> nE.
-rewrite /mnmc_lt_seq /Order.lt /=.
-rewrite mpoly.ltmc_def eq_sym nE /=.
-have rmdeg := refine_mdeg n; rewrite refinesE in rmdeg.
-rewrite /eq_op /eq_N /lt_op /lt_N.
-rewrite /mnmc_le.
-rewrite Order.SeqLexiOrder.Exports.lexi_cons.
-rewrite (rmdeg _ _ (refinesP rm1)) (rmdeg _ _ (refinesP rm2)) => {rmdeg}.
-rewrite /Order.le /=.
-rewrite (_ : Order.SeqLexiOrder.le _ _ = mnmc_lt_seq_aux m1' m2'); last first.
-{ rewrite leq_eqVlt.
-  apply/idP/idP.
-  { case eqP => /= He.
-    { rewrite He leqnn /= => ->.
-      apply /orP; right.
-      rewrite andbC /=.
-      move: He; rewrite -Nat2N.inj_iff !nat_of_binK => ->.
-      by rewrite /is_true N.eqb_eq. }
-    move=> /andP [Hlt _].
-    apply /orP; left.
-    by rewrite /is_true N.ltb_lt; apply /Rnat_ltP. }
-  move=> /orP [Hlt|/andP [Heaq ->]].
-  { apply /andP; split.
-    { apply /orP; right.
-      by move: Hlt; rewrite /is_true N.ltb_lt => /Rnat_ltP. }
-    apply /implyP => Hle.
-    exfalso; move: Hlt.
-    rewrite /is_true N.ltb_lt => /Rnat_ltP.
-    by rewrite /spec_N ltnNge Hle. }
-  move: Heaq => /Neqb_ok => ->.
-  by apply /andP; split; [rewrite eqxx|apply /implyP]. }
-elim: n m1 m1' rm1 m2 m2' rm2 nE => [|n IH] m1 m1' rm1 m2 m2' rm2 nE.
-{ move: rm1=> /(@refine_size _) /size0nil ->.
-  move: rm2=> /(@refine_size _) /size0nil -> /=.
-  apply/negbTE/negP=> H; move: nE => /eqP; apply.
-  by case m1, m2; rewrite tuple0; symmetry; rewrite tuple0. }
-case: m1' rm1 => [|h1 t1 rm1]; [by move/(@refine_size _)|].
-case: m2' rm2 => [|h2 t2 rm2]; [by move/(@refine_size _)|].
-move: nE; case: m1 rm1=> m1; case: m1 => m1; case: m1=> [//|h1' t1'] sm1 /= rm1.
-case: m2 rm2 => m2; case: m2 => m2; case: m2 => [//|h2' t2'] sm2 /= rm2 => nE.
-have st1 : size t1' == n; [by rewrite -eqSS|].
-have st2 : size t2' == n; [by rewrite -eqSS|].
-have Hh1 : nat_of_bin h1 = h1'.
-{ by move: (refine_nth ord0 rm1); rewrite /spec_N => ->. }
-have rt1 : refines Rseqmultinom [multinom Tuple st1] t1.
-{ apply refine_seqmultinomP.
-  { by move: (@refine_size _ _ _ rm1)=> /= /eqP; rewrite eqSS=> /eqP. }
-  move=> i; move: (refine_nth (fintype.lift ord0 i) rm1).
-  by rewrite /= =>->; rewrite !multinomE !(tnth_nth 0%N) /=. }
-have Hh2 : nat_of_bin h2 = h2'.
-{ by move: (refine_nth ord0 rm2); rewrite /spec_N => ->. }
-have rt2 : refines Rseqmultinom [multinom Tuple st2] t2.
-{ apply refine_seqmultinomP.
-  { by move: (@refine_size _ _ _ rm2)=> /= /eqP; rewrite eqSS=> /eqP. }
-  move=> i; move: (refine_nth (fintype.lift ord0 i) rm2).
-  by rewrite /= =>->; rewrite !multinomE !(tnth_nth 0%N) /=. }
-rewrite /Order.lt /= /eq_op /eq_N /lt_op /lt_N.
-move: (@refine_nth _ _ _ ord0 rm1) => /=.
-rewrite multinomE /spec_N (tnth_nth 0%N) /= => <-.
-move: (@refine_nth _ _ _ ord0 rm2) => /=.
-rewrite multinomE /spec_N (tnth_nth 0%N) /= => <-.
-rewrite /Order.le /=.
-apply/idP/idP.
-{ rewrite leq_eqVlt.
-  move=> /andP [/orP [Heq12|Hlt12] /implyP Himpl].
-  { move: Heq12 => /eqP; rewrite -Nat2N.inj_iff !nat_of_binK => Heq12.
-    apply /orP; right.
-    apply /andP; split.
-    { rewrite Heq12; apply N.eqb_refl. }
-    rewrite -(IH _ _ rt1 _ _ rt2); last by apply Himpl; rewrite Heq12.
-    apply /eqP => Hst12.
-    move: nE => /eqP; apply.
-    do 2 (apply val_inj => /=).
-    apply f_equal2.
-    { by rewrite -Hh1 Heq12. }
-    by move: Hst12 => []. }
-  apply /orP; left.
-  by rewrite /is_true N.ltb_lt; apply /Rnat_ltP. }
-move=> /orP [Hlt12|/andP [Heq12 Hltseq]];
-  (apply /andP; split; [|apply /implyP => Hle21]).
-{ apply ltnW.
-  by move: Hlt12; rewrite /is_true N.ltb_lt => /Rnat_ltP. }
-{ exfalso; move: Hle21.
-  apply /negP; rewrite -ltnNge.
-  by move: Hlt12; rewrite /is_true N.ltb_lt => /Rnat_ltP. }
-{ by move: Heq12 => /Neqb_ok => ->. }
-rewrite (IH _ _ rt1 _ _ rt2) => [|//].
-apply /negP => /eqP [Ht12'].
-move: nE => /negP; apply; apply /eqP.
-do 2 (apply val_inj => /=).
-apply f_equal2 => [|//].
-by rewrite -Hh1 -Hh2; move: Heq12 => /Neqb_ok => ->.
+rewrite lt_neqAle nE/= [(_ <= _)%O]lexi_cons /mnmc_lt_seq/=.
+rewrite leEnat Rnat_ltE Rnat_eqE.
+rewrite -[spec_N _](refinesP (refine_mdeg n) _ _ (refinesP rm1)).
+rewrite -[spec_N _](refinesP (refine_mdeg n) _ _ (refinesP rm2)).
+case: ltngtP => //= _.
+move: nE; rewrite (Rseqmultinom_eq rm1 rm2) /multinom_val/=.
+move: rm1 rm2 => /RseqmultinomP-> /RseqmultinomP->.
+elim: (enum 'I_n) => //= x xs IHxs.
+rewrite eqseq_cons lexi_cons negb_and leEnat.
+by rewrite ![_ == _]Rnat_eqE Rnat_eqE Rnat_ltE 2!implem_NK; case: ltngtP.
 Qed.
 
-Definition mpoly_of_effmpoly (T : nzRingType) n (p' : effmpoly T) : option (mpoly n T) :=
+Definition mpoly_of_effmpoly (T : nzRingType) n (p' : effmpoly T) : option {mpoly T[n]} :=
   if P.for_all (fun k _ => size k == n)%N p' then
-    Some [mpoly [freeg [seq (a.2, multinom_of_seqmultinom_val n a.1) |
-                        a <- M.elements p']]]
+    Some (\sum_(a <- M.elements p') << a.2 *g multinom_of_seqmultinom_val n a.1 >>)
   else None.
 
-Definition mpoly_of_effmpoly_val (T : nzRingType) n (p' : effmpoly T) : mpoly n T :=
+Definition mpoly_of_effmpoly_val (T : nzRingType) n (p' : effmpoly T) : {mpoly T[n]} :=
   odflt 0 (mpoly_of_effmpoly n p').
 
 (** Main refinement predicate for multivariate polynomials *)
@@ -811,7 +705,7 @@ by apply/negP => Hin; apply H1, in_fst_InA_eq_key_iff.
 Qed.
 
 Lemma refine_size_mpoly (n : nat) (T : nzRingType)
-    (p : mpoly n T) (p' : effmpoly T) `{ref_pp' : !refines Reffmpoly p p'} :
+    (p : {mpoly T[n]}) (p' : effmpoly T) `{ref_pp' : !refines Reffmpoly p p'} :
   forall m, M.In m p' -> size m == n.
 Proof.
 move: ref_pp'.
@@ -822,7 +716,7 @@ by move=> H _ m [e Hme]; apply (H m e).
 Qed.
 
 Lemma refine_find_mpoly (n : nat) (T : nzRingType)
-    (p : mpoly n T) (p' : effmpoly T) : refines Reffmpoly p p' ->
+    (p : {mpoly T[n]}) (p' : effmpoly T) : refines Reffmpoly p p' ->
   forall m m', refines Rseqmultinom m m' -> p@_m = odflt 0 (M.find m' p').
 Proof.
 rewrite !refinesE /Reffmpoly /mpoly_of_effmpoly /ofun_hrel.
